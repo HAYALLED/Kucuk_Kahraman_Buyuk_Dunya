@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=6 format=3 uid="uid://usoogdmu5xx2"]
+
+[ext_resource type="Texture2D" uid="uid://hjnlh7h3n8hk" path="res://Sprites/portray-batboy.png" id="1_c8haw"]
+[ext_resource type="SpriteFrames" uid="uid://b0kuqch3ts3e5" path="res://Resources/Costumes/batBoy_sprites.tres" id="1_ynoon"]
+[ext_resource type="PackedScene" uid="uid://c5n4d7chdawc4" path="res://Assets/Scenes/Projectiles/batarang_trap.tscn" id="2_56l66"]
+[ext_resource type="Script" uid="uid://dy444cyn5wphm" path="res://Scripts/CostumeResource.cs" id="2_c8haw"]
+[ext_resource type="PackedScene" uid="uid://b315dhmc1ge1" path="res://Assets/Scenes/Projectiles/batarang_projectile.tscn" id="3_u1srk"]
+
+[resource]
+script = ExtResource("2_c8haw")
+CostumeName = "batBoy"
+Sprites = ExtResource("1_ynoon")
+MaxHealth = 4
+Icon = ExtResource("1_c8haw")
+DamageMultiplier = 2.0
+CanGrapple = true
+CanHover = true
+CanThrowProjectile = true
+ProjectileScene = ExtResource("3_u1srk")
+PlantScene = ExtResource("2_56l66")
+metadata/_custom_type_script = "uid://dy444cyn5wphm"

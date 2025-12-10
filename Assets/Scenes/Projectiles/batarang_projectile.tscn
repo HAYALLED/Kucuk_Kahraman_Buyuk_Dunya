@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://b315dhmc1ge1"]
+
+[ext_resource type="Script" uid="uid://bmt0dkyluww0k" path="res://Scripts/BatarangProjectile.cs" id="1_6jq0r"]
+[ext_resource type="Texture2D" uid="uid://b8xdtx8qcpfag" path="res://Sprites/batman_batarang-object.png" id="1_x4m80"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6jq0r"]
+atlas = ExtResource("1_x4m80")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6eqny"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6jq0r")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rmgyw"]
+radius = 15.0
+
+[node name="BatarangProjectile" type="Area2D"]
+collision_layer = 2
+collision_mask = 8
+script = ExtResource("1_6jq0r")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_6eqny")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_rmgyw")

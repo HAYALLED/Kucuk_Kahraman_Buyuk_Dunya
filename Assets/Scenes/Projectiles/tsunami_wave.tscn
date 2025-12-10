@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://b7opmiwxefcs6"]
+
+[ext_resource type="Script" uid="uid://bia2a51mcxtyu" path="res://Scripts/TsunamiWave.cs" id="1_3twli"]
+[ext_resource type="Texture2D" uid="uid://mln1fxoq6044" path="res://Sprites/aquaboy_wave.png" id="2_b0ckc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jm5uo"]
+atlas = ExtResource("2_b0ckc")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_uqqph"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jm5uo")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_afit7"]
+radius = 12.0
+
+[node name="tsunami_wave" type="Area2D"]
+collision_layer = 0
+collision_mask = 25
+script = ExtResource("1_3twli")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_uqqph")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_afit7")

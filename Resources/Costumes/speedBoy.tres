@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=4 format=3 uid="uid://cygasdddys272"]
+
+[ext_resource type="Texture2D" uid="uid://wmjovwg6jeq8" path="res://Sprites/portray-empthy.png" id="1_juwlg"]
+[ext_resource type="SpriteFrames" uid="uid://s12h4ud6j81b" path="res://Resources/Costumes/speedBoy_sprites.tres" id="2_juwlg"]
+[ext_resource type="Script" uid="uid://dy444cyn5wphm" path="res://Scripts/CostumeResource.cs" id="3_bjxnm"]
+
+[resource]
+script = ExtResource("3_bjxnm")
+CostumeName = "speedBoy"
+Sprites = ExtResource("2_juwlg")
+MaxHealth = 4
+Icon = ExtResource("1_juwlg")
+CanFrozeTime = true
+CanTeleport = true
+SpeedEfficiency = 2.5
+metadata/_custom_type_script = "uid://dy444cyn5wphm"

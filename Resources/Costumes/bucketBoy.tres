@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=5 format=3 uid="uid://i8itv1d35v4k"]
+
+[ext_resource type="Texture2D" uid="uid://csunbwqcp6thg" path="res://Sprites/portray-tinboy.png" id="1_4dl62"]
+[ext_resource type="PackedScene" uid="uid://d4cdvrtdvbg0q" path="res://Assets/Scenes/Projectiles/rocket_projectile.tscn" id="2_2meve"]
+[ext_resource type="Script" uid="uid://dy444cyn5wphm" path="res://Scripts/CostumeResource.cs" id="2_4dl62"]
+[ext_resource type="SpriteFrames" uid="uid://b6h1h2qrhjjgy" path="res://Resources/Costumes/bucketBoy_sprites.tres" id="2_4k8fr"]
+
+[resource]
+script = ExtResource("2_4dl62")
+CostumeName = "bucketBoy"
+Sprites = ExtResource("2_4k8fr")
+MaxHealth = 4
+Icon = ExtResource("1_4dl62")
+DamageMultiplier = 2.0
+CanGrapple = true
+CanHover = true
+CanThrowProjectile = true
+ProjectileDamage = 3
+ProjectileCooldown = 2.0
+ProjectileScene = ExtResource("2_2meve")
+HasDroneSupport = true
+metadata/_custom_type_script = "uid://dy444cyn5wphm"

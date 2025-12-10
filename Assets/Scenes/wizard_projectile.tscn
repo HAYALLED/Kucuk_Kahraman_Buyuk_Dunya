@@ -1,0 +1,51 @@
+[gd_scene load_steps=8 format=3 uid="uid://c8uejryhinxwc"]
+
+[ext_resource type="Script" uid="uid://28di4y53afb4" path="res://Scripts/WizardProjectile.cs" id="1_4e354"]
+[ext_resource type="Texture2D" uid="uid://mqjycvd5rorh" path="res://Sprites/düşmantrashbagdeneme-projectile.png" id="2_pp8u7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_x33dv"]
+radius = 20.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fxjue"]
+atlas = ExtResource("2_pp8u7")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uh8ml"]
+atlas = ExtResource("2_pp8u7")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ltda8"]
+atlas = ExtResource("2_pp8u7")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6ox5x"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fxjue")
+}],
+"loop": true,
+"name": &"projectile",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uh8ml")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ltda8")
+}],
+"loop": false,
+"name": &"startup",
+"speed": 5.0
+}]
+
+[node name="wizard_projectile" type="Area2D"]
+script = ExtResource("1_4e354")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_x33dv")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_6ox5x")
+animation = &"startup"

@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://b5angxtflmrr0"]
+
+[ext_resource type="Texture2D" uid="uid://dwnvvcg8xrxia" path="res://Sprites/points_or_recycle_ones.png" id="1_oxa5v"]
+[ext_resource type="Script" uid="uid://cg7aaub31kni0" path="res://Scripts/PointsGoldTrash.cs" id="1_yqhag"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4ald7"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yqhag"]
+atlas = ExtResource("1_oxa5v")
+region = Rect2(80, 32, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5884m"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yqhag")
+}],
+"loop": true,
+"name": &"BigPoints",
+"speed": 5.0
+}]
+
+[node name="points_gold_trash" type="Area2D"]
+script = ExtResource("1_yqhag")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_4ald7")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_5884m")
+animation = &"BigPoints"

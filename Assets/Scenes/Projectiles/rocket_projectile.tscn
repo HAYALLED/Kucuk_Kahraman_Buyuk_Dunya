@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://d4cdvrtdvbg0q"]
+
+[ext_resource type="Texture2D" uid="uid://dv22uipv58fto" path="res://Sprites/bucketboy_rocket.png" id="1_b0nal"]
+[ext_resource type="Script" uid="uid://3by2ng6letkh" path="res://Scripts/RocketProjectile.cs" id="1_k7j5b"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k7j5b"]
+atlas = ExtResource("1_b0nal")
+region = Rect2(0, 0, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_77slf"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k7j5b")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pl2vl"]
+size = Vector2(19, 10)
+
+[node name="RocketProjectile" type="Area2D"]
+collision_layer = 2
+collision_mask = 8
+script = ExtResource("1_k7j5b")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_77slf")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_pl2vl")

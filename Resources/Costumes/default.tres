@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=4 format=3 uid="uid://cpfbe3giki1h5"]
+
+[ext_resource type="Script" uid="uid://dy444cyn5wphm" path="res://Scripts/CostumeResource.cs" id="1_cuv76"]
+[ext_resource type="SpriteFrames" uid="uid://dkc46fwvbn6j5" path="res://Resources/Costumes/default_sprites.tres" id="1_i6mny"]
+[ext_resource type="Texture2D" uid="uid://wmjovwg6jeq8" path="res://Sprites/portray-empthy.png" id="1_obxre"]
+
+[resource]
+script = ExtResource("1_cuv76")
+Sprites = ExtResource("1_i6mny")
+Icon = ExtResource("1_obxre")
+metadata/_custom_type_script = "uid://dy444cyn5wphm"

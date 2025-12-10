@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=5 format=3 uid="uid://d1ak144ue5npk"]
+
+[ext_resource type="SpriteFrames" uid="uid://d0andxrbsyphu" path="res://Resources/Costumes/spiderBoy_sprites.tres" id="1_e0n8x"]
+[ext_resource type="Texture2D" uid="uid://dxoc0s7l5ojky" path="res://Sprites/portray-spiderboy.png" id="1_umspa"]
+[ext_resource type="PackedScene" uid="uid://bijsjyh0kmwy5" path="res://Assets/Scenes/Projectiles/web_projectile.tscn" id="2_8o7hj"]
+[ext_resource type="Script" uid="uid://dy444cyn5wphm" path="res://Scripts/CostumeResource.cs" id="2_umspa"]
+
+[resource]
+script = ExtResource("2_umspa")
+CostumeName = "spiderboy"
+Sprites = ExtResource("1_e0n8x")
+MaxHealth = 4
+Icon = ExtResource("1_umspa")
+CanWallClimb = true
+CanSwing = true
+CanThrowProjectile = true
+ProjectileDamage = 0
+ProjectileCooldown = 0.5
+ProjectileCanStun = true
+ProjectileScene = ExtResource("2_8o7hj")
+CanWallJump = true
+MaxWallJumps = 999999
+WallJumpEfficiency = 1.5
+JumpEfficiency = 1.5
+metadata/_custom_type_script = "uid://dy444cyn5wphm"

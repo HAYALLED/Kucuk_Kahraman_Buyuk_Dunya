@@ -1,0 +1,53 @@
+[gd_scene load_steps=9 format=3 uid="uid://qglhjeocs8wu"]
+
+[ext_resource type="Script" uid="uid://n6jvgey2kkgb" path="res://Scripts/PointsWood.cs" id="1_2pc2p"]
+[ext_resource type="Texture2D" uid="uid://dwnvvcg8xrxia" path="res://Sprites/points_or_recycle_ones.png" id="1_g1438"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4ald7"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2pc2p"]
+atlas = ExtResource("1_g1438")
+region = Rect2(0, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qpxkt"]
+atlas = ExtResource("1_g1438")
+region = Rect2(16, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pt5ro"]
+atlas = ExtResource("1_g1438")
+region = Rect2(32, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x1kuu"]
+atlas = ExtResource("1_g1438")
+region = Rect2(48, 48, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_um7bi"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2pc2p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qpxkt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pt5ro")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x1kuu")
+}],
+"loop": true,
+"name": &"points",
+"speed": 5.0
+}]
+
+[node name="points_wood" type="Area2D"]
+collision_mask = 2
+script = ExtResource("1_2pc2p")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_4ald7")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_um7bi")
+animation = &"points"

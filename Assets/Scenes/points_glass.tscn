@@ -1,0 +1,53 @@
+[gd_scene load_steps=9 format=3 uid="uid://d02e0x5hobkc4"]
+
+[ext_resource type="Texture2D" uid="uid://dwnvvcg8xrxia" path="res://Sprites/points_or_recycle_ones.png" id="1_cuh4v"]
+[ext_resource type="Script" uid="uid://bby5q5cww3d51" path="res://Scripts/PointsGlass.cs" id="1_jqd7p"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4ald7"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jqd7p"]
+atlas = ExtResource("1_cuh4v")
+region = Rect2(32, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5vtqm"]
+atlas = ExtResource("1_cuh4v")
+region = Rect2(16, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_20xse"]
+atlas = ExtResource("1_cuh4v")
+region = Rect2(0, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ytce"]
+atlas = ExtResource("1_cuh4v")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wiheg"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jqd7p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5vtqm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_20xse")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ytce")
+}],
+"loop": true,
+"name": &"points",
+"speed": 5.0
+}]
+
+[node name="points_glass" type="Area2D"]
+collision_mask = 2
+script = ExtResource("1_jqd7p")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_4ald7")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_wiheg")
+animation = &"points"

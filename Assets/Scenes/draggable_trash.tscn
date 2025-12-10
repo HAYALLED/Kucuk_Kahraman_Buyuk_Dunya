@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://bpmj2ge2fyskx"]
+
+[ext_resource type="Script" uid="uid://bqagesm4bfh2u" path="res://Scripts/DraggableTrash.cs" id="1_gqt4r"]
+[ext_resource type="Texture2D" uid="uid://dwnvvcg8xrxia" path="res://Sprites/points_or_recycle_ones.png" id="2_uc8tl"]
+
+[node name="DraggableTrash" type="Control"]
+custom_minimum_size = Vector2(60, 80)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_gqt4r")
+
+[node name="Icon" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(60, 80)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_uc8tl")
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 0
+offset_top = 90.0
+offset_right = 60.0
+offset_bottom = 113.0
+text = "çöpler"
+vertical_alignment = 1

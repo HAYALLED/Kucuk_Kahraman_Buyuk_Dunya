@@ -1,0 +1,34 @@
+[gd_scene load_steps=7 format=3 uid="uid://f82mqbnpwjq8"]
+
+[ext_resource type="Script" uid="uid://bt6nslv5q4ad4" path="res://Scripts/RecyclingStation.cs" id="1_8mw2h"]
+[ext_resource type="Texture2D" uid="uid://b18seqcnx2lr8" path="res://Sprites/recycling bins-full_set.png" id="1_n158t"]
+[ext_resource type="PackedScene" uid="uid://wuunacymi6aw" path="res://Assets/Scenes/recycling_minigame.tscn" id="2_si1am"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8mw2h"]
+atlas = ExtResource("1_n158t")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_si1am"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8mw2h")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cdbdc"]
+size = Vector2(30, 25)
+
+[node name="RecyclingStation" type="Area2D"]
+script = ExtResource("1_8mw2h")
+MinigameScene = ExtResource("2_si1am")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_si1am")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4)
+shape = SubResource("RectangleShape2D_cdbdc")

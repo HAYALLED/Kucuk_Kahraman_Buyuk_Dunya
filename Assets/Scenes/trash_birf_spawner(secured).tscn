@@ -1,0 +1,117 @@
+[gd_scene load_steps=18 format=3 uid="uid://cgxawnggjcgop"]
+
+[ext_resource type="Texture2D" uid="uid://coxbq5m8ct73h" path="res://Sprites/bird_spawner_secured.png" id="1_3i2g2"]
+[ext_resource type="Script" uid="uid://b5l6pqcd7jf6f" path="res://Scripts/TrashBirfSpawner_secured.cs" id="1_bio71"]
+[ext_resource type="PackedScene" uid="uid://ctc2kdiheob8c" path="res://Assets/Scenes/trash_miniboss_security.tscn" id="2_dpqmr"]
+[ext_resource type="Texture2D" uid="uid://dwuasvsg14uee" path="res://Sprites/batman_batarang-confetti explode.png" id="2_p2m1i"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dpqmr"]
+atlas = ExtResource("2_p2m1i")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kivn4"]
+atlas = ExtResource("2_p2m1i")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wk41r"]
+atlas = ExtResource("2_p2m1i")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bche4"]
+atlas = ExtResource("2_p2m1i")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eno1v"]
+atlas = ExtResource("2_p2m1i")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6oqh3"]
+atlas = ExtResource("2_p2m1i")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_20cl2"]
+atlas = ExtResource("2_p2m1i")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cjvd0"]
+atlas = ExtResource("2_p2m1i")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jp54v"]
+atlas = ExtResource("2_p2m1i")
+region = Rect2(256, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kj1a3"]
+atlas = ExtResource("1_3i2g2")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bio71"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dpqmr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kivn4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wk41r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bche4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eno1v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6oqh3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_20cl2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cjvd0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jp54v")
+}],
+"loop": true,
+"name": &"death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kj1a3")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p2m1i"]
+size = Vector2(63, 67)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dpqmr"]
+size = Vector2(360, 160)
+
+[node name="Trash_Birf_Spawner(Secured)" type="CharacterBody2D"]
+script = ExtResource("1_bio71")
+TrashMinibossSecurityScene = ExtResource("2_dpqmr")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_bio71")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, -0.5)
+shape = SubResource("RectangleShape2D_p2m1i")
+
+[node name="player_detector" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="player_detector"]
+visibility_layer = 8
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_dpqmr")
+debug_color = Color(0.7680311, 0.44019002, 0.21477231, 0.41960785)

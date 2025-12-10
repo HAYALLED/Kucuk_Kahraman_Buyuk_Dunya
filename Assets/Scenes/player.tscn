@@ -1,0 +1,294 @@
+[gd_scene load_steps=20 format=3 uid="uid://365bo4k4vdep"]
+
+[ext_resource type="Script" uid="uid://clwaso7uwqail" path="res://Scripts/Player_controller.cs" id="1_7dd06"]
+[ext_resource type="SpriteFrames" uid="uid://dkc46fwvbn6j5" path="res://Resources/Costumes/default_sprites.tres" id="2_38rej"]
+[ext_resource type="Resource" uid="uid://4h7ew8bxdmf6" path="res://Resources/Costumes/normal.tres" id="2_t1xgp"]
+[ext_resource type="Resource" uid="uid://usoogdmu5xx2" path="res://Resources/Costumes/batBoy.tres" id="3_lerqx"]
+[ext_resource type="Resource" uid="uid://d1ak144ue5npk" path="res://Resources/Costumes/spiderBoy.tres" id="4_jp3cw"]
+[ext_resource type="Texture2D" uid="uid://bfv3w6mnepk5n" path="res://Sprites/portray.png" id="5_23lac"]
+[ext_resource type="Resource" uid="uid://bkvsuld16e2c2" path="res://Resources/Costumes/superBoy.tres" id="5_ecf78"]
+[ext_resource type="Texture2D" uid="uid://b12c54x24kd12" path="res://Sprites/spider_web.png" id="6_jp3cw"]
+[ext_resource type="Texture2D" uid="uid://bluoafib43wxf" path="res://Sprites/tümhealthbarşekilleri-idle full heart.png" id="7_c3tg1"]
+[ext_resource type="Texture2D" uid="uid://dvs6gkdv5tpqq" path="res://Sprites/batman_hook.png" id="7_ecf78"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_t1xgp"]
+radius = 15.0
+height = 56.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c3tg1"]
+size = Vector2(52.5, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lerqx"]
+atlas = ExtResource("7_c3tg1")
+region = Rect2(0, 0, 16, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jp3cw"]
+atlas = ExtResource("7_c3tg1")
+region = Rect2(144, 0, 16, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5lpyi"]
+atlas = ExtResource("7_c3tg1")
+region = Rect2(288, 0, 16, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fupf5"]
+atlas = ExtResource("7_c3tg1")
+region = Rect2(432, 0, 16, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d6hru"]
+atlas = ExtResource("7_c3tg1")
+region = Rect2(576, 0, 16, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w3t24"]
+atlas = ExtResource("5_23lac")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ggw7w"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lerqx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jp3cw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5lpyi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fupf5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d6hru")
+}],
+"loop": true,
+"name": &"health",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w3t24")
+}],
+"loop": true,
+"name": &"portray",
+"speed": 5.0
+}]
+
+[node name="player" type="CharacterBody2D"]
+collision_layer = 3
+collision_mask = 15
+script = ExtResource("1_7dd06")
+CurrentCostume = ExtResource("2_t1xgp")
+CostumeSlots = [ExtResource("3_lerqx"), ExtResource("4_jp3cw"), ExtResource("5_ecf78")]
+WebAnchorTexture = ExtResource("6_jp3cw")
+HookTexture = ExtResource("7_ecf78")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -28)
+shape = SubResource("CapsuleShape2D_t1xgp")
+
+[node name="attack_collision" type="Area2D" parent="."]
+collision_layer = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="attack_collision"]
+visibility_layer = 7
+position = Vector2(26.75, -26)
+shape = SubResource("RectangleShape2D_c3tg1")
+debug_color = Color(0.8036122, 0.3793542, 0.47163427, 0.41960785)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -33)
+sprite_frames = ExtResource("2_38rej")
+animation = &"attack"
+
+[node name="health_bar" type="CanvasLayer" parent="."]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="health_bar"]
+z_index = 3
+custom_minimum_size = Vector2(10, 10)
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 83.0
+offset_bottom = 50.0
+theme_override_constants/separation = 10
+
+[node name="heart" type="TextureRect" parent="health_bar/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart"]
+z_index = 3
+position = Vector2(20, 20)
+scale = Vector2(2.9615386, 2.9615386)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"health"
+
+[node name="heart2" type="TextureRect" parent="health_bar/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart2"]
+z_index = 3
+position = Vector2(20, 20)
+scale = Vector2(2.9615386, 2.9615386)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"health"
+
+[node name="heart3" type="TextureRect" parent="health_bar/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart3"]
+z_index = 3
+position = Vector2(20, 20)
+scale = Vector2(2.9615386, 2.9615386)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"health"
+
+[node name="heart4" type="TextureRect" parent="health_bar/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart4"]
+z_index = 3
+position = Vector2(20, 20)
+scale = Vector2(2.9615386, 2.9615386)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"health"
+
+[node name="heart5" type="TextureRect" parent="health_bar/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart5"]
+z_index = 3
+position = Vector2(20, 20)
+scale = Vector2(2.9615386, 2.9615386)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"health"
+
+[node name="heart6" type="TextureRect" parent="health_bar/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart6"]
+z_index = 3
+position = Vector2(20, 20)
+scale = Vector2(2.9615386, 2.9615386)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"health"
+
+[node name="heart7" type="TextureRect" parent="health_bar/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart7"]
+z_index = 3
+position = Vector2(20, 20)
+scale = Vector2(2.9615386, 2.9615386)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"health"
+
+[node name="heart8" type="TextureRect" parent="health_bar/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart8"]
+z_index = 3
+position = Vector2(20, 20)
+scale = Vector2(2.9615386, 2.9615386)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"health"
+
+[node name="costume_slots" type="CanvasLayer" parent="."]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="costume_slots"]
+z_index = 3
+custom_minimum_size = Vector2(10, 10)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -73.0
+offset_bottom = 40.0
+grow_horizontal = 0
+theme_override_constants/separation = 10
+
+[node name="portray" type="TextureRect" parent="costume_slots/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="portray" type="AnimatedSprite2D" parent="costume_slots/HBoxContainer/portray"]
+z_index = 3
+position = Vector2(-2.0000076, 46)
+scale = Vector2(1.058, 1)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"portray"
+
+[node name="portray2" type="TextureRect" parent="costume_slots/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="portray" type="AnimatedSprite2D" parent="costume_slots/HBoxContainer/portray2"]
+z_index = 3
+position = Vector2(-2.0000076, 46)
+scale = Vector2(1.058, 1)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"portray"
+
+[node name="portray3" type="TextureRect" parent="costume_slots/HBoxContainer"]
+z_index = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="portray" type="AnimatedSprite2D" parent="costume_slots/HBoxContainer/portray3"]
+z_index = 3
+position = Vector2(-2.0000076, 46)
+scale = Vector2(1.058, 1)
+sprite_frames = SubResource("SpriteFrames_ggw7w")
+animation = &"portray"
+
+[node name="scores" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="scores"]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -38.5
+offset_right = 199.0
+offset_bottom = 38.5
+grow_vertical = 2
+
+[node name="trashCountLabel" type="Label" parent="scores/VBoxContainer"]
+layout_mode = 2
+text = "tuttuğu çöp sayısı"
+
+[node name="currentScoreLabel" type="Label" parent="scores/VBoxContainer"]
+layout_mode = 2
+text = "player şu anki puan sayısı"
+
+[node name="requiredScoreLabel" type="Label" parent="scores/VBoxContainer"]
+layout_mode = 2
+text = "for level score"

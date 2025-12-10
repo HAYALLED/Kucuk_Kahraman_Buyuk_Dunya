@@ -1,0 +1,104 @@
+[gd_scene load_steps=16 format=3 uid="uid://c8yturrtsbus2"]
+
+[ext_resource type="Texture2D" uid="uid://dwuasvsg14uee" path="res://Sprites/batman_batarang-confetti explode.png" id="1_d65xb"]
+[ext_resource type="Script" uid="uid://ca32lgr4a7lrf" path="res://Scripts/Trash_Bird_Spawner_vulnerable.cs" id="1_fn07g"]
+[ext_resource type="Texture2D" uid="uid://bqwc1tec6f5ra" path="res://Sprites/bird_spawner.png" id="2_fn07g"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a0a6i"]
+size = Vector2(69, 69)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tget4"]
+atlas = ExtResource("1_d65xb")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y5shh"]
+atlas = ExtResource("1_d65xb")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o85vx"]
+atlas = ExtResource("1_d65xb")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wlo86"]
+atlas = ExtResource("1_d65xb")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4y4jk"]
+atlas = ExtResource("1_d65xb")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sdx2v"]
+atlas = ExtResource("1_d65xb")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ahy5g"]
+atlas = ExtResource("1_d65xb")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4dq4x"]
+atlas = ExtResource("1_d65xb")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x0wq8"]
+atlas = ExtResource("1_d65xb")
+region = Rect2(256, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qbnoj"]
+atlas = ExtResource("2_fn07g")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_m7ivf"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tget4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y5shh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o85vx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wlo86")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4y4jk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sdx2v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ahy5g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4dq4x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x0wq8")
+}],
+"loop": true,
+"name": &"death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qbnoj")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[node name="Trash_Bird_Spawner_(Vulnerable)" type="CharacterBody2D"]
+collision_layer = 8
+script = ExtResource("1_fn07g")
+SpawnInterval = 3.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_a0a6i")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_m7ivf")
+animation = &"idle"

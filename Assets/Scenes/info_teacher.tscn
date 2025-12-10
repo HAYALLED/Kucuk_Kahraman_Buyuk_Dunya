@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://dh2qnn6xp5lr1"]
+
+[ext_resource type="Texture2D" uid="uid://dr256in8fgksy" path="res://Sprites/düşmanagacdeneme.png" id="1_erd2j"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bb770"]
+atlas = ExtResource("1_erd2j")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_gnaql"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bb770")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3fo3y"]
+size = Vector2(70, 70)
+
+[node name="info_teacher" type="Area2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_gnaql")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_3fo3y")

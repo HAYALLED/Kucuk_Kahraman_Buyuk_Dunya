@@ -1,0 +1,34 @@
+[gd_scene load_steps=7 format=3 uid="uid://xe4438lxp6o8"]
+
+[ext_resource type="Texture2D" uid="uid://cemu71la7ksvt" path="res://Sprites/tailor_aunt.png" id="1_2d7rt"]
+[ext_resource type="Script" uid="uid://bitpvb61i5iyh" path="res://Scripts/TailorAunt.cs" id="1_6qusn"]
+[ext_resource type="PackedScene" uid="uid://b10el6tsdhxli" path="res://Assets/Scenes/math_minigame.tscn" id="2_k4pna"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k4pna"]
+atlas = ExtResource("1_2d7rt")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_niirc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k4pna")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2d7rt"]
+size = Vector2(70, 70)
+
+[node name="tailor_aunt" type="Area2D"]
+script = ExtResource("1_6qusn")
+MathMinigameScene = ExtResource("2_k4pna")
+Difficulty = "Orta"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_niirc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_2d7rt")

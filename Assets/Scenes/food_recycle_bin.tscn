@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7pb8egtve34e"]
+
+[ext_resource type="Script" uid="uid://p4m6ku0l4rkk" path="res://Scripts/RecycleBin.cs" id="1_6dxlb"]
+[ext_resource type="Texture2D" uid="uid://8ggab3javju1" path="res://Sprites/recycling bins-food.png" id="2_bn2gc"]
+
+[node name="FoodRecycleBin" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_6dxlb")
+BinType = 1
+AcceptedTrashTypes = PackedInt32Array(0, 0, 0)
+
+[node name="BinIcon" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 60.0
+offset_bottom = 60.0
+texture = ExtResource("2_bn2gc")
+
+[node name="BinLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 54.0
+offset_right = 41.0
+offset_bottom = 77.0
+text = "food"

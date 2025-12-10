@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=4 format=3 uid="uid://bkvsuld16e2c2"]
+
+[ext_resource type="Texture2D" uid="uid://dnicvyjrxod40" path="res://Sprites/portray-superboy.png" id="1_ae2q1"]
+[ext_resource type="SpriteFrames" uid="uid://coq7ycmksdjd8" path="res://Resources/Costumes/superBoy_sprites.tres" id="1_q4pwp"]
+[ext_resource type="Script" uid="uid://dy444cyn5wphm" path="res://Scripts/CostumeResource.cs" id="2_ae2q1"]
+
+[resource]
+script = ExtResource("2_ae2q1")
+CostumeName = "superboy"
+Sprites = ExtResource("1_q4pwp")
+MaxHealth = 4
+Icon = ExtResource("1_ae2q1")
+CanFly = true
+CanThrowProjectile = true
+metadata/_custom_type_script = "uid://dy444cyn5wphm"

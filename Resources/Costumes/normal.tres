@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=4 format=3 uid="uid://4h7ew8bxdmf6"]
+
+[ext_resource type="Texture2D" uid="uid://wmjovwg6jeq8" path="res://Sprites/portray-empthy.png" id="1_153eh"]
+[ext_resource type="SpriteFrames" uid="uid://xph4vagty1bc" path="res://Resources/Costumes/normal_sprites.tres" id="1_j6w5f"]
+[ext_resource type="Script" uid="uid://dy444cyn5wphm" path="res://Scripts/CostumeResource.cs" id="1_udhpu"]
+
+[resource]
+script = ExtResource("1_udhpu")
+Sprites = ExtResource("1_j6w5f")
+Icon = ExtResource("1_153eh")
+CanWallJump = true
+WallJumpEfficiency = 0.5
+metadata/_custom_type_script = "uid://dy444cyn5wphm"

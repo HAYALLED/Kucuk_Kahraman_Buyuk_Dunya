@@ -1,0 +1,39 @@
+[gd_scene load_steps=12 format=3 uid="uid://brjeo326iyyt2"]
+
+[ext_resource type="Texture2D" uid="uid://b8l3tewk4p7cf" path="res://Sprites/random_costume.png" id="1_4g24r"]
+[ext_resource type="Script" uid="uid://cygp4haay5o1h" path="res://Scripts/RandomCostume.cs" id="1_xfgtc"]
+[ext_resource type="Resource" uid="uid://usoogdmu5xx2" path="res://Resources/Costumes/batBoy.tres" id="2_nr78n"]
+[ext_resource type="Resource" uid="uid://i8itv1d35v4k" path="res://Resources/Costumes/bucketBoy.tres" id="3_tnby7"]
+[ext_resource type="Resource" uid="uid://cygasdddys272" path="res://Resources/Costumes/speedBoy.tres" id="4_5wlp6"]
+[ext_resource type="Resource" uid="uid://d1ak144ue5npk" path="res://Resources/Costumes/spiderBoy.tres" id="5_81xvx"]
+[ext_resource type="Resource" uid="uid://bkvsuld16e2c2" path="res://Resources/Costumes/superBoy.tres" id="6_osgpk"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_nr78n"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xfgtc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uigk8"]
+atlas = ExtResource("1_4g24r")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pdfcy"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uigk8")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="random_costume" type="Area2D"]
+script = ExtResource("1_xfgtc")
+AvailableCostumes = Array[Object]([ExtResource("2_nr78n"), ExtResource("3_tnby7"), ExtResource("4_5wlp6"), ExtResource("5_81xvx"), ExtResource("6_osgpk")])
+Sprites = SubResource("SpriteFrames_nr78n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_xfgtc")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_pdfcy")

@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://c8m48ult4444d"]
+
+[ext_resource type="Texture2D" uid="uid://bqjesnsro8u7t" path="res://Sprites/recycling bins-wood.png" id="1_hyc36"]
+[ext_resource type="Script" uid="uid://p4m6ku0l4rkk" path="res://Scripts/RecycleBin.cs" id="1_oqafc"]
+
+[node name="WoodRecycleBin" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_oqafc")
+BinType = 4
+AcceptedTrashTypes = PackedInt32Array(0, 0, 0, 0)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 60.0
+offset_bottom = 60.0
+texture = ExtResource("1_hyc36")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 57.0
+offset_right = 46.0
+offset_bottom = 80.0
+text = "Wood"

@@ -1,0 +1,118 @@
+[gd_scene load_steps=16 format=3 uid="uid://wuunacymi6aw"]
+
+[ext_resource type="Script" uid="uid://32u375cye4t8" path="res://Scripts/RecyclingMinigame.cs" id="1_b1r3m"]
+[ext_resource type="Texture2D" uid="uid://bn6bdvjn8ulkr" path="res://Sprites/points-metal.png" id="2_t5g6x"]
+[ext_resource type="Texture2D" uid="uid://dk13rb7ef1tp2" path="res://Sprites/bomb_sprite-rope.png" id="2_vpwel"]
+[ext_resource type="Texture2D" uid="uid://xqc3bwv2a8fm" path="res://Sprites/points-glass.png" id="3_pvv8v"]
+[ext_resource type="PackedScene" uid="uid://b7pb8egtve34e" path="res://Assets/Scenes/food_recycle_bin.tscn" id="3_tv68d"]
+[ext_resource type="PackedScene" uid="uid://bpmj2ge2fyskx" path="res://Assets/Scenes/draggable_trash.tscn" id="3_ypikl"]
+[ext_resource type="Texture2D" uid="uid://dkn2n7r7q22el" path="res://Sprites/points-plastic.png" id="4_hx21l"]
+[ext_resource type="PackedScene" uid="uid://c8m48ult4444d" path="res://Assets/Scenes/wood_recycle_bin.tscn" id="4_ypikl"]
+[ext_resource type="Texture2D" uid="uid://bt0iv64tk5yrv" path="res://Sprites/points-food.png" id="5_fm1ah"]
+[ext_resource type="PackedScene" uid="uid://dc73n3p1h8a0p" path="res://Assets/Scenes/glass_recycle_bin.tscn" id="5_pmvdj"]
+[ext_resource type="PackedScene" uid="uid://f1olb7ga54tx" path="res://Assets/Scenes/metal_recycle_bin.tscn" id="6_fqkwl"]
+[ext_resource type="Texture2D" uid="uid://ilwvsli3u2mm" path="res://Sprites/points-wood.png" id="6_xa0pp"]
+[ext_resource type="PackedScene" uid="uid://dcsw3wpkudxyy" path="res://Assets/Scenes/plastic_recycle_bin.tscn" id="7_0wnd6"]
+
+[sub_resource type="Theme" id="Theme_ixcaq"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ih1ht"]
+texture = ExtResource("2_vpwel")
+texture_margin_right = 1.0
+expand_margin_bottom = 100.0
+
+[node name="RecyclingMinigame" type="CanvasLayer"]
+script = ExtResource("1_b1r3m")
+TrashTextures = [ExtResource("2_t5g6x"), ExtResource("3_pvv8v"), ExtResource("4_hx21l"), ExtResource("5_fm1ah"), ExtResource("6_xa0pp")]
+DraggableTrashScene = ExtResource("3_ypikl")
+
+[node name="GameArea" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="background" type="ColorRect" parent="GameArea"]
+layout_mode = 0
+offset_right = 540.0
+offset_bottom = 300.0
+color = Color(0.64941347, 0.9632396, 0.96877533, 1)
+
+[node name="FuseBar" type="ProgressBar" parent="GameArea"]
+modulate = Color(1, 0.3647059, 0.22745098, 0.7176471)
+layout_mode = 0
+offset_top = -1.0
+offset_right = 400.0
+offset_bottom = 29.0
+theme = SubResource("Theme_ixcaq")
+theme_override_colors/font_color = Color(0.9490196, 0.3019608, 0.9490196, 1)
+theme_override_styles/fill = SubResource("StyleBoxTexture_ih1ht")
+value = 100.0
+
+[node name="TrashSpawnPoint" type="Control" parent="GameArea"]
+anchors_preset = 0
+offset_left = 205.0
+offset_top = 51.0
+offset_right = 245.0
+offset_bottom = 91.0
+
+[node name="title" type="Label" parent="GameArea"]
+layout_mode = 0
+offset_left = 132.0
+offset_top = -27.0
+offset_right = 439.0
+offset_bottom = -4.0
+text = "HAYDİ ARKADAŞLAR ÇÖPLERİ AYIRALIM "
+
+[node name="ScoreLabel" type="Label" parent="GameArea"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 29.0
+offset_right = 134.0
+offset_bottom = 56.0
+text = "TOPLAM PUANIN = BLANK"
+
+[node name="CorrectLabel" type="Label" parent="GameArea"]
+layout_mode = 0
+offset_left = 407.0
+offset_top = 4.0
+offset_right = 536.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.28235295, 0.8392157, 0.16862746, 1)
+text = "DOĞRU = BLANK"
+
+[node name="WrongLabel" type="Label" parent="GameArea"]
+layout_mode = 0
+offset_left = 408.0
+offset_top = 28.0
+offset_right = 533.0
+offset_bottom = 51.0
+theme_override_colors/font_color = Color(1, 0.24705882, 0.18431373, 1)
+text = "YANLIŞ = BLANK"
+
+[node name="BinsContainer" type="HBoxContainer" parent="GameArea"]
+custom_minimum_size = Vector2(25, 0)
+layout_mode = 0
+offset_top = 198.0
+offset_right = 600.0
+offset_bottom = 298.0
+
+[node name="FoodRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("3_tv68d")]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="WoodRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("4_ypikl")]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="GlassRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("5_pmvdj")]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="MetalRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("6_fqkwl")]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="PlasticRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("7_0wnd6")]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2

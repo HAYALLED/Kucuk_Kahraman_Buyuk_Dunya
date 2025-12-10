@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://dsw0mhpmjttkf"]
+
+[ext_resource type="Script" uid="uid://dgo05056bht1i" path="res://Scripts/Trambolin.cs" id="1_dhkog"]
+[ext_resource type="Texture2D" uid="uid://dlbres2bp6paa" path="res://Sprites/trampolin.png" id="1_osu3y"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dhkog"]
+size = Vector2(70, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_peht4"]
+atlas = ExtResource("1_osu3y")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_edbac"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_peht4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="trambolin" type="Area2D"]
+script = ExtResource("1_dhkog")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_dhkog")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -19)
+sprite_frames = SubResource("SpriteFrames_edbac")

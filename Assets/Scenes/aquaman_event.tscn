@@ -1,0 +1,35 @@
+[gd_scene load_steps=8 format=3 uid="uid://bw85cxpjsutmj"]
+
+[ext_resource type="Texture2D" uid="uid://vv00vallb262" path="res://Sprites/aquaboy_weapon-statue.png" id="1_1vy6u"]
+[ext_resource type="Script" uid="uid://cppftod7wjdh5" path="res://Scripts/AquamanEvent.cs" id="1_8g6eh"]
+[ext_resource type="PackedScene" uid="uid://b10el6tsdhxli" path="res://Assets/Scenes/math_minigame.tscn" id="2_eruxi"]
+[ext_resource type="Resource" uid="uid://bij37anshk5ed" path="res://Resources/Costumes/aquaBoy.tres" id="3_kury4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kury4"]
+atlas = ExtResource("1_1vy6u")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_2nsgy"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kury4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vxg1p"]
+size = Vector2(70, 70)
+
+[node name="aquaman_event" type="Area2D"]
+script = ExtResource("1_8g6eh")
+MathMinigameScene = ExtResource("2_eruxi")
+RewardCostume = ExtResource("3_kury4")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_2nsgy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_vxg1p")

@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://bijsjyh0kmwy5"]
+
+[ext_resource type="Texture2D" uid="uid://c17x8dufhhaxs" path="res://Sprites/spider_web_attack.png" id="1_pd8tm"]
+[ext_resource type="Script" uid="uid://dmuswfkpnndtx" path="res://Scripts/WebProjectile.cs" id="1_rmgyw"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rmgyw"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fy31q"]
+atlas = ExtResource("1_pd8tm")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vjusr"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fy31q")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="WebProjectile" type="Area2D"]
+collision_layer = 2
+collision_mask = 8
+script = ExtResource("1_rmgyw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_rmgyw")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_vjusr")

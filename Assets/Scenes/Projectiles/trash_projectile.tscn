@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://treugvvoouav"]
+
+[ext_resource type="Script" uid="uid://dljihnf1b3til" path="res://Scripts/TrashProjectile.cs" id="1_2xlmg"]
+[ext_resource type="Texture2D" uid="uid://dwnvvcg8xrxia" path="res://Sprites/points_or_recycle_ones.png" id="1_808fv"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2xlmg"]
+atlas = ExtResource("1_808fv")
+region = Rect2(80, 32, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_q2vih"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2xlmg")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gl8vi"]
+
+[node name="trash_projectile" type="Area2D"]
+collision_layer = 8
+collision_mask = 3
+script = ExtResource("1_2xlmg")
+Lifetime = 7.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_q2vih")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_gl8vi")
