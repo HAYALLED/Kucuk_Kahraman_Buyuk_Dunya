@@ -1,5 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://dh2qnn6xp5lr1"]
+[gd_scene load_steps=7 format=3 uid="uid://dh2qnn6xp5lr1"]
 
+[ext_resource type="Script" uid="uid://b8wik0vyrxcqd" path="res://Scripts/info_teacher.cs" id="1_bb770"]
 [ext_resource type="Texture2D" uid="uid://dr256in8fgksy" path="res://Sprites/düşmanagacdeneme.png" id="1_erd2j"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bb770"]
@@ -20,10 +21,56 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3fo3y"]
 size = Vector2(70, 70)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bb770"]
+bg_color = Color(0.078431375, 0.16862746, 0.654902, 0.37254903)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.078431375, 0.7490196, 0.18431373, 0.37254903)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0.47058824, 0.47058824, 0.47058824, 0.39215687)
+shadow_size = 5
+
 [node name="info_teacher" type="Area2D"]
+script = ExtResource("1_bb770")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_gnaql")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_3fo3y")
+
+[node name="InteractionLabel" type="Label" parent="."]
+custom_minimum_size = Vector2(80, 80)
+offset_left = -40.0
+offset_top = -100.0
+offset_right = 40.0
+offset_bottom = -20.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 42
+text = "E"
+horizontal_alignment = 1
+
+[node name="DialogBox" type="Panel" parent="."]
+custom_minimum_size = Vector2(300, 50)
+offset_left = -150.0
+offset_top = -80.0
+offset_right = 150.0
+offset_bottom = -30.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bb770")
+
+[node name="DialogText" type="Label" parent="DialogBox"]
+z_index = 2
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "\"\""
+autowrap_mode = 2

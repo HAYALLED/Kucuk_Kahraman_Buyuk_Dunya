@@ -1,8 +1,7 @@
-[gd_scene load_steps=20 format=3 uid="uid://365bo4k4vdep"]
+[gd_scene load_steps=19 format=3 uid="uid://365bo4k4vdep"]
 
 [ext_resource type="Script" uid="uid://clwaso7uwqail" path="res://Scripts/Player_controller.cs" id="1_7dd06"]
 [ext_resource type="SpriteFrames" uid="uid://dkc46fwvbn6j5" path="res://Resources/Costumes/default_sprites.tres" id="2_38rej"]
-[ext_resource type="Resource" uid="uid://4h7ew8bxdmf6" path="res://Resources/Costumes/normal.tres" id="2_t1xgp"]
 [ext_resource type="Resource" uid="uid://usoogdmu5xx2" path="res://Resources/Costumes/batBoy.tres" id="3_lerqx"]
 [ext_resource type="Resource" uid="uid://d1ak144ue5npk" path="res://Resources/Costumes/spiderBoy.tres" id="4_jp3cw"]
 [ext_resource type="Texture2D" uid="uid://bfv3w6mnepk5n" path="res://Sprites/portray.png" id="5_23lac"]
@@ -77,7 +76,6 @@ animations = [{
 collision_layer = 3
 collision_mask = 15
 script = ExtResource("1_7dd06")
-CurrentCostume = ExtResource("2_t1xgp")
 CostumeSlots = [ExtResource("3_lerqx"), ExtResource("4_jp3cw"), ExtResource("5_ecf78")]
 WebAnchorTexture = ExtResource("6_jp3cw")
 HookTexture = ExtResource("7_ecf78")
@@ -292,3 +290,7 @@ text = "player şu anki puan sayısı"
 [node name="requiredScoreLabel" type="Label" parent="scores/VBoxContainer"]
 layout_mode = 2
 text = "for level score"
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+position = Vector2(-1, -29)
+target_position = Vector2(100, 0)

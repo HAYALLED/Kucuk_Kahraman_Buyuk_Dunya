@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://0h7247b2t0g2"]
+
+[ext_resource type="Script" uid="uid://c5u058bspwd1x" path="res://Scripts/BubbleProjectile.cs" id="1_kvj0v"]
+[ext_resource type="Texture2D" uid="uid://ddtfuyuujmimo" path="res://Sprites/aquaboy_bubble.png" id="2_y5ieu"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_jr0kx"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6ktv0"]
+atlas = ExtResource("2_y5ieu")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l3cto"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6ktv0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="BubbleProjectile" type="Area2D"]
+collision_layer = 8
+collision_mask = 8
+script = ExtResource("1_kvj0v")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_jr0kx")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_l3cto")

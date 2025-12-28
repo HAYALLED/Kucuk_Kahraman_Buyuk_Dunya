@@ -1,0 +1,133 @@
+[gd_scene load_steps=17 format=4 uid="uid://cl41nkfl2w5ar"]
+
+[ext_resource type="Script" uid="uid://uhg8yx6fhxxo" path="res://Scripts/Systems/Level1_2SclvlMain.cs" id="1_b0ujj"]
+[ext_resource type="PackedScene" uid="uid://b5angxtflmrr0" path="res://Assets/Scenes/points_gold_trash.tscn" id="1_f1y2e"]
+[ext_resource type="Script" uid="uid://dypfb6nn04oqd" path="res://Scripts/KillZone.cs" id="2_h1ysk"]
+[ext_resource type="Script" uid="uid://rh16gyoeo2ix" path="res://Scripts/ScreenFader.cs" id="3_ognwe"]
+[ext_resource type="Texture2D" uid="uid://dktwo4w7rnovk" path="res://Sprites/level1_background-level2.png" id="4_3ae4y"]
+[ext_resource type="Script" uid="uid://cqngvx6iss8oh" path="res://Scripts/Background.cs" id="5_b0ujj"]
+[ext_resource type="TileSet" uid="uid://idawp46t62yg" path="res://Assets/Scenes/Areas/platform_tileset.tres" id="6_i0xat"]
+[ext_resource type="PackedScene" uid="uid://brjeo326iyyt2" path="res://Assets/Scenes/random_costume.tscn" id="7_ognwe"]
+[ext_resource type="PackedScene" uid="uid://ctc2kdiheob8c" path="res://Assets/Scenes/trash_miniboss_security.tscn" id="7_xy12v"]
+[ext_resource type="PackedScene" uid="uid://dni4l7c65x2ul" path="res://Assets/Scenes/trash_man.tscn" id="8_3ae4y"]
+[ext_resource type="PackedScene" uid="uid://365bo4k4vdep" path="res://Assets/Scenes/player.tscn" id="10_3ae4y"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0rmsu"]
+size = Vector2(40, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e85sm"]
+size = Vector2(9813.5, 100)
+
+[sub_resource type="Animation" id="Animation_msn23"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Overlay:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_nlyig"]
+resource_name = "fade_out"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Overlay:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_f20k6"]
+_data = {
+&"RESET": SubResource("Animation_msn23"),
+&"fade_out": SubResource("Animation_nlyig")
+}
+
+[node name="level1_2SclvlMain" type="Node2D"]
+script = ExtResource("1_b0ujj")
+
+[node name="player_spawn" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="player_spawn"]
+position = Vector2(299, -60)
+shape = SubResource("RectangleShape2D_0rmsu")
+
+[node name="points_gold_trash" parent="." instance=ExtResource("1_f1y2e")]
+position = Vector2(-1034, -77.00001)
+scale = Vector2(1.25, 1.25)
+
+[node name="KillZone" type="Area2D" parent="."]
+collision_layer = 4
+script = ExtResource("2_h1ysk")
+FaderPath = NodePath("../ScreenFader")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+position = Vector2(0, 436)
+shape = SubResource("RectangleShape2D_e85sm")
+
+[node name="ScreenFader" type="CanvasLayer" parent="." node_paths=PackedStringArray("AnimPlayer", "Overlay")]
+script = ExtResource("3_ognwe")
+AnimPlayer = NodePath("AnimationPlayer")
+Overlay = NodePath("Overlay")
+
+[node name="Overlay" type="ColorRect" parent="ScreenFader"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -33.0
+offset_top = -33.0
+offset_right = 67.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+metadata/_edit_use_anchors_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="ScreenFader"]
+libraries = {
+&"": SubResource("AnimationLibrary_f20k6")
+}
+
+[node name="Level1BackgroundLevel1" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(300, -31.99997)
+scale = Vector2(3.2396426, 3.1562502)
+texture = ExtResource("4_3ae4y")
+script = ExtResource("5_b0ujj")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAD+/wMAAAAEAAIAAAD//wMAAAAFAAIAAAAAAAMAAAAGAAIAAAD7/wMAAAAEAAIAAAD8/wMAAAAFAAIAAAD9/wMAAAAGAAIAAAD4/wMAAAAEAAIAAAD5/wMAAAAFAAIAAAD6/wMAAAAGAAIAAAD1/wMAAAAEAAIAAAD2/wMAAAAFAAIAAAD3/wMAAAAGAAIAAADz/wMAAAABAAEAAAD0/wMAAAACAAEAAADw/wMAAAABAAEAAADx/wMAAAACAAEAAADy/wMAAAAAAAEAAADv/wMAAAAAAAEAAADv/wEAAAAHAAAAAADv/wIAAAAHAAEAAADv////AAAHAAAAAADv/wAAAAAHAAEAAADv//3/AAAHAAAAAADv//7/AAAHAAEAAADv//v/AAAHAAAAAADv//z/AAAHAAEAAADt//v/AAABAAEAAADu//v/AAACAAEAAADP/wUAAAAEAAIAAADQ/wUAAAAFAAIAAADR/wUAAAAGAAIAAADM/wUAAAAEAAIAAADN/wUAAAAFAAIAAADO/wUAAAAGAAIAAADJ/wUAAAAEAAIAAADK/wUAAAAFAAIAAADL/wUAAAAGAAIAAADG/wUAAAAEAAIAAADH/wUAAAAFAAIAAADI/wUAAAAGAAIAAADD/wUAAAAEAAIAAADE/wUAAAAFAAIAAADF/wUAAAAGAAIAAADA/wUAAAAEAAIAAADB/wUAAAAFAAIAAADC/wUAAAAGAAIAAAC6/wMAAAABAAEAAAC7/wMAAAACAAEAAAC1/wAAAAABAAEAAAC2/wAAAAACAAEAAAC7//3/AAABAAEAAAC8//3/AAACAAEAAAC///z/AAAFAAIAAADA//z/AAAGAAIAAADB//z/AAAEAAIAAADC//z/AAAFAAIAAADD//z/AAAGAAIAAADE//z/AAAEAAIAAADF//z/AAAFAAIAAADG//z/AAAGAAIAAADH//z/AAAEAAIAAADI//z/AAAFAAIAAADJ//z/AAAGAAIAAADK//z/AAAEAAIAAADL//z/AAAFAAIAAADM//z/AAAGAAIAAADN//z/AAAEAAIAAADO//z/AAAFAAIAAADP//z/AAAGAAIAAADQ//z/AAAEAAIAAAC+//z/AAAEAAIAAADR//z/AAAFAAIAAADS//z/AAAGAAIAAADm//v/AAAEAAIAAADn//v/AAAFAAIAAADo//v/AAAGAAIAAADg//v/AAABAAEAAADh//v/AAACAAEAAADa//v/AAAEAAIAAADb//v/AAAFAAIAAADc//v/AAAGAAIAAADd//v/AAAAAAEAAADZ//v/AAAAAAEAAADX/+7/AAAEAAIAAADY/+7/AAAFAAIAAADZ/+7/AAAGAAIAAADU/+7/AAAEAAIAAADV/+7/AAAFAAIAAADW/+7/AAAGAAIAAADR/+7/AAAEAAIAAADS/+7/AAAFAAIAAADT/+7/AAAGAAIAAADW/wUAAAAEAAIAAADX/wUAAAAFAAIAAADY/wUAAAAGAAIAAAA=")
+tile_set = ExtResource("6_i0xat")
+
+[node name="TileMap" type="TileMap" parent="TileMapLayer"]
+format = 2
+
+[node name="trash_miniboss_security" parent="." instance=ExtResource("7_xy12v")]
+position = Vector2(-914, -113.00002)
+
+[node name="random_costume" parent="." instance=ExtResource("7_ognwe")]
+position = Vector2(-649, 70)
+
+[node name="TrashMan" parent="." instance=ExtResource("8_3ae4y")]
+position = Vector2(-585, -103)
+
+[node name="trash_miniboss_security2" parent="." instance=ExtResource("7_xy12v")]
+position = Vector2(-892, 35.99999)
+
+[node name="player" parent="." instance=ExtResource("10_3ae4y")]
+position = Vector2(298, -30)

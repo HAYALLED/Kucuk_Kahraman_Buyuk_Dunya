@@ -1,0 +1,231 @@
+[gd_scene load_steps=19 format=4 uid="uid://8ttdgsxsuhur"]
+
+[ext_resource type="Script" uid="uid://1fg0a7syn38l" path="res://Scripts/Systems/Level1_3SclvlMain.cs" id="1_2x528"]
+[ext_resource type="Script" uid="uid://dypfb6nn04oqd" path="res://Scripts/KillZone.cs" id="2_6ax4e"]
+[ext_resource type="Script" uid="uid://rh16gyoeo2ix" path="res://Scripts/ScreenFader.cs" id="3_bqryn"]
+[ext_resource type="Texture2D" uid="uid://dktwo4w7rnovk" path="res://Sprites/level1_background-level2.png" id="4_lh41i"]
+[ext_resource type="Script" uid="uid://cqngvx6iss8oh" path="res://Scripts/Background.cs" id="5_j5b0g"]
+[ext_resource type="TileSet" uid="uid://d4txr382p0wm" path="res://Assets/Scenes/Areas/buildings.tres" id="6_wrn8p"]
+[ext_resource type="PackedScene" uid="uid://d02e0x5hobkc4" path="res://Assets/Scenes/points_glass.tscn" id="7_4hsxq"]
+[ext_resource type="PackedScene" uid="uid://bevufwiia10w6" path="res://Assets/Scenes/points_food.tscn" id="8_b33hu"]
+[ext_resource type="PackedScene" uid="uid://dvcopuprmacpt" path="res://Assets/Scenes/points_bottle_holder_points.tscn" id="9_khv62"]
+[ext_resource type="PackedScene" uid="uid://qglhjeocs8wu" path="res://Assets/Scenes/points_wood.tscn" id="10_eudio"]
+[ext_resource type="PackedScene" uid="uid://dnulrxxon8x14" path="res://Assets/Scenes/points_plastic.tscn" id="11_t8386"]
+[ext_resource type="PackedScene" uid="uid://vpvsn5hb3ldw" path="res://Assets/Scenes/points_metal.tscn" id="12_oke8a"]
+[ext_resource type="PackedScene" uid="uid://365bo4k4vdep" path="res://Assets/Scenes/player.tscn" id="13_an7p5"]
+[ext_resource type="PackedScene" uid="uid://b5angxtflmrr0" path="res://Assets/Scenes/points_gold_trash.tscn" id="14_yjcro"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3b34k"]
+size = Vector2(9813.5, 100)
+
+[sub_resource type="Animation" id="Animation_msn23"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Overlay:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_nlyig"]
+resource_name = "fade_out"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Overlay:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_f20k6"]
+_data = {
+&"RESET": SubResource("Animation_msn23"),
+&"fade_out": SubResource("Animation_nlyig")
+}
+
+[node name="level1_3SclvlMain" type="Node2D"]
+script = ExtResource("1_2x528")
+
+[node name="KillZone" type="Area2D" parent="."]
+collision_layer = 4
+script = ExtResource("2_6ax4e")
+FaderPath = NodePath("../ScreenFader")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+position = Vector2(0, 1624)
+shape = SubResource("RectangleShape2D_3b34k")
+
+[node name="ScreenFader" type="CanvasLayer" parent="." node_paths=PackedStringArray("AnimPlayer", "Overlay")]
+script = ExtResource("3_bqryn")
+AnimPlayer = NodePath("AnimationPlayer")
+Overlay = NodePath("Overlay")
+
+[node name="Overlay" type="ColorRect" parent="ScreenFader"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -33.0
+offset_top = -33.0
+offset_right = 67.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+metadata/_edit_use_anchors_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="ScreenFader"]
+libraries = {
+&"": SubResource("AnimationLibrary_f20k6")
+}
+
+[node name="Level1BackgroundLevel1" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(300, -31.99997)
+scale = Vector2(3.2396426, 3.1562502)
+texture = ExtResource("4_lh41i")
+script = ExtResource("5_j5b0g")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAD//wYAAAAAAAIAAAD//wcAAAAAAAMAAAAAAAYAAAABAAIAAAAAAAcAAAABAAMAAAD7/wwAAAAAAAIAAAD7/w0AAAAAAAMAAAD8/wwAAAABAAIAAAD8/w0AAAABAAMAAAACABAAAAAAAAIAAAACABEAAAAAAAMAAAADABAAAAABAAIAAAADABEAAAABAAMAAAAGAAkAAAAAAAIAAAAGAAoAAAAAAAMAAAAHAAkAAAABAAIAAAAHAAoAAAABAAMAAAAKABIAAAAAAAIAAAAKABMAAAAAAAMAAAALABIAAAABAAIAAAALABMAAAABAAMAAAAPAAwAAAAAAAIAAAAPAA0AAAAAAAMAAAAQAAwAAAABAAIAAAAQAA0AAAABAAMAAAARAAUAAAAAAAIAAAARAAYAAAAAAAMAAAASAAUAAAABAAIAAAASAAYAAAABAAMAAAATAA8AAAAAAAIAAAATABAAAAAAAAMAAAAUAA8AAAABAAIAAAAUABAAAAABAAMAAAAcABMAAAAAAAIAAAAcABQAAAAAAAMAAAAdABMAAAABAAIAAAAdABQAAAABAAMAAAAZAAkAAAAAAAIAAAAZAAoAAAAAAAMAAAAaAAkAAAABAAIAAAAaAAoAAAABAAMAAAAgAAwAAAAAAAIAAAAgAA0AAAAAAAMAAAAhAAwAAAABAAIAAAAhAA0AAAABAAMAAAAgAAQAAAAAAAIAAAAgAAUAAAAAAAMAAAAhAAQAAAABAAIAAAAhAAUAAAABAAMAAAAmAAcAAAAAAAIAAAAmAAgAAAAAAAMAAAAnAAcAAAABAAIAAAAnAAgAAAABAAMAAAAmABEAAAAAAAIAAAAmABIAAAAAAAMAAAAnABEAAAABAAIAAAAnABIAAAABAAMAAAA=")
+tile_set = ExtResource("6_wrn8p")
+
+[node name="TileMap" type="TileMap" parent="TileMapLayer"]
+format = 2
+
+[node name="points_glass8" parent="." instance=ExtResource("7_4hsxq")]
+position = Vector2(625, 100)
+
+[node name="points_food6" parent="." instance=ExtResource("8_b33hu")]
+position = Vector2(611, 102)
+
+[node name="points_bottle_holder_points2" parent="." instance=ExtResource("9_khv62")]
+position = Vector2(639, 102)
+
+[node name="points_glass12" parent="." instance=ExtResource("7_4hsxq")]
+position = Vector2(539, 181)
+
+[node name="points_wood11" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(525, 180)
+
+[node name="points_wood12" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(319, 224)
+
+[node name="points_food13" parent="." instance=ExtResource("8_b33hu")]
+position = Vector2(512, 184)
+
+[node name="points_glass16" parent="." instance=ExtResource("7_4hsxq")]
+position = Vector2(270, 181)
+
+[node name="points_wood20" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(256, 180)
+
+[node name="points_food17" parent="." instance=ExtResource("8_b33hu")]
+position = Vector2(243, 184)
+
+[node name="points_glass17" parent="." instance=ExtResource("7_4hsxq")]
+position = Vector2(-51, 181)
+
+[node name="points_wood21" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(-65, 180)
+
+[node name="points_food18" parent="." instance=ExtResource("8_b33hu")]
+position = Vector2(-78, 184)
+
+[node name="points_glass18" parent="." instance=ExtResource("7_4hsxq")]
+position = Vector2(12, 85)
+
+[node name="points_wood22" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(-2, 84)
+
+[node name="points_food19" parent="." instance=ExtResource("8_b33hu")]
+position = Vector2(-15, 88)
+
+[node name="points_glass15" parent="." instance=ExtResource("7_4hsxq")]
+position = Vector2(540, 50)
+
+[node name="points_wood17" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(526, 49)
+
+[node name="points_food16" parent="." instance=ExtResource("8_b33hu")]
+position = Vector2(513, 53)
+
+[node name="points_glass13" parent="." instance=ExtResource("7_4hsxq")]
+position = Vector2(122, 131)
+
+[node name="points_wood15" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(108, 130)
+
+[node name="points_food14" parent="." instance=ExtResource("8_b33hu")]
+position = Vector2(95, 134)
+
+[node name="points_glass14" parent="." instance=ExtResource("7_4hsxq")]
+position = Vector2(188, 276)
+
+[node name="points_wood16" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(174, 275)
+
+[node name="points_food15" parent="." instance=ExtResource("8_b33hu")]
+position = Vector2(161, 279)
+
+[node name="points_plastic" parent="." instance=ExtResource("11_t8386")]
+position = Vector2(330, 231)
+
+[node name="points_metal2" parent="." instance=ExtResource("12_oke8a")]
+position = Vector2(309, 229)
+
+[node name="points_wood18" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(416, 127)
+
+[node name="points_plastic4" parent="." instance=ExtResource("11_t8386")]
+position = Vector2(427, 134)
+
+[node name="points_metal5" parent="." instance=ExtResource("12_oke8a")]
+position = Vector2(406, 132)
+
+[node name="points_wood19" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(463, 291)
+
+[node name="points_plastic5" parent="." instance=ExtResource("11_t8386")]
+position = Vector2(474, 298)
+
+[node name="points_metal6" parent="." instance=ExtResource("12_oke8a")]
+position = Vector2(453, 296)
+
+[node name="points_wood13" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(284, 64)
+
+[node name="points_plastic2" parent="." instance=ExtResource("11_t8386")]
+position = Vector2(295, 71)
+
+[node name="points_metal3" parent="." instance=ExtResource("12_oke8a")]
+position = Vector2(274, 69)
+
+[node name="points_wood14" parent="." instance=ExtResource("10_eudio")]
+position = Vector2(45, 239)
+
+[node name="points_plastic3" parent="." instance=ExtResource("11_t8386")]
+position = Vector2(56, 246)
+
+[node name="points_metal4" parent="." instance=ExtResource("12_oke8a")]
+position = Vector2(35, 244)
+
+[node name="player" parent="." instance=ExtResource("13_an7p5")]
+
+[node name="points_gold_trash" parent="." instance=ExtResource("14_yjcro")]
+position = Vector2(628, 259)
+scale = Vector2(1.25, 1.25)
