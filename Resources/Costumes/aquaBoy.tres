@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="CostumeResource" load_steps=5 format=3 uid="uid://bij37anshk5ed"]
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=6 format=3 uid="uid://bij37anshk5ed"]
 
 [ext_resource type="Texture2D" uid="uid://wmjovwg6jeq8" path="res://Sprites/portray-empthy.png" id="1_2dupw"]
+[ext_resource type="PackedScene" uid="uid://0h7247b2t0g2" path="res://Assets/Scenes/Projectiles/BubbleProjectile.tscn" id="1_ti548"]
 [ext_resource type="SpriteFrames" uid="uid://3v6klq8a2tmw" path="res://Resources/Costumes/aquaBoy_sprites.tres" id="2_2dupw"]
 [ext_resource type="PackedScene" uid="uid://b7opmiwxefcs6" path="res://Assets/Scenes/Projectiles/tsunami_wave.tscn" id="2_fsu7i"]
 [ext_resource type="Script" uid="uid://dy444cyn5wphm" path="res://Scripts/CostumeResource.cs" id="3_ti548"]
@@ -14,13 +15,15 @@ Icon = ExtResource("1_2dupw")
 DamageMultiplier = 2.0
 CanThrowProjectile = true
 ProjectileDamage = 2
-ProjectileCooldown = 15.0
+ProjectileCooldown = 5.0
 ProjectileCanStun = true
 ProjectileStunHitCount = 1
 ProjectileStunDuration = 4.0
 ProjectileScene = ExtResource("2_fsu7i")
-CanFrozeTime = true
-FrozeTimeSlowPercent = 1.0
-FrozeTimeDuration = 4.0
-FrozeTimeCooldown = 25.0
+FreezeTimeCooldown = 5.0
+CanUseBubbleTrap = true
+BubbleScene = ExtResource("1_ti548")
+BubbleStunCooldown = 5.0
+JumpEfficiency = 1.1
+SpeedEfficiency = 1.1
 metadata/_custom_type_script = "uid://dy444cyn5wphm"

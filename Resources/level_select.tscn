@@ -1,0 +1,106 @@
+[gd_scene load_steps=16 format=3 uid="uid://qbsun2idmkvn"]
+
+[ext_resource type="Script" uid="uid://dd8xbnaukvrny" path="res://Scripts/Systems/LevelSelect.cs" id="1_vcx8e"]
+[ext_resource type="Texture2D" uid="uid://cx1hkmbfdcvp8" path="res://Sprites/background.png" id="2_g2u2b"]
+[ext_resource type="Texture2D" uid="uid://bs1l7vxmvpw3t" path="res://Sprites/Level_layout-idle_notcleared1.png" id="2_sr74g"]
+[ext_resource type="Texture2D" uid="uid://o3tlduoy50q5" path="res://Sprites/scores-scoreboard_background.png" id="3_7gfbu"]
+[ext_resource type="Texture2D" uid="uid://ciaqhmb4wa1ud" path="res://Sprites/Level_layout-press_notcleared1.png" id="3_a28yo"]
+[ext_resource type="Texture2D" uid="uid://buyvndj4yolei" path="res://Sprites/Level_layout-hover_notcleared1.png" id="4_wfao6"]
+[ext_resource type="Texture2D" uid="uid://cboedtxp1wfsw" path="res://Sprites/Level_layout-idle_notcleared2.png" id="5_5dlir"]
+[ext_resource type="Texture2D" uid="uid://c8kebk4w22yqm" path="res://Sprites/Level_layout-idle_cleared1.png" id="5_pfg3r"]
+[ext_resource type="Texture2D" uid="uid://d2yrf3wngt6oh" path="res://Sprites/Level_layout-press_notcleared2.png" id="6_g2u2b"]
+[ext_resource type="Texture2D" uid="uid://ck1wsbwpve0td" path="res://Sprites/Level_layout-press_cleared1.png" id="6_oiq4m"]
+[ext_resource type="Texture2D" uid="uid://chr0vcriihe1b" path="res://Sprites/Level_layout-hover_notcleared2.png" id="7_4ducj"]
+[ext_resource type="Texture2D" uid="uid://dhwjyam1elhpm" path="res://Sprites/go_back.png" id="10_4mnfr"]
+[ext_resource type="Texture2D" uid="uid://fs0flckj04h6" path="res://Sprites/Level_layout-idle_cleared2.png" id="10_sqmmw"]
+[ext_resource type="Texture2D" uid="uid://cnbundae6yquk" path="res://Sprites/Level_layout-press_cleared2.png" id="11_7rmu7"]
+[ext_resource type="Texture2D" uid="uid://bl5oxslgd4ukp" path="res://Sprites/Level_layout-tutorial.png" id="15_7rmu7"]
+
+[node name="LevelSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 56.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vcx8e")
+Level1NormalIdle = ExtResource("2_sr74g")
+Level1NormalHover = ExtResource("4_wfao6")
+Level1NormalClicked = ExtResource("3_a28yo")
+Level1CompletedIdle = ExtResource("5_pfg3r")
+Level1CompletedClicked = ExtResource("6_oiq4m")
+Level2NormalIdle = ExtResource("5_5dlir")
+Level2NormalHover = ExtResource("7_4ducj")
+Level2NormalClicked = ExtResource("6_g2u2b")
+Level2CompletedIdle = ExtResource("10_sqmmw")
+Level2CompletedClicked = ExtResource("11_7rmu7")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 1080.0
+offset_bottom = 640.0
+texture = ExtResource("2_g2u2b")
+
+[node name="TextureRect2" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 144.0
+offset_top = 99.0
+offset_right = 944.0
+offset_bottom = 499.0
+texture = ExtResource("3_7gfbu")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 213.0
+offset_top = -8.0
+offset_right = 892.0
+offset_bottom = 129.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 100
+text = "LEVEL SEÇİNİZ"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(80, 10)
+layout_mode = 0
+offset_left = 150.0
+offset_top = 106.0
+offset_right = 403.33334
+offset_bottom = 236.0
+scale = Vector2(3, 3)
+
+[node name="level1Button" type="TextureButton" parent="HBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("2_sr74g")
+texture_pressed = ExtResource("3_a28yo")
+texture_hover = ExtResource("4_wfao6")
+
+[node name="level2Button" type="TextureButton" parent="HBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("5_5dlir")
+texture_pressed = ExtResource("6_g2u2b")
+texture_hover = ExtResource("7_4ducj")
+
+[node name="level3Button" type="TextureButton" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="level4Button" type="TextureButton" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="BackButton" type="TextureButton" parent="."]
+layout_mode = 0
+offset_top = 4.0
+offset_right = 40.0
+offset_bottom = 44.0
+scale = Vector2(5, 5)
+texture_normal = ExtResource("10_4mnfr")
+
+[node name="tutorialButton" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 780.0
+offset_top = 351.0
+offset_right = 844.0
+offset_bottom = 415.0
+scale = Vector2(2, 2)
+texture_normal = ExtResource("15_7rmu7")

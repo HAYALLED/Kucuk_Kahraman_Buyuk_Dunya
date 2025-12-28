@@ -1,0 +1,79 @@
+[gd_scene load_steps=4 format=3 uid="uid://k25p12am1m80"]
+
+[ext_resource type="Script" uid="uid://ct5m3mmjlcibc" path="res://Scripts/Systems/ScoreBoard.cs" id="1_433ot"]
+[ext_resource type="Texture2D" uid="uid://o3tlduoy50q5" path="res://Sprites/scores-scoreboard_background.png" id="1_m6hli"]
+[ext_resource type="Texture2D" uid="uid://dhwjyam1elhpm" path="res://Sprites/go_back.png" id="2_433ot"]
+
+[node name="ScoreBoard" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -85.0
+offset_top = -5.0
+offset_right = -85.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_433ot")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(1200, 600)
+layout_mode = 0
+offset_left = 52.0
+offset_top = 2.0
+offset_right = 852.0
+offset_bottom = 602.0
+texture = ExtResource("1_m6hli")
+
+[node name="BackButton" type="TextureButton" parent="."]
+z_index = 10
+z_as_relative = false
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 0
+offset_left = 55.999996
+offset_top = 4.9999995
+offset_right = 96.0
+offset_bottom = 45.0
+scale = Vector2(5, 5)
+texture_normal = ExtResource("2_433ot")
+
+[node name="TitleLabel" type="Label" parent="."]
+z_index = 1
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 0
+offset_left = 338.0
+offset_top = 31.0
+offset_right = 738.0
+offset_bottom = 81.0
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_font_sizes/font_size = 36
+text = "🏆 SKOR TABLOSU 🏆"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+custom_minimum_size = Vector2(600, 500)
+layout_mode = 0
+offset_left = 259.0
+offset_top = 85.0
+offset_right = 859.0
+offset_bottom = 585.0
+horizontal_scroll_mode = 0
+
+[node name="ScoreList" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="RefreshButton" type="Button" parent="."]
+z_index = 10
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 0
+offset_left = 110.0
+offset_top = 524.0
+offset_right = 260.0
+offset_bottom = 574.0
+theme_override_font_sizes/font_size = 24
+text = "🔄 Yenile"

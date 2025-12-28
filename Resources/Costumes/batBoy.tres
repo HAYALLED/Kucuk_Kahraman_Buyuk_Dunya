@@ -15,6 +15,7 @@ Icon = ExtResource("1_c8haw")
 DamageMultiplier = 2.0
 CanGrapple = true
 CanHover = true
+HoverGravityMultiplier = 0.3
 CanThrowProjectile = true
 ProjectileScene = ExtResource("3_u1srk")
 PlantScene = ExtResource("2_56l66")

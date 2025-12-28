@@ -1,0 +1,87 @@
+[gd_scene load_steps=14 format=3 uid="uid://bea4ke0dia8ng"]
+
+[ext_resource type="Texture2D" uid="uid://cxle6upani0ck" path="res://Sprites/start_button-baslat.png" id="1_75oa4"]
+[ext_resource type="Texture2D" uid="uid://cx1hkmbfdcvp8" path="res://Sprites/background.png" id="1_au85l"]
+[ext_resource type="Script" uid="uid://dgi31nadoumsb" path="res://Scripts/Systems/MainMenu.cs" id="1_uoal7"]
+[ext_resource type="Texture2D" uid="uid://b8leedgdgk0wb" path="res://Sprites/start_button-baslat_bas.png" id="2_au85l"]
+[ext_resource type="Texture2D" uid="uid://trydqwqgpm3h" path="res://Sprites/start_button-ayarlar.png" id="3_uoal7"]
+[ext_resource type="Texture2D" uid="uid://eoigkhphqvrf" path="res://Sprites/start_button-ayarlar_bas.png" id="4_8jkl1"]
+[ext_resource type="Texture2D" uid="uid://c56ncsk4nkvyc" path="res://Sprites/logo-naked.png" id="4_g16a5"]
+[ext_resource type="Texture2D" uid="uid://drgchgshtr6eh" path="res://Sprites/start_button-bitir.png" id="5_g16a5"]
+[ext_resource type="Texture2D" uid="uid://bwu54h610ntej" path="res://Sprites/start_button-bitir_bas.png" id="6_68nxi"]
+[ext_resource type="Texture2D" uid="uid://xi6dd0q3itk5" path="res://Sprites/start_button-Profil.png" id="10_68nxi"]
+[ext_resource type="Texture2D" uid="uid://b526ihg3be5c6" path="res://Sprites/start_button-Profil_bas.png" id="11_hnh60"]
+[ext_resource type="Texture2D" uid="uid://e27a42a7e5nk" path="res://Sprites/start_button-SKOR.png" id="12_nl6bf"]
+[ext_resource type="Texture2D" uid="uid://c22l8vv77fie7" path="res://Sprites/start_button-SKOR_BAS.png" id="13_8b4je"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 56.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uoal7")
+
+[node name="background" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 1080.0
+offset_bottom = 640.0
+texture = ExtResource("1_au85l")
+expand_mode = 1
+
+[node name="TextureRect2" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 246.0
+offset_top = 4.0
+offset_right = 406.00003
+offset_bottom = 132.0
+scale = Vector2(3, 3)
+texture = ExtResource("4_g16a5")
+
+[node name="start" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 185.0
+offset_right = 235.0
+offset_bottom = 281.0
+texture_normal = ExtResource("1_75oa4")
+texture_pressed = ExtResource("2_au85l")
+
+[node name="settings" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 166.0
+offset_top = 280.0
+offset_right = 358.0
+offset_bottom = 376.0
+texture_normal = ExtResource("3_uoal7")
+texture_pressed = ExtResource("4_8jkl1")
+
+[node name="exit" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 410.0
+offset_top = 379.0
+offset_right = 602.0
+offset_bottom = 475.0
+texture_normal = ExtResource("5_g16a5")
+texture_pressed = ExtResource("6_68nxi")
+
+[node name="profile" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 768.0
+offset_top = 185.0
+offset_right = 960.0
+offset_bottom = 281.0
+texture_normal = ExtResource("10_68nxi")
+texture_pressed = ExtResource("11_hnh60")
+
+[node name="scoretable" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 641.0
+offset_top = 280.0
+offset_right = 833.0
+offset_bottom = 376.0
+texture_normal = ExtResource("12_nl6bf")
+texture_pressed = ExtResource("13_8b4je")
