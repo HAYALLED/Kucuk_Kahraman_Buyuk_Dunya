@@ -8,18 +8,21 @@ public partial class NPCSpawner : Node
     {
         TEACHER,
         TAILOR,
-        AQUAMAN_EVENT
+        AQUAMAN_EVENT,
+        ROBOT  // ✅ YENİ!
     }
 
     [ExportGroup("NPC Scenes")]
     [Export] public PackedScene TeacherScene;
     [Export] public PackedScene TailorScene;
     [Export] public PackedScene AquamanEventScene;
+    [Export] public PackedScene RobotScene;  // ✅ YENİ!
 
     [ExportGroup("Spawn Oranları (%)")]
-    [Export] public int TeacherChance = 45;
-    [Export] public int TailorChance = 45;
-    [Export] public int AquamanChance = 10;
+    [Export] public int TeacherChance = 35;     // ⚡ 45 → 35 (azaldı)
+    [Export] public int TailorChance = 35;      // ⚡ 45 → 35 (azaldı)
+    [Export] public int AquamanChance = 10;     // Aynı
+    [Export] public int RobotChance = 20;       // ✅ YENİ!
 
     [ExportGroup("Spawn Pozisyonları")]
     [Export] public Godot.Collections.Array<Marker2D> SpawnPositions;
@@ -92,7 +95,10 @@ public partial class NPCSpawner : Node
 
     private NPCType SelectRandomNPCType()
     {
-        int total = TeacherChance + TailorChance + AquamanChance;
+        // ✅ FIX 1: Robot dahil toplam hesabı
+        int total = TeacherChance + TailorChance + AquamanChance + RobotChance;
+
+        // ✅ FIX 2: RandiRange kullan (int için!)
         int randomValue = GD.RandRange(0, total - 1);
 
         int cumulative = 0;
@@ -111,17 +117,27 @@ public partial class NPCSpawner : Node
             return NPCType.TAILOR;
         }
 
-        GD.Print($"[NPC SPAWNER] 🎲 AQUAMAN_EVENT seçildi (roll: {randomValue}/{total})");
-        return NPCType.AQUAMAN_EVENT;
+        cumulative += AquamanChance;
+        if (randomValue < cumulative)
+        {
+            GD.Print($"[NPC SPAWNER] 🎲 AQUAMAN_EVENT seçildi (roll: {randomValue}/{total})");
+            return NPCType.AQUAMAN_EVENT;
+        }
+
+        // ✅ FIX 3: ROBOT dön! (AQUAMAN_EVENT değil!)
+        GD.Print($"[NPC SPAWNER] 🎲 ROBOT seçildi (roll: {randomValue}/{total})");
+        return NPCType.ROBOT;
     }
 
     private void SpawnNPC(NPCType npcType, Vector2 position)
     {
+        // ✅ FIX 4: Robot case eklendi
         PackedScene scene = npcType switch
         {
             NPCType.TEACHER => TeacherScene,
             NPCType.TAILOR => TailorScene,
             NPCType.AQUAMAN_EVENT => AquamanEventScene,
+            NPCType.ROBOT => RobotScene,  // ✅ ROBOT CASE!
             _ => null
         };
 
@@ -156,6 +172,9 @@ public partial class NPCSpawner : Node
                 break;
             case NPCType.AQUAMAN_EVENT:
                 AquamanChance = chance;
+                break;
+            case NPCType.ROBOT:  // ✅ FIX 5: Robot case!
+                RobotChance = chance;
                 break;
         }
 

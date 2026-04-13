@@ -1,10 +1,10 @@
 using Godot;
 using System;
 
-public partial class level1_1Sclvl : Area2D
+public partial class level3_1Sclvl : Area2D
 {
-    [Export] public string SecretLevelPath = "res://Assets/Scenes/Areas/level1_1_sclvlMain.tscn";
-    [Export] public string SecretLevelID = "level1_1";
+    [Export] public string SecretLevelPath = "res://Assets/Scenes/Areas/level3_1SclvlMain.tscn";
+    [Export] public string SecretLevelID = "level3_1";
 
     private CollisionShape2D _entrance;
     private CollisionShape2D _exit;
@@ -14,8 +14,8 @@ public partial class level1_1Sclvl : Area2D
     {
         GD.Print("========== SECRET ENTRANCE DEBUG ==========");
 
-        _entrance = GetNodeOrNull<CollisionShape2D>("1_1entrance");
-        _exit = GetNodeOrNull<CollisionShape2D>("1_1exit");
+        _entrance = GetNodeOrNull<CollisionShape2D>("3_1entrance");
+        _exit = GetNodeOrNull<CollisionShape2D>("3_1exit");
 
         if (_entrance == null || _exit == null)
         {
@@ -23,7 +23,7 @@ public partial class level1_1Sclvl : Area2D
             return;
         }
         _exit.Disabled = true;
-        // ✅ Ölüm sonrası temizlenmiş meta kontrolü
+
         if (GetTree().Root.HasMeta($"SecretCompleted_{SecretLevelID}"))
         {
             GD.Print($"[SECRET] ⚠️ {SecretLevelID} tamamlandı!");
@@ -40,7 +40,6 @@ public partial class level1_1Sclvl : Area2D
         GD.Print($"[SECRET] Exit: {_exit.GlobalPosition}");
     }
 
-    // ✅ CRITICAL FIX: Physics callback'den HEMEN çık!
     private void OnBodyEntered(Node2D body)
     {
         if (_alreadyEntered || !body.IsInGroup("player")) return;
@@ -48,11 +47,9 @@ public partial class level1_1Sclvl : Area2D
         _alreadyEntered = true;
         GD.Print("[SECRET] Player girişi algılandı!");
 
-        // ✅ TÜM İŞLEMLERİ DEFER ET!
         CallDeferred(nameof(ProcessSecretEntry), body);
     }
 
-    // ✅ YENİ: Physics callback DIŞINDA çalışır
     private void ProcessSecretEntry(Node2D body)
     {
         if (body == null || !IsInstanceValid(body))
@@ -80,6 +77,9 @@ public partial class level1_1Sclvl : Area2D
         // Kostüm ve can kaydet
         SavePlayerState(body);
 
+        // ✅ Lever durumlarını kaydet
+        SaveLeverStates();
+
         // Dönüş pozisyonu
         Vector2 exitPos = _exit.GlobalPosition;
         GetTree().Root.SetMeta("ReturnFromSecret", exitPos);
@@ -87,8 +87,25 @@ public partial class level1_1Sclvl : Area2D
 
         GD.Print($"[SECRET] ✅ Secret level'e geçiliyor!");
 
-        // ✅ Scene değişimini de defer et
         GetTree().CallDeferred("change_scene_to_file", SecretLevelPath);
+    }
+
+    private void SaveLeverStates()
+    {
+        var levers = GetTree().GetNodesInGroup("interactable");
+        var leverStates = new Godot.Collections.Dictionary();
+
+        foreach (var node in levers)
+        {
+            if (node is lever l)
+            {
+                leverStates[node.GetPath().ToString()] = l.IsLeverActivated();
+                GD.Print($"[SECRET] 💾 Lever kaydedildi: {node.Name} = {l.IsLeverActivated()}");
+            }
+        }
+
+        GetTree().Root.SetMeta("SavedLeverStates", leverStates);
+        GD.Print($"[SECRET] 💾 {leverStates.Count} lever kaydedildi.");
     }
 
     private void SavePlayerState(Node2D body)
@@ -97,7 +114,6 @@ public partial class level1_1Sclvl : Area2D
 
         try
         {
-            // Kostüm
             if (body.HasMethod("GetCurrentCostumeIndex"))
             {
                 int costumeIndex = (int)body.Call("GetCurrentCostumeIndex");
@@ -105,7 +121,6 @@ public partial class level1_1Sclvl : Area2D
                 GD.Print($"[SECRET] 💾 Kostüm kaydedildi: {costumeIndex}");
             }
 
-            // Can
             if (body.HasMethod("GetCurrentHealth"))
             {
                 int currentHealth = (int)body.Call("GetCurrentHealth");
