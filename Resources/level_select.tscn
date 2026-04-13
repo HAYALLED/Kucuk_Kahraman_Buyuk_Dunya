@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://qbsun2idmkvn"]
+[gd_scene load_steps=21 format=3 uid="uid://qbsun2idmkvn"]
 
 [ext_resource type="Script" uid="uid://dd8xbnaukvrny" path="res://Scripts/Systems/LevelSelect.cs" id="1_vcx8e"]
 [ext_resource type="Texture2D" uid="uid://cx1hkmbfdcvp8" path="res://Sprites/background.png" id="2_g2u2b"]
@@ -14,7 +14,12 @@
 [ext_resource type="Texture2D" uid="uid://dhwjyam1elhpm" path="res://Sprites/go_back.png" id="10_4mnfr"]
 [ext_resource type="Texture2D" uid="uid://fs0flckj04h6" path="res://Sprites/Level_layout-idle_cleared2.png" id="10_sqmmw"]
 [ext_resource type="Texture2D" uid="uid://cnbundae6yquk" path="res://Sprites/Level_layout-press_cleared2.png" id="11_7rmu7"]
+[ext_resource type="Texture2D" uid="uid://dht3wx8ihcvwr" path="res://Sprites/Level_layout-idle_notcleared3.png" id="14_b1spy"]
 [ext_resource type="Texture2D" uid="uid://bl5oxslgd4ukp" path="res://Sprites/Level_layout-tutorial.png" id="15_7rmu7"]
+[ext_resource type="Texture2D" uid="uid://cgwa744ayijex" path="res://Sprites/Level_layout-press_notcleared3.png" id="15_hu31b"]
+[ext_resource type="Texture2D" uid="uid://c76oqxo8y6153" path="res://Sprites/Level_layout-idle_cleared3.png" id="15_x8o2c"]
+[ext_resource type="Texture2D" uid="uid://b60llasdkdo22" path="res://Sprites/Level_layout-press_cleared3.png" id="16_disqu"]
+[ext_resource type="Texture2D" uid="uid://b2424qlqkxk8b" path="res://Sprites/Level_layout-hover_notcleared3.png" id="16_x8o2c"]
 
 [node name="LevelSelect" type="Control"]
 layout_mode = 3
@@ -36,6 +41,11 @@ Level2NormalHover = ExtResource("7_4ducj")
 Level2NormalClicked = ExtResource("6_g2u2b")
 Level2CompletedIdle = ExtResource("10_sqmmw")
 Level2CompletedClicked = ExtResource("11_7rmu7")
+Level3NormalIdle = ExtResource("14_b1spy")
+Level3NormalHover = ExtResource("16_x8o2c")
+Level3NormalClicked = ExtResource("15_hu31b")
+Level3CompletedIdle = ExtResource("15_x8o2c")
+Level3CompletedClicked = ExtResource("16_disqu")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 0
@@ -84,6 +94,9 @@ texture_hover = ExtResource("7_4ducj")
 
 [node name="level3Button" type="TextureButton" parent="HBoxContainer"]
 layout_mode = 2
+texture_normal = ExtResource("14_b1spy")
+texture_pressed = ExtResource("15_hu31b")
+texture_hover = ExtResource("16_x8o2c")
 
 [node name="level4Button" type="TextureButton" parent="HBoxContainer"]
 layout_mode = 2
