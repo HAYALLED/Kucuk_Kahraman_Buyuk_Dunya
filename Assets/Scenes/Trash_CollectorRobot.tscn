@@ -1,0 +1,90 @@
+[gd_scene load_steps=13 format=3 uid="uid://dcgujfcv88u8g"]
+
+[ext_resource type="Texture2D" uid="uid://bo0rrrevnwbrx" path="res://Sprites/trash_collector_robot-hovermod.png" id="1_8efix"]
+[ext_resource type="Script" uid="uid://bq116qsulubmh" path="res://Scripts/Trash_CollectorRobot.cs" id="1_awm4d"]
+[ext_resource type="Texture2D" uid="uid://dj2d3n0paui18" path="res://Sprites/trash_collector_robot-ground.png" id="2_awm4d"]
+[ext_resource type="Texture2D" uid="uid://dfv8cslsj06ye" path="res://Sprites/trash_collector_robot.png" id="3_ksuqj"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g1dvo"]
+size = Vector2(60, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_33rji"]
+atlas = ExtResource("1_8efix")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bucg2"]
+atlas = ExtResource("2_awm4d")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r5o5l"]
+atlas = ExtResource("2_awm4d")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bre5o"]
+atlas = ExtResource("2_awm4d")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wtpgp"]
+atlas = ExtResource("2_awm4d")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m528j"]
+atlas = ExtResource("3_ksuqj")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_k0k6n"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_33rji")
+}],
+"loop": true,
+"name": &"air_walk",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bucg2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r5o5l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bre5o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wtpgp")
+}],
+"loop": true,
+"name": &"ground_walk",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m528j")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[node name="Trash_CollectorRobot" type="Area2D"]
+script = ExtResource("1_awm4d")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_g1dvo")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -12)
+sprite_frames = SubResource("SpriteFrames_k0k6n")
+animation = &"idle"
+
+[node name="RayCast2Dleft" type="RayCast2D" parent="."]
+position = Vector2(-30, -27)
+target_position = Vector2(0, 70)
+collision_mask = 7
+
+[node name="RayCast2Dright" type="RayCast2D" parent="."]
+position = Vector2(31, -29)
+target_position = Vector2(0, 70)
+collision_mask = 7

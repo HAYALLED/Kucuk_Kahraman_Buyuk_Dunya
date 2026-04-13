@@ -1,0 +1,42 @@
+[gd_scene load_steps=12 format=3 uid="uid://ny6ybo8gyco"]
+
+[ext_resource type="Script" uid="uid://dq8jitmxpid0" path="res://Scripts/Events/EventManager.cs" id="1_eeugl"]
+[ext_resource type="Script" uid="uid://dhxmw7m2qbgcf" path="res://Scripts/Events/WindEvent.cs" id="2_0dl11"]
+[ext_resource type="Script" uid="uid://d2wx2inojuji1" path="res://Scripts/Events/TrashRainEvent.cs" id="3_13jhg"]
+[ext_resource type="Script" uid="uid://ck77snviuiy4v" path="res://Scripts/Events/TrashCampaignEvent.cs" id="4_g3ddv"]
+[ext_resource type="PackedScene" uid="uid://dnulrxxon8x14" path="res://Assets/Scenes/points_plastic.tscn" id="4_o37js"]
+[ext_resource type="PackedScene" uid="uid://vpvsn5hb3ldw" path="res://Assets/Scenes/points_metal.tscn" id="5_qwrvi"]
+[ext_resource type="Script" uid="uid://do5gpq0o0i1bf" path="res://Scripts/Events/TrashKingEvent.cs" id="5_tqack"]
+[ext_resource type="PackedScene" uid="uid://d02e0x5hobkc4" path="res://Assets/Scenes/points_glass.tscn" id="6_n6p7n"]
+[ext_resource type="Script" uid="uid://b2pnjplgeiuan" path="res://Scripts/Events/BirdMigrationEvent.cs" id="6_o37js"]
+[ext_resource type="PackedScene" uid="uid://bevufwiia10w6" path="res://Assets/Scenes/points_food.tscn" id="7_3xekj"]
+[ext_resource type="PackedScene" uid="uid://qglhjeocs8wu" path="res://Assets/Scenes/points_wood.tscn" id="8_j45qt"]
+
+[node name="EventManager" type="Node" node_paths=PackedStringArray("BirdMigration_MigrationSpawners", "BirdMigration_MigrationPaths")]
+script = ExtResource("1_eeugl")
+BirdMigration_MigrationSpawners = []
+BirdMigration_MigrationPaths = []
+
+[node name="WindEvent" type="Node" parent="."]
+script = ExtResource("2_0dl11")
+SpeedReduction = 0.3
+PushForce = 15.0
+
+[node name="TrashRainEvent" type="Node" parent="."]
+script = ExtResource("3_13jhg")
+PlasticScene = ExtResource("4_o37js")
+MetalScene = ExtResource("5_qwrvi")
+GlassScene = ExtResource("6_n6p7n")
+FoodScene = ExtResource("7_3xekj")
+WoodScene = ExtResource("8_j45qt")
+BaseTrashCount = 20
+
+[node name="TrashCampaignEvent" type="Node" parent="."]
+script = ExtResource("4_g3ddv")
+
+[node name="TrashKingEvent" type="Node" parent="."]
+script = ExtResource("5_tqack")
+
+[node name="BirdMigrationEvent" type="Node" parent="." node_paths=PackedStringArray("NormalSpawners")]
+script = ExtResource("6_o37js")
+NormalSpawners = []

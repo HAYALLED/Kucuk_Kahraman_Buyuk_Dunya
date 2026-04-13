@@ -1,4 +1,4 @@
-[gd_scene load_steps=86 format=3 uid="uid://baas6rqjh6vrp"]
+[gd_scene load_steps=85 format=3 uid="uid://baas6rqjh6vrp"]
 
 [ext_resource type="Texture2D" uid="uid://kx3r5uf5y2i4" path="res://Sprites/jugernuts-atk.png" id="1_rvmgi"]
 [ext_resource type="Script" uid="uid://dbwlouvxrkj1d" path="res://Scripts/TrashJuggernaut.cs" id="1_vq2ep"]
@@ -465,7 +465,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_7frte")
 }],
-"loop": true,
+"loop": false,
 "name": &"death",
 "speed": 5.0
 }, {
@@ -557,12 +557,13 @@ size = Vector2(120, 45)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vq2ep"]
 size = Vector2(500, 45)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_q86jb"]
-size = Vector2(700, 45)
-
 [node name="Trash_Juggernaut" type="CharacterBody2D"]
 collision_layer = 8
 script = ExtResource("1_vq2ep")
+JumpForce = -550.0
+MinJumpForce = -550.0
+MaxJumpForce = -900.0
+JumpForwardBoost = 350.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-1.5, -0.5)
@@ -571,7 +572,7 @@ shape = SubResource("RectangleShape2D_rvmgi")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(4, -10)
 sprite_frames = SubResource("SpriteFrames_v7v1h")
-animation = &"charge_atk"
+animation = &"attack"
 
 [node name="attack_collision" type="Area2D" parent="."]
 collision_layer = 0
@@ -610,9 +611,10 @@ position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_vq2ep")
 debug_color = Color(0, 0.6, 0.69803923, 0.16862746)
 
-[node name="platform_detector" type="Area2D" parent="."]
+[node name="PlatformRayCast" type="RayCast2D" parent="."]
+position = Vector2(0, -22)
+target_position = Vector2(300, 200)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="platform_detector"]
-position = Vector2(0, 30)
-shape = SubResource("RectangleShape2D_q86jb")
-debug_color = Color(0.7175833, 0.37476683, 0.773862, 0.16862746)
+[node name="PlatformRayCast2" type="RayCast2D" parent="."]
+position = Vector2(0, 13)
+target_position = Vector2(250, 20)

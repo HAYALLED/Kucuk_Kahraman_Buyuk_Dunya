@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://b8ris4ndc6hdc" path="res://Sprites/trash_bird-flying.png" id="2_psdmb"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hce1s"]
-size = Vector2(50, 45)
+size = Vector2(47.5, 41)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g4lp5"]
 atlas = ExtResource("2_hce1s")
@@ -205,9 +205,11 @@ collision_layer = 8
 motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_psdmb")
+Speed = 600.0
+BirdScale = Vector2(1.5, 1.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(1.5, 4.5)
+position = Vector2(2.75, 4.5)
 shape = SubResource("RectangleShape2D_hce1s")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

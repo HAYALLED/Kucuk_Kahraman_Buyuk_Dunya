@@ -1,4 +1,4 @@
-[gd_scene load_steps=109 format=3 uid="uid://cdrbao165r0b3"]
+[gd_scene load_steps=108 format=3 uid="uid://cdrbao165r0b3"]
 
 [ext_resource type="Script" uid="uid://bo6i04q2qjeax" path="res://Scripts/TrashMonster.cs" id="1_e5tte"]
 [ext_resource type="Texture2D" uid="uid://cnf5cn5prqbtl" path="res://Sprites/crawlar_slimebutnotreallyslime-airborn.png" id="1_eqsqd"]
@@ -708,13 +708,13 @@ size = Vector2(120, 45)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f8g5v"]
 size = Vector2(320, 45)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_n11eh"]
-size = Vector2(700, 45)
-
 [node name="trash_monster" type="CharacterBody2D"]
 collision_layer = 8
 script = ExtResource("1_e5tte")
 ProjectileScene = ExtResource("2_6x1q7")
+JumpForce = -550.0
+MinJumpForce = -550.0
+MaxJumpForce = -900.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -11)
@@ -765,9 +765,10 @@ position = Vector2(5.5, -0.5)
 shape = SubResource("RectangleShape2D_f8g5v")
 debug_color = Color(0.83729464, 0.31514135, 0.5858295, 0.08627451)
 
-[node name="platform_detector" type="Area2D" parent="."]
+[node name="PlatformRayCast" type="RayCast2D" parent="."]
+position = Vector2(0, -11)
+target_position = Vector2(300, 200)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="platform_detector"]
-position = Vector2(0, 23)
-shape = SubResource("RectangleShape2D_n11eh")
-debug_color = Color(0.7175833, 0.37476683, 0.773862, 0.16862746)
+[node name="PlatformRayCast2" type="RayCast2D" parent="."]
+position = Vector2(0, 15)
+target_position = Vector2(250, 20)

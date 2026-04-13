@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://365bo4k4vdep"]
+[gd_scene load_steps=21 format=3 uid="uid://365bo4k4vdep"]
 
 [ext_resource type="Script" uid="uid://clwaso7uwqail" path="res://Scripts/Player_controller.cs" id="1_7dd06"]
 [ext_resource type="SpriteFrames" uid="uid://dkc46fwvbn6j5" path="res://Resources/Costumes/default_sprites.tres" id="2_38rej"]
@@ -9,6 +9,8 @@
 [ext_resource type="Texture2D" uid="uid://b12c54x24kd12" path="res://Sprites/spider_web.png" id="6_jp3cw"]
 [ext_resource type="Texture2D" uid="uid://bluoafib43wxf" path="res://Sprites/tümhealthbarşekilleri-idle full heart.png" id="7_c3tg1"]
 [ext_resource type="Texture2D" uid="uid://dvs6gkdv5tpqq" path="res://Sprites/batman_hook.png" id="7_ecf78"]
+[ext_resource type="Script" uid="uid://cuerhlq6t0hmq" path="res://Scripts/CameraController.cs" id="7_vy5gb"]
+[ext_resource type="PackedScene" uid="uid://balu5gc8ekash" path="res://Assets/Scenes/Mr_AdGuy.tscn" id="10_ecf78"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_t1xgp"]
 radius = 15.0
@@ -82,6 +84,7 @@ HookTexture = ExtResource("7_ecf78")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2, 2)
+script = ExtResource("7_vy5gb")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -28)
@@ -294,3 +297,5 @@ text = "for level score"
 [node name="RayCast2D" type="RayCast2D" parent="."]
 position = Vector2(-1, -29)
 target_position = Vector2(100, 0)
+
+[node name="Mr_AdGuy" parent="." instance=ExtResource("10_ecf78")]

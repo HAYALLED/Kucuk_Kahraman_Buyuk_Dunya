@@ -1,0 +1,104 @@
+[gd_scene load_steps=14 format=3 uid="uid://vn032p7mj10n"]
+
+[ext_resource type="Script" uid="uid://cq8k2ww7wkyd4" path="res://Scripts/VentDoor.cs" id="1_6k6de"]
+[ext_resource type="Texture2D" uid="uid://f4sgrwtehgwv" path="res://Sprites/vent_system-closed-open.png" id="2_bf15t"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cyt5v"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(224, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7i88f"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(160, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h7kje"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(96, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2mfh5"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(32, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n48ht"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(32, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_et0qq"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(224, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mt6cf"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(32, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jkhel"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(96, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o4mel"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(160, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_86im7"]
+atlas = ExtResource("2_bf15t")
+region = Rect2(224, 32, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_irle5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cyt5v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7i88f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h7kje")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2mfh5")
+}],
+"loop": true,
+"name": &"closing",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n48ht")
+}],
+"loop": true,
+"name": &"default_close",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_et0qq")
+}],
+"loop": true,
+"name": &"default_open",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mt6cf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jkhel")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o4mel")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_86im7")
+}],
+"loop": true,
+"name": &"opening",
+"speed": 5.0
+}]
+
+[node name="VentDoor" type="Area2D"]
+script = ExtResource("1_6k6de")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_irle5")
+animation = &"default_open"
