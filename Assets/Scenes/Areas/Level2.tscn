@@ -1,7 +1,8 @@
-[gd_scene load_steps=43 format=3 uid="uid://7mraqb5oqfbo"]
+[gd_scene load_steps=45 format=3 uid="uid://7mraqb5oqfbo"]
 
 [ext_resource type="Script" uid="uid://cdnltgbey0qc7" path="res://Scripts/Systems/Level2.cs" id="1_y10gd"]
 [ext_resource type="PackedScene" uid="uid://365bo4k4vdep" path="res://Assets/Scenes/player.tscn" id="2_6glwm"]
+[ext_resource type="PackedScene" uid="uid://ny6ybo8gyco" path="res://Assets/Scenes/EventManager.tscn" id="2_p0l1w"]
 [ext_resource type="PackedScene" uid="uid://dsw0mhpmjttkf" path="res://Assets/Scenes/trambolin.tscn" id="3_6glwm"]
 [ext_resource type="TileSet" uid="uid://idawp46t62yg" path="res://Assets/Scenes/Areas/platform_tileset.tres" id="3_mee4k"]
 [ext_resource type="Texture2D" uid="uid://b808qnpnx8mha" path="res://Sprites/forest_general_objects.png" id="5_3hfjy"]
@@ -31,6 +32,7 @@
 [ext_resource type="PackedScene" uid="uid://xe4438lxp6o8" path="res://Assets/Scenes/tailor_aunt.tscn" id="30_vcr1u"]
 [ext_resource type="PackedScene" uid="uid://bw85cxpjsutmj" path="res://Assets/Scenes/aquaman_event.tscn" id="31_nigk1"]
 [ext_resource type="PackedScene" uid="uid://dh2qnn6xp5lr1" path="res://Assets/Scenes/info_teacher.tscn" id="32_p0l1w"]
+[ext_resource type="PackedScene" uid="uid://dcgujfcv88u8g" path="res://Assets/Scenes/Trash_CollectorRobot.tscn" id="32_vcr1u"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ot4fl"]
 texture = ExtResource("5_3hfjy")
@@ -115,6 +117,8 @@ size = Vector2(80.0625, 76.875)
 
 [node name="Level2" type="Node2D"]
 script = ExtResource("1_y10gd")
+
+[node name="EventManager" parent="." instance=ExtResource("2_p0l1w")]
 
 [node name="player" parent="." instance=ExtResource("2_6glwm")]
 position = Vector2(2, 40)
@@ -275,15 +279,18 @@ position = Vector2(-348, -677)
 [node name="trash_monster3" parent="." instance=ExtResource("10_f1jwf")]
 position = Vector2(3936, -190)
 
-[node name="Trash_Bird_Spawner_(Vulnerable)" parent="." instance=ExtResource("11_d4pvd")]
+[node name="Trash_Bird_Spawner_(Vulnerable)" parent="." node_paths=PackedStringArray("AssignedPath") instance=ExtResource("11_d4pvd")]
 position = Vector2(-640, -1001)
+AssignedPath = NodePath("../Path2D_vulnerable")
 
-[node name="Trash_Bird_Spawner_(Hermit)" parent="." instance=ExtResource("12_bnme1")]
+[node name="Trash_Bird_Spawner_(Hermit)" parent="." node_paths=PackedStringArray("AssignedPath") instance=ExtResource("12_bnme1")]
 position = Vector2(26, -996.00006)
 scale = Vector2(1.139, 1.752)
+AssignedPath = NodePath("../Path2D_rapid")
 
-[node name="Trash_Birf_Spawner(Secured)" parent="." instance=ExtResource("13_b4mrf")]
+[node name="Trash_Birf_Spawner(Secured)" parent="." node_paths=PackedStringArray("AssignedPath") instance=ExtResource("13_b4mrf")]
 position = Vector2(-336, -916)
+AssignedPath = NodePath("../Path2D_secured")
 
 [node name="Path2D_rapid" type="Path2D" parent="."]
 position = Vector2(347, -852)
@@ -1216,6 +1223,7 @@ script = ExtResource("28_phl1j")
 TeacherScene = ExtResource("29_p0l1w")
 TailorScene = ExtResource("30_vcr1u")
 AquamanEventScene = ExtResource("31_nigk1")
+RobotScene = ExtResource("32_vcr1u")
 SpawnPositions = []
 
 [node name="NPCSpawnPoints" type="Node2D" parent="."]

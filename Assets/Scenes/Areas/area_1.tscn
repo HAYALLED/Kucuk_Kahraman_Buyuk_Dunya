@@ -1,8 +1,9 @@
-[gd_scene load_steps=41 format=4 uid="uid://e576ll4d3smh"]
+[gd_scene load_steps=43 format=4 uid="uid://e576ll4d3smh"]
 
 [ext_resource type="TileSet" uid="uid://idawp46t62yg" path="res://Assets/Scenes/Areas/platform_tileset.tres" id="1_8wi1m"]
 [ext_resource type="Script" uid="uid://bjjaco2c1v7vk" path="res://Scripts/Level1.cs" id="1_wu28u"]
 [ext_resource type="PackedScene" uid="uid://365bo4k4vdep" path="res://Assets/Scenes/player.tscn" id="2_8wi1m"]
+[ext_resource type="PackedScene" uid="uid://ny6ybo8gyco" path="res://Assets/Scenes/EventManager.tscn" id="2_n6ddg"]
 [ext_resource type="Script" uid="uid://bmy8j0qmb0vv6" path="res://Scripts/Systems/Level1_3Sclvl.cs" id="3_3pfo6"]
 [ext_resource type="Script" uid="uid://o1q262flwp2l" path="res://Scripts/Systems/level1_1Sclvl.cs" id="3_3v4sq"]
 [ext_resource type="Texture2D" uid="uid://boncmaqjp1hmy" path="res://Sprites/level1_background-level1.png" id="3_8wi1m"]
@@ -12,6 +13,7 @@
 [ext_resource type="Script" uid="uid://dypfb6nn04oqd" path="res://Scripts/KillZone.cs" id="5_7fk0h"]
 [ext_resource type="TileSet" uid="uid://d4txr382p0wm" path="res://Assets/Scenes/Areas/buildings.tres" id="6_nlyig"]
 [ext_resource type="Script" uid="uid://rh16gyoeo2ix" path="res://Scripts/ScreenFader.cs" id="7_msn23"]
+[ext_resource type="PackedScene" uid="uid://dcgujfcv88u8g" path="res://Assets/Scenes/Trash_CollectorRobot.tscn" id="9_bpkbw"]
 [ext_resource type="Texture2D" uid="uid://c5hfix1e3mtb6" path="res://Sprites/fire_ladder.png" id="13_6rwvx"]
 [ext_resource type="Texture2D" uid="uid://b2iek5twp85yv" path="res://Sprites/fire_door.png" id="14_xl8b6"]
 [ext_resource type="PackedScene" uid="uid://c6sw5qc62udar" path="res://Assets/Scenes/Trash_Bird_Spawner_(Hermit).tscn" id="17_c8jce"]
@@ -104,13 +106,20 @@ point_count = 10
 [node name="Level1" type="Node2D"]
 script = ExtResource("1_wu28u")
 
+[node name="EventManager" parent="." node_paths=PackedStringArray("BirdMigration_MigrationSpawners", "BirdMigration_MigrationPaths") instance=ExtResource("2_n6ddg")]
+Wind_TriggerChance = 0.3
+BirdMigration_SpawnIntervalMultiplier = 3.0
+BirdMigration_BaseMaxBirds = 50
+BirdMigration_MigrationSpawners = [NodePath("../Trash_Bird_Spawner_(Vulnerable)"), NodePath("../Trash_Bird_Spawner_(Hermit)")]
+BirdMigration_MigrationPaths = [NodePath("../Path2D_rapid"), NodePath("../Path2D_vulnerable")]
+
 [node name="level1_1Sclvl" type="Area2D" parent="."]
 collision_layer = 15
 collision_mask = 15
 script = ExtResource("3_3v4sq")
 
 [node name="1_1entrance" type="CollisionShape2D" parent="level1_1Sclvl"]
-position = Vector2(863.5, -832)
+position = Vector2(864, -807)
 shape = SubResource("RectangleShape2D_bpkbw")
 
 [node name="1_1exit" type="CollisionShape2D" parent="level1_1Sclvl"]
@@ -153,6 +162,7 @@ script = ExtResource("3_bpkbw")
 TeacherScene = ExtResource("27_wu28u")
 TailorScene = ExtResource("27_citrs")
 AquamanEventScene = ExtResource("28_xb627")
+RobotScene = ExtResource("9_bpkbw")
 SpawnPositions = []
 
 [node name="NPCSpawnPoints" type="Node2D" parent="."]
@@ -279,12 +289,16 @@ position = Vector2(1750, -381)
 [node name="TrashMan5" parent="." instance=ExtResource("17_lbrap")]
 position = Vector2(1111, 163)
 
-[node name="Trash_Bird_Spawner_(Vulnerable)" parent="." instance=ExtResource("17_xai42")]
+[node name="Trash_Bird_Spawner_(Vulnerable)" parent="." node_paths=PackedStringArray("AssignedPath") instance=ExtResource("17_xai42")]
 position = Vector2(422, -463)
+DefaultBirdSpeed = 300.0
+AssignedPath = NodePath("../Path2D_vulnerable")
 
-[node name="Trash_Bird_Spawner_(Hermit)" parent="." instance=ExtResource("17_c8jce")]
+[node name="Trash_Bird_Spawner_(Hermit)" parent="." node_paths=PackedStringArray("AssignedPath") instance=ExtResource("17_c8jce")]
 position = Vector2(1237.0001, 263)
 scale = Vector2(1.1388708, 1.7523072)
+DefaultBirdSpeed = 300.0
+AssignedPath = NodePath("../Path2D_rapid")
 
 [node name="Path2D_rapid" type="Path2D" parent="."]
 position = Vector2(1398.665, 734.9063)
@@ -296,217 +310,219 @@ position = Vector2(-173.00002, 43)
 scale = Vector2(1.1388708, 1.7523072)
 curve = SubResource("Curve2D_klwya")
 
-[node name="points_glass" parent="." instance=ExtResource("19_g3rwo")]
+[node name="Node" type="Node" parent="."]
+
+[node name="points_glass" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(3761, 238)
 
-[node name="points_glass12" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass12" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(3186, -704)
 
-[node name="points_glass13" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass13" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(3411, 269)
 
-[node name="points_glass2" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass2" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(1076, -568)
 
-[node name="points_glass3" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass3" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(1446, 33)
 
-[node name="points_glass5" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass5" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(1717, 109)
 
-[node name="points_glass9" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass9" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(2175, -603)
 
-[node name="points_glass10" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass10" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(2279, -603)
 
-[node name="points_glass11" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass11" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(2310, -605)
 
-[node name="points_glass6" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass6" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(1862, 459)
 
-[node name="points_glass7" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass7" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(1886, 463)
 
-[node name="points_glass8" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass8" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(2068, 463)
 
-[node name="points_glass4" parent="." instance=ExtResource("19_g3rwo")]
+[node name="points_glass4" parent="Node" instance=ExtResource("19_g3rwo")]
 position = Vector2(1145, 139)
 
-[node name="points_wood10" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood10" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(354, 609)
 
-[node name="points_wood2" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood2" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(388, -441)
 
-[node name="points_wood3" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood3" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(462, -441)
 
-[node name="points_wood4" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood4" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(632, -329)
 
-[node name="points_wood5" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood5" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(798, -375)
 
-[node name="points_wood11" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood11" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(3161, -705)
 
-[node name="points_wood12" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood12" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(3332, -233)
 
-[node name="points_wood6" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood6" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(1039, -571)
 
-[node name="points_wood7" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood7" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(1171, -83)
 
-[node name="points_wood8" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood8" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(1144, 163)
 
-[node name="points_wood9" parent="." instance=ExtResource("20_sxlx6")]
+[node name="points_wood9" parent="Node" instance=ExtResource("20_sxlx6")]
 position = Vector2(1164, 163)
 
-[node name="points_food2" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food2" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(772, -48)
 
-[node name="points_food3" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food3" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(929, -98)
 
-[node name="points_food7" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food7" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(2153, -603)
 
-[node name="points_food8" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food8" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(2526, -507)
 
-[node name="points_food9" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food9" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(2970, 415)
 
-[node name="points_food10" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food10" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(3129, 273)
 
-[node name="points_food12" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food12" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(3523, -299)
 
-[node name="points_food13" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food13" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(3136, -704)
 
-[node name="points_food4" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food4" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(1142, 184)
 
-[node name="points_food5" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food5" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(1165, 185)
 
-[node name="points_food6" parent="." instance=ExtResource("21_wu28u")]
+[node name="points_food6" parent="Node" instance=ExtResource("21_wu28u")]
 position = Vector2(2045, 463)
 
-[node name="points_plastic" parent="." instance=ExtResource("22_citrs")]
+[node name="points_plastic" parent="Node" instance=ExtResource("22_citrs")]
 position = Vector2(3368, -734)
 
-[node name="points_plastic2" parent="." instance=ExtResource("22_citrs")]
+[node name="points_plastic2" parent="Node" instance=ExtResource("22_citrs")]
 position = Vector2(660, -329)
 
-[node name="points_plastic4" parent="." instance=ExtResource("22_citrs")]
+[node name="points_plastic4" parent="Node" instance=ExtResource("22_citrs")]
 position = Vector2(1920, -8)
 
-[node name="points_plastic5" parent="." instance=ExtResource("22_citrs")]
+[node name="points_plastic5" parent="Node" instance=ExtResource("22_citrs")]
 position = Vector2(1839, 461)
 
-[node name="points_plastic3" parent="." instance=ExtResource("22_citrs")]
+[node name="points_plastic3" parent="Node" instance=ExtResource("22_citrs")]
 position = Vector2(1976, -461)
 
-[node name="points_bottle_holder_points" parent="." instance=ExtResource("24_me1nw")]
+[node name="points_bottle_holder_points" parent="Node" instance=ExtResource("24_me1nw")]
 position = Vector2(1870, 90)
 
-[node name="points_bottle_holder_points5" parent="." instance=ExtResource("24_me1nw")]
+[node name="points_bottle_holder_points5" parent="Node" instance=ExtResource("24_me1nw")]
 position = Vector2(1464, 273)
 
-[node name="points_bottle_holder_points2" parent="." instance=ExtResource("24_me1nw")]
+[node name="points_bottle_holder_points2" parent="Node" instance=ExtResource("24_me1nw")]
 position = Vector2(2091, 463)
 
-[node name="points_bottle_holder_points4" parent="." instance=ExtResource("24_me1nw")]
+[node name="points_bottle_holder_points4" parent="Node" instance=ExtResource("24_me1nw")]
 position = Vector2(3625, 273)
 
-[node name="points_bottle_holder_points3" parent="." instance=ExtResource("24_me1nw")]
+[node name="points_bottle_holder_points3" parent="Node" instance=ExtResource("24_me1nw")]
 position = Vector2(2246, -602)
 
-[node name="points_metal3" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal3" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(3012, 412)
 
-[node name="points_metal4" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal4" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(209, -108)
 
-[node name="points_metal5" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal5" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(640, -149)
 
-[node name="points_metal7" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal7" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(1462, -213)
 
-[node name="points_metal8" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal8" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(1714, -362)
 
-[node name="points_metal9" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal9" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(2130, -603)
 
-[node name="points_metal12" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal12" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(2795, -424)
 
-[node name="points_metal13" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal13" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(2965, -637)
 
-[node name="points_metal14" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal14" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(3267, 256)
 
-[node name="points_metal15" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal15" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(3739, -297)
 
-[node name="points_metal10" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal10" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(2419, 221)
 
-[node name="points_metal11" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal11" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(2607, 238)
 
-[node name="points_metal6" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal6" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(763, -375)
 
-[node name="points_metal2" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal2" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(3343, -732)
 
-[node name="points_metal" parent="." instance=ExtResource("25_bpkbw")]
+[node name="points_metal" parent="Node" instance=ExtResource("25_bpkbw")]
 position = Vector2(2103, 88)
 
-[node name="trambolin" parent="." instance=ExtResource("26_sxlx6")]
+[node name="trambolin" parent="Node" instance=ExtResource("26_sxlx6")]
 position = Vector2(940, 181)
 
-[node name="trambolin2" parent="." instance=ExtResource("26_sxlx6")]
+[node name="trambolin2" parent="Node" instance=ExtResource("26_sxlx6")]
 position = Vector2(2337, 499)
 BounceForce = 1500.0
 
-[node name="trambolin3" parent="." instance=ExtResource("26_sxlx6")]
+[node name="trambolin3" parent="Node" instance=ExtResource("26_sxlx6")]
 position = Vector2(2724, 418)
 
-[node name="trambolin4" parent="." instance=ExtResource("26_sxlx6")]
+[node name="trambolin4" parent="Node" instance=ExtResource("26_sxlx6")]
 position = Vector2(3739, 448)
 
-[node name="RecyclingStation" parent="." instance=ExtResource("23_klwya")]
+[node name="RecyclingStation" parent="Node" instance=ExtResource("23_klwya")]
 position = Vector2(4073.0002, 192)
 scale = Vector2(3, 3)
 
-[node name="random_costume7" parent="." instance=ExtResource("24_j7vlb")]
+[node name="random_costume7" parent="Node" instance=ExtResource("24_j7vlb")]
 position = Vector2(860, -492)
 
-[node name="random_costume8" parent="." instance=ExtResource("24_j7vlb")]
+[node name="random_costume8" parent="Node" instance=ExtResource("24_j7vlb")]
 position = Vector2(892, -493)
 
-[node name="random_costume9" parent="." instance=ExtResource("24_j7vlb")]
+[node name="random_costume9" parent="Node" instance=ExtResource("24_j7vlb")]
 position = Vector2(1178, -186)
 
-[node name="random_costume10" parent="." instance=ExtResource("24_j7vlb")]
+[node name="random_costume10" parent="Node" instance=ExtResource("24_j7vlb")]
 position = Vector2(3291, -733)
 
-[node name="random_costume11" parent="." instance=ExtResource("24_j7vlb")]
+[node name="random_costume11" parent="Node" instance=ExtResource("24_j7vlb")]
 position = Vector2(2049, -586)
 
-[node name="info_teacher" parent="." instance=ExtResource("30_me1nw")]
+[node name="info_teacher" parent="Node" instance=ExtResource("30_me1nw")]
 position = Vector2(-55, -58)
