@@ -48,7 +48,7 @@ offset_right = 738.0
 offset_bottom = 81.0
 theme_override_colors/font_color = Color(1, 1, 0, 1)
 theme_override_font_sizes/font_size = 36
-text = "🏆 SKOR TABLOSU 🏆"
+text = "SCORE_TITLE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -76,4 +76,4 @@ offset_top = 524.0
 offset_right = 260.0
 offset_bottom = 574.0
 theme_override_font_sizes/font_size = 24
-text = "🔄 Yenile"
+text = "SCORE_REFRESH"

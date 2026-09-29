@@ -1,0 +1,185 @@
+keys,tr,en
+RECYCLE_TITLE,HAYDİ ARKADAŞLAR ÇÖPLERİ AYIRALIM,"COME ON FRIENDS, LET'S SORT THE TRASH"
+RECYCLE_SCORE_FORMAT,Puan: {0},Score: {0}
+RECYCLE_SCORE_CAMPAIGN_FORMAT,Puan: {0} (x{1}⭐),Score: {0} (x{1}⭐)
+RECYCLE_CORRECT_FORMAT,Doğru: {0},Correct: {0}
+RECYCLE_WRONG_FORMAT,Yanlış: {0},Wrong: {0}
+RECYCLE_TIME_FORMAT,Süre: {0}s,Time: {0}s
+RECYCLE_CAMPAIGN_ACTIVE,⭐ Kampanya Aktif!,⭐ Campaign Active!
+RECYCLE_TRASH_METAL,Metal,Metal
+RECYCLE_TRASH_GLASS,Cam,Glass
+RECYCLE_TRASH_PLASTIC,Plastik,Plastic
+RECYCLE_TRASH_ORGANIC,Organik,Organic
+RECYCLE_TRASH_PAPER,Kağıt,Paper
+RECYCLE_TRASH_MIX,Karışık Çöp,Mixed Trash
+SETTINGS_TITLE,AYARLAR,SETTINGS
+SETTINGS_FULLSCREEN,Tam Ekran,Fullscreen
+SETTINGS_RESOLUTION_LABEL,Çözünürlük:,Resolution:
+SETTINGS_VSYNC,VSync,VSync
+SETTINGS_LANGUAGE_LABEL,Dil:,Language:
+SETTINGS_MASTER_VOLUME,ANA SES:,MASTER VOLUME:
+SETTINGS_MUSIC_VOLUME,MUZİK:,MUSIC:
+SETTINGS_SFX_VOLUME,Efekt:,SFX:
+SETTINGS_DIFFICULTY_LABEL,Zorluk:,Difficulty:
+SETTINGS_RESET_PROGRESS,İLERLEMEYİ SIFIRLA,RESET PROGRESS
+DIFFICULTY_EASY,Kolay,Easy
+DIFFICULTY_MEDIUM,Orta,Medium
+DIFFICULTY_HARD,Zor,Hard
+SETTINGS_RESET_CONFIRM_TEXT,Tüm ilerleme sıfırlanacak! Emin misiniz?,All progress will be reset! Are you sure?
+SETTINGS_RESET_CONFIRM_TITLE,ONAY,CONFIRM
+SETTINGS_RESET_OK,"EVET, SIFIRLA","YES, RESET"
+SETTINGS_RESET_CANCEL,HAYIR,NO
+PAUSE_TITLE,⏸️ OYUN DURAKLADI,⏸️ GAME PAUSED
+PAUSE_RESUME,▶️ DEVAM ET,▶️ RESUME
+PAUSE_RESTART,🔄 LEVELİ TEKRAR BAŞLAT,🔄 RESTART LEVEL
+PAUSE_MAIN_MENU,ANA MENÜ,MAIN MENU
+PAUSE_SETTINGS,⚙️ AYARLAR,⚙️ SETTINGS
+PAUSE_QUIT,🚪 OYUNDAN ÇIK,🚪 QUIT GAME
+SCORE_TITLE,🏆 SKOR TABLOSU 🏆,🏆 SCOREBOARD 🏆
+SCORE_REFRESH,🔄 Yenile,🔄 Refresh
+SCORE_EMPTY,❌ Henüz kayıtlı skor yok!,❌ No scores recorded yet!
+LEVEL_SELECT_TITLE,LEVEL SEÇİNİZ,SELECT LEVEL
+PROFILE_ACTIVE_LABEL,Aktif Profil:,Active Profile:
+PROFILE_ACTIVE_GUEST_SHORT,Aktif: Misafir,Active: Guest
+PROFILE_LOGIN_BUTTON,GİRİŞ YAP,LOG IN
+PROFILE_REGISTER_BUTTON,KAYIT OL,REGISTER
+PROFILE_LOGOUT_LABEL,PROFİLDEN ÇIKIŞ:,LOG OUT OF PROFILE:
+PROFILE_REMOVE_QUESTION,SORU ÇIKAR,REMOVE QUESTION
+PROFILE_DELETE,SİL,DELETE
+PROFILE_ADD_QUESTION,SORU EKLE,ADD QUESTION
+PROFILE_MATH_QUESTION_PLACEHOLDER,MATEMATİK SORU SU GİRİNİZ,ENTER MATH QUESTION
+PROFILE_ADD_BUTTON,EKLE,ADD
+PROFILE_RESTORE_QUESTIONS,SORULARI GERİ GETİR,RESTORE QUESTIONS
+PROFILE_LOGIN_REQUIRED,Giriş yapmalısınız!,You must log in!
+PROFILE_REACTIVATE_CONFIRM,Devre dışı bıraktığınız TÜM soruları tekrar aktif etmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!,Are you sure you want to reactivate ALL the questions you disabled?\n\nThis action cannot be undone!
+PROFILE_REACTIVATE_TITLE,TÜM SORULARI TEKRAR AKTİF ET,REACTIVATE ALL QUESTIONS
+PROFILE_REACTIVATE_OK,"EVET, HEPSİNİ AKTİF ET","YES, ACTIVATE ALL"
+PROFILE_REACTIVATE_SUCCESS,Tüm sorular tekrar aktif edildi!,All questions have been reactivated!
+PROFILE_NO_DISABLED_QUESTIONS,Hiç devre dışı soru bulunamadı!,No disabled questions found!
+PROFILE_SELECT_QUESTION,Lütfen bir soru seçin!,Please select a question!
+PROFILE_MIN_QUESTIONS_FORMAT,Bu zorluk seviyesinde en az {0} soru kalmalı!\n\nŞu an: {1} aktif soru var.,At least {0} questions must remain at this difficulty!\n\nCurrently: {1} active questions.
+PROFILE_DISABLE_CONFIRM_FORMAT,"Bu soruyu devre dışı bırakmak istediğinize emin misiniz?\n\n""{0}""\n\nKalan aktif soru sayısı: {1}","Are you sure you want to disable this question?\n\n""{0}""\n\nRemaining active questions: {1}"
+PROFILE_DISABLE_TITLE,SORU DEVRE DIŞI BIRAKMA,DISABLE QUESTION
+PROFILE_DISABLE_OK,"EVET, DEVRE DIŞI BIRAK","YES, DISABLE"
+PROFILE_DISABLE_SUCCESS,Soru başarıyla devre dışı bırakıldı!,Question successfully disabled!
+PROFILE_DISABLE_FAILED,Soru devre dışı bırakılamadı!,Failed to disable question!
+PROFILE_QUESTION_EMPTY,Soru boş olamaz!,Question cannot be empty!
+PROFILE_ADD_LOGIN_REQUIRED,Soru eklemek için giriş yapmalısınız!,You must log in to add a question!
+PROFILE_ADD_CONFIRM_FORMAT,Bu soru TÜM KULLANICILAR için eklenecek!\n\nSoru: {0}\nZorluk: {1}\n\nCevap otomatik hesaplanacak. Emin misiniz?,This question will be added for ALL USERS!\n\nQuestion: {0}\nDifficulty: {1}\n\nThe answer will be calculated automatically. Are you sure?
+PROFILE_ADD_TITLE,SORU EKLEME,ADD QUESTION
+PROFILE_ADD_SUCCESS,Soru başarıyla eklendi!,Question successfully added!
+PROFILE_ADD_FAILED,Soru eklenemedi! Lütfen konsolu kontrol edin.,Failed to add question! Please check the console.
+PROFILE_ERROR_TITLE,❌ HATA,❌ ERROR
+PROFILE_ACTIVE_PROFILE_FORMAT,Aktif Profil: {0},Active Profile: {0}
+PROFILE_ACTIVE_GUEST_FULL,Aktif Profil: Misafir,Active Profile: Guest
+PROFILE_EMPTY_CREDENTIALS,Kullanıcı adı ve şifre boş olamaz!,Username and password cannot be empty!
+PROFILE_USER_NOT_FOUND,Kullanıcı bulunamadı!,User not found!
+PROFILE_WRONG_PASSWORD,Şifre hatalı!,Incorrect password!
+PROFILE_WELCOME_FORMAT,"Hoş geldin, {0}!","Welcome, {0}!"
+PROFILE_PASSWORD_TOO_SHORT,Şifre en az 4 karakter olmalı!,Password must be at least 4 characters!
+PROFILE_USERNAME_TAKEN,Bu kullanıcı adı zaten kullanılıyor!,This username is already taken!
+PROFILE_ACCOUNT_CREATED_FORMAT,"Hesap oluşturuldu! Hoş geldin, {0}!","Account created! Welcome, {0}!"
+PROFILE_LOGGED_OUT,Çıkış yapıldı!,Logged out!
+DB_ERR_INVALID_DIFFICULTY,Geçersiz zorluk seviyesi!,Invalid difficulty level!
+DB_ERR_NEEDS_OPERATOR,"Soruda en az bir operatör (+, -, x, /) bulunmalı!","The question must contain at least one operator (+, -, x, /)!"
+DB_ERR_MAX_OPERATIONS_FORMAT,{0} seviyesinde en fazla {1} işlem olabilir! (Şu an: {2}),"At {0} level, at most {1} operations are allowed! (Currently: {2})"
+DB_ERR_INVALID_NUMBER_FORMAT,Geçersiz sayı: '{0}',Invalid number: '{0}'
+DB_ERR_ANSWER_INTEGER_FORMAT,{0} seviyesinde cevap tam sayı olmalı! (Sonuç: {1}),"At {0} level, the answer must be a whole number! (Result: {1})"
+DB_ERR_HARD_DECIMAL_FORMAT,Zor seviyesinde cevap en fazla 1 ondalık basamak olabilir! (Sonuç: {0}),"At Hard level, the answer may have at most 1 decimal digit! (Result: {0})"
+DB_ERR_VALIDATION_FORMAT,Validasyon hatası: {0},Validation error: {0}
+DB_ERR_DIVIDE_BY_ZERO,Sıfıra bölme hatası!,Division by zero error!
+DB_ERR_CALC_FORMAT,Hesaplama hatası: {0},Calculation error: {0}
+HUD_TRASH_FORMAT,Çöp: {0},Trash: {0}
+HUD_SCORE_FORMAT,Skor: {0},Score: {0}
+HUD_TARGET_FORMAT,Hedef: {0},Target: {0}
+EVENT_TRIGGERED_FORMAT,⚠ {0} etkinliği tetiklendi!,⚠ {0} event triggered!
+MATH_QUESTION_NOT_FOUND,Soru bulunamadı!,Question not found!
+MATH_ANSWER_PLACEHOLDER,cevabınızı buraya giriniz,enter your answer here
+MATH_SUBMIT,gönder,submit
+MATH_QUESTION_PREFIX,soru=,question=
+MATH_CORRECT_FORMAT,DOĞRU: {0},CORRECT: {0}
+MATH_WRONG_FORMAT,YANLIŞ: {0},WRONG: {0}
+MATH_RESULT_FORMAT,Sonuç!\n{0}/{1} Doğru\n{2}{3} Puan,Result!\n{0}/{1} Correct\n{2}{3} Points
+MATH_FAIL_COSTUME,Başarısız!\nKostüm kayboldu...,Failed!\nThe costume was lost...
+MATH_PERFECT_COSTUME,Mükemmel!\nKostüm yenilendi!,Perfect!\nThe costume was restored!
+MATH_NOTHING_HAPPENED,Eh işte...\nHiçbir şey olmadı.,Meh...\nNothing happened.
+MATH_AMAZING_COSTUME,MUHTEŞEM!\nKostüm level boyunca senin!,AMAZING!\nThe costume is yours for the whole level!
+MATH_GOOD_COSTUME_TIME,İyi!\n80 saniye kostüm!,Good!\n80 seconds of costume!
+MATH_INSUFFICIENT,Yetersiz...\nHiçbir şey olmadı.,Not enough...\nNothing happened.
+MATH_DISASTER_DAMAGE,FELAKET!\nHasar aldın!,DISASTER!\nYou took damage!
+MATH_RESULT_SIMPLE_FORMAT,{0}/{1} Doğru,{0}/{1} Correct
+MATH_CLOSE_BUTTON,Kapat,Close
+ROBOT_FOLLOW_BUTTON,🛡️ Takip Et ve Koru (Ekstra Puan!),🛡️ Follow and Protect (Extra Points!)
+ROBOT_DONT_FOLLOW_BUTTON,👋 Takip Etme (Puan Yok),👋 Don't Follow (No Points)
+ROBOT_GREETING,Merhaba!,Hello!
+ROBOT_PREPARE_COUNTDOWN_FORMAT,🤖 Hazırlan!\n\n⏳ {0}...,🤖 Get ready!\n\n⏳ {0}...
+ROBOT_ABOUT_TO_LEAVE,"🤖 Birazdan yola çıkıyorum, hazırlan!","🤖 I'm about to head out, get ready!"
+ROBOT_THANKS_BYE,"Teşekkürler, görüşürüz!","Thanks, see you around!"
+ROBOT_QUEST_MIX_FORMAT,Bana {0}sn içinde\n{1} adet KARIŞIK çöp getir!\n\nÖdül: {2} puan! 🏆,Bring me {1} MIXED trash within {0}s!\n\nReward: {2} points! 🏆
+ROBOT_QUEST_SINGLE_FORMAT,Bana {0}sn içinde\n{1} adet {2} çöp getir!\n\nÖdül: {3} puan!,Bring me {1} {2} trash within {0}s!\n\nReward: {3} points!
+ROBOT_QUEST_SUFFIX,\n\nTopladıktan sonra tekrar konuş!,\n\nTalk to me again after collecting!
+ROBOT_PLAYER_NOT_FOUND,Player bulunamadı!,Player not found!
+ROBOT_QUEST_PROGRESS_FORMAT,Daha {0} adet {1} lazım!\nKalan: {2}sn,Still need {0} more {1}!\nRemaining: {2}s
+ROBOT_QUEST_REWARD_FORMAT,Harika! {0} puan kazandın! 🏆,Great! You earned {0} points! 🏆
+ROBOT_ESCORT_DIRECTION_RIGHT,SAĞA ➡️,RIGHT ➡️
+ROBOT_ESCORT_DIRECTION_LEFT,⬅️ SOLA,⬅️ LEFT
+ROBOT_ESCORT_REQUEST_FORMAT,🤖 Benim bir yere gitmem lazım!\nYön: {0}\nMesafe: ~{1} piksel\n\nBeni takip edip korursan:\n  🛡️ {2} puan!\n\nTakip etmezsen:\n  👋 Ekstra puan yok.\n\nNe yapmak istersin?,🤖 I need to head somewhere!\nDirection: {0}\nDistance: ~{1} pixels\n\nIf you follow and protect me:\n  🛡️ {2} points!\n\nIf you don't follow:\n  👋 No extra points.\n\nWhat would you like to do?
+ROBOT_COUNTDOWN_FOLLOW_FORMAT,🤖 Hazırlan!\n\n⏳ {0}...,🤖 Get ready!\n\n⏳ {0}...
+ROBOT_COUNTDOWN_ALONE_FORMAT,"🤖 Tamam, çıkıyorum!\n\n⏳ {0}...","🤖 Okay, heading out!\n\n⏳ {0}..."
+ROBOT_ESCORT_START_FOLLOW_FORMAT,🛡️ Yola çıktım! Beni koru!\nSüre: {0}sn,🛡️ I'm on my way! Protect me!\nTime: {0}s
+ROBOT_ESCORT_START_ALONE,👋 Yola çıktım! Görüşürüz!,👋 I'm on my way! See you around!
+ROBOT_ESCORT_STATUS_FOLLOW_FORMAT,🤖 Hedefe gidiyorum!\n~{0}px kaldı\nSüre: {1}sn\nCan: {2}/{3}\nTakip: {4},🤖 Heading to the target!\n~{0}px left\nTime: {1}s\nHealth: {2}/{3}\nFollowing: {4}
+ROBOT_ESCORT_FOLLOWING_YES,✅,✅
+ROBOT_ESCORT_FOLLOWING_NO,❌ Uzaktasın!,❌ You're too far!
+ROBOT_ESCORT_STATUS_ALONE_FORMAT,🤖 Kendi başıma gidiyorum...\n~{0}px kaldı,🤖 Making my way there alone...\n~{0}px left
+ROBOT_DESTROYED,💀 Robot yok edildi!\nGörev başarısız...,💀 Robot destroyed!\nQuest failed...
+ROBOT_ESCORT_REWARD_FULL_FORMAT,🏆 Beni korudun!\nTemel: {0}\nBonus: +{1}\nTOPLAM: {2} puan! 🎉,🏆 You protected me!\nBase: {0}\nBonus: +{1}\nTOTAL: {2} points! 🎉
+ROBOT_ESCORT_REWARD_PARTIAL_FORMAT,Hedefe ulaştım ama yanımda değildin...\nTemel: {0} puan\nBonus: Yok ❌,I reached the target but you weren't with me...\nBase: {0} points\nBonus: None ❌
+ROBOT_ESCORT_REACHED_ALONE,Hedefe ulaştım! Hoşçakal! 👋,I reached the target! Goodbye! 👋
+ROBOT_ESCORT_TIMEOUT,⏰ Süre doldu!,⏰ Time's up!
+ROBOT_QUEST_TIMEOUT,Süre doldu! Görev başarısız...,Time's up! Quest failed...
+LEVEL_MILESTONE_FORMAT,Harika! {0} puana ulaştınız!,Great! You reached {0} points!
+LEVEL_COLLECTED_FORMAT,Tebrikler! {0} puan topladın!\n(Hedef: {1}),Congratulations! You collected {0} points!\n(Target: {1})
+LEVEL1_COMPLETE,TEBRİKLER! Level 1 geçildi!,CONGRATULATIONS! Level 1 completed!
+LEVEL2_COMPLETE,TEBRİKLER! Level 2 geçildi!,CONGRATULATIONS! Level 2 completed!
+LEVEL3_COMPLETE,TEBRİKLER! Level 3 geçildi!,CONGRATULATIONS! Level 3 completed!
+TUTORIAL_COMPLETE,TEBRİKLER! Tutorial tamamlandı!,CONGRATULATIONS! Tutorial completed!
+TUTORIAL_LABEL_MOVE,WASD / OK TUŞLARI İLE\n HAREKET EDEBİLİRSİN,YOU CAN MOVE WITH\n WASD / ARROW KEYS
+TUTORIAL_LABEL_MAIN_GOAL,OYUNUN ANA AMACI HER BÖLÜMDE BULUNAN EN SAĞDAKİ\nGERİ DÖNÜŞÜM KUTUSANA GİTMEK VE ORADA ÇÖPLERİ GERİ\nDÖNÜŞTÜRMEKTİR,THE MAIN GOAL OF THE GAME IS TO REACH THE\nRECYCLING BIN AT THE FAR RIGHT OF EACH LEVEL\nAND RECYCLE YOUR TRASH THERE
+TUTORIAL_LABEL_JUMP,SPACE TUŞUNA BASTIĞINDA\nKARAKTER ZIPLAR,PRESSING THE SPACE KEY\nMAKES YOUR CHARACTER JUMP
+TUTORIAL_LABEL_COSTUME_KEYS,1 2 VE 3 TUŞLARI TAŞIDIĞIN\nKOSTUMLERİ GİYMENİ SAĞLAR,"KEYS 1, 2 AND 3 LET YOU\nWEAR THE COSTUMES YOU'RE CARRYING"
+TUTORIAL_LABEL_BAT_THROW,YARASA ÇOCUK İLE FARENİ\nPLATFORMA GETİR VE E BAS,"AS BAT BOY, BRING YOUR MOUSE\nTO THE PLATFORM AND PRESS E"
+TUTORIAL_LABEL_BAT_RIGHTCLICK,YARASA ÇOCUK İLE FARENİN SAĞ TUŞU İLE\nDÜŞMANLARA HASAR VEREBİLDİĞİN OBJE \nATABİLİRSİN,"AS BAT BOY, RIGHT-CLICK\nTO THROW AN OBJECT THAT CAN\nDAMAGE ENEMIES"
+TUTORIAL_LABEL_SPIDER_SWITCH,ÖRÜMCEK ÇOCUĞA GEÇ (2 TUŞUNA BAS)\nW İLE DUVARLARA TIRMANABİLİRSİN,SWITCH TO SPIDER BOY (PRESS KEY 2)\nYOU CAN CLIMB WALLS WITH W
+TUTORIAL_LABEL_SPIDER_SWING,ÖRÜMCEK ÇOCUKTA FARE İLE PLATFORMA TUT VE \nE TUŞUNA BASTIĞINDA\nOBJELERDE SALLANABİLİRSİN,"AS SPIDER BOY, AIM AT A PLATFORM WITH YOUR MOUSE\nAND PRESS E\nTO SWING FROM OBJECTS"
+TUTORIAL_LABEL_SPIDER_STUN,ÖRÜMCEK ÇOCUK SAĞ TUŞU HASAR VERMEZ AMA KISA SÜREDE \nAYNI DUŞMANA VURURSAN DUŞMAN BİR SÜRELİĞİNE\nSERSEMLETİR,"SPIDER BOY'S RIGHT-CLICK DEALS NO DAMAGE, BUT IF YOU\nHIT THE SAME ENEMY AGAIN QUICKLY, IT WILL\nSTUN THEM FOR A SHORT TIME"
+TUTORIAL_LABEL_SUPER_FLY,SUPER ÇOCUK İLE E BASTIĞINDA BELLİ BİR SÜRE UÇABİLİRSİN,"AS SUPER BOY, PRESS E TO FLY FOR A LIMITED TIME"
+TUTORIAL_LABEL_COSTUME_PICKUP,BUNLAR RASTGELE SANA BİR KOSTUM VERİR\nHER KOSTÜMÜN KENDİSİNE HAS ÖZELLİKLERİ VARDIR.\nAL VE DENE,THESE GIVE YOU A RANDOM COSTUME\nEVERY COSTUME HAS ITS OWN UNIQUE ABILITIES.\nPICK ONE UP AND TRY IT
+TUTORIAL_LABEL_BUCKET_THROW,KOVA ÇOCUK SAĞ TUŞU YARASA ÇOCUK GİBİ\nDAHA FAZLA HASAR VERİR AMA DAHA YAVAŞ FIRLATMA\nSÜRESİ VARDIR,"BUCKET BOY'S RIGHT-CLICK, LIKE BAT BOY'S,\nDEALS MORE DAMAGE BUT HAS A SLOWER\nTHROW SPEED"
+TUTORIAL_LABEL_SPEED_COSTUME,ŞU ANKİ SON KOSTUM\nHIZ ÇOCUK\nBU KOSTUM SAĞ TUŞUNA BASILDIĞINDA SENİ BELLİ\nMESAFE IŞINLAR ,THE LAST COSTUME FOR NOW\nSPEED BOY\nRIGHT-CLICKING WITH THIS COSTUME TELEPORTS YOU\nA CERTAIN DISTANCE 
+TUTORIAL_LABEL_FINAL,TEBRİKLER ŞU ANDA EĞİTİMİN EN SON KISMINA GELDİN\nŞİMDİ İSE TOPLADIĞIN ÇÖPLERİ GERİ DÖNÜŞTÜR\n,"CONGRATULATIONS, YOU'VE REACHED THE FINAL PART OF THE TUTORIAL\nNOW GO RECYCLE THE TRASH YOU'VE COLLECTED\n"
+TEACHER_MSG_FIRST,Merhaba! Ben bilgi öğretmeniyim.\nNPC'lere ve objelere E tuşuna basarak etkileşim kurabilirsin!,Hello! I'm the info teacher.\nYou can interact with NPCs and objects by pressing E!
+TEACHER_MSG_01,SPIDERBOY KOSTÜMÜ:\nE tuşuna basarak ağ atabilir ve duvarlarda sallanabilirsin!,SPIDERBOY COSTUME:\nPress E to shoot a web and swing on walls!
+TEACHER_MSG_02,BATBOY KOSTÜMÜ:\nE tuşuna basarak kancayı fırlatıp çekebilirsin!,BATBOY COSTUME:\nPress E to throw and pull with your grappling hook!
+TEACHER_MSG_03,KOSTÜMLER:\nE tuşuna veya sağ klik basarsan o kostümün özelliklerini kullanabilirsin!Hepsi birbirinden havalı!,COSTUMES:\nPress E or right-click to use that costume's special ability! They're all awesome in their own way!
+TEACHER_MSG_04,"Güçlü Çöp Adam:\nBu dev düşman seni görünce koşarak üstüne gelir!\nÇarparsa çok hasar alırsın, dikkatli ol!","Strong Trash Man:\nThis giant enemy charges straight at you once it spots you!\nIf it hits you, you take heavy damage, so be careful!"
+TEACHER_MSG_05,Çöp Adam:\nBu düşman genelde dolaşmayı sever ve zayıftırlardır ama dikkat et birlikteykenler güçlülerdir!,"Trash Man:\nThis enemy usually likes to wander around and is weak on its own, but watch out - they're strong in groups!"
+TEACHER_MSG_06,Çöp Konteyner Büyücüsü:\nBu dev düşman genelde arkadaşlarını çağırmayı sever\ndüşünüce kim arkadaş istemez ki?,"Trash Container Wizard:\nThis giant enemy usually likes to summon its friends -\nthen again, who doesn't want friends?"
+TEACHER_MSG_07,Çöp Konteyner Büyücüsü:\nBu dev düşman seni görünce sana arkadaşlarını fırlatır!\neğimi biraz kötüdür ama neden arkadaşlarını sana atıyor??,"Trash Container Wizard:\nWhen this giant enemy spots you, it hurls its friends at you!\nIts aim is a bit off, but still - why is it throwing its friends at you??"
+TEACHER_MSG_08,Çöp Canavarı:\nYavaş hareket eder ama seni görünce sana uzaktan saldırır ve hasar alabilirsin!\nÜstünden atla veya uzak dur.,"Trash Monster:\nIt moves slowly, but once it spots you it attacks from range and can hurt you!\nJump over it or keep your distance."
+TEACHER_MSG_09,Kalkanlı Çöp Adam:\nBu dev düşman genelde uykucu ama uykusu çok hafiftir ve arada bir etrafı kontrol eder güvende mi diye ama dikkat et çok yakına gelirsen veya uzaktan ilk defa saldırırsan uyanır!\nBir yandan ona kızamayız onu uykusundan uyandırdık!,"Shielded Trash Man:\nThis giant enemy is usually asleep, but it's a light sleeper - it checks its surroundings now and then to make sure it's safe. Get too close or land the first hit from range and it'll wake up!\nThen again, we can't really blame it - we're the ones who woke it up!"
+TEACHER_MSG_10,Kalkanlı Çöp Adam:\nBu dev düşman şapkasını kalkan gibi kullanır ve kalkanı düşünceyi kadar gerçekten hasar alamaz!\nŞapkası havada dönerken bundan faydalan ve dikkat et şapkasına zarar gelmesinden nefret eder!,"Shielded Trash Man:\nThis giant enemy uses its hat as a shield, and it barely takes any real damage while it's up!\nTake advantage of it whenever its hat is spinning in the air - and watch out, it hates it when its hat gets damaged!"
+TEACHER_MSG_11,Çöp Kuşu:\nBu düşman genelde bir alanda dolaşmayı sever seni görür görmez balık görmüş gibi dalarlar!\nVe dikkat et birlikteykenler çok güçlülerdir ve birlikte hareket ederler!,"Trash Bird:\nThis enemy usually likes to patrol an area, and the moment it spots you it dives in like it just saw a fish!\nWatch out - they're very strong together and move as a group!"
+TEACHER_MSG_12,Çöp Kuşu Spawner (Secured):\nBu bina çöp kuşların bulunduğu binadır ama Kalkanlı Çöp Adamlar tarafından korunuyordur!\nDüşündüğünde tatlı bir arkadaşlıkları var!,"Trash Bird Spawner (Secured):\nThis building is where the trash birds live, guarded by Shielded Trash Men!\nWhen you think about it, they actually have a sweet friendship!"
+TEACHER_MSG_13,Çöp Kuşu Spawner (hermit):\nBu bina çöp kuşların bulunduğu binadır ve tatlı hermit onları yaşamasını izin veriyor ama dikkat et hermit çok utangaç yakınına gelirsen anında kabuğuna çekilir ve hasar verilemez konuma gelir!\nDüşündüğünde tatlı bir arkadaşlıkları var!,"Trash Bird Spawner (hermit):\nThis building is where the trash birds live, and a sweet hermit lets them stay there - but watch out, the hermit is very shy. Get too close and it instantly pulls into its shell, becoming impossible to damage!\nWhen you think about it, they actually have a sweet friendship!"
+TEACHER_MSG_14, ÇÖP GERİ DÖNÜŞÜM KUTULARI:\nBölümün en sağ tarafında bulunur.\nÇöpleri oraya götürüp E tuşuna bas!, RECYCLING BINS:\nThey're found at the far right of the level.\nBring your trash there and press E!
+TEACHER_MSG_15, CAN SİSTEMİ:\nSol üstte kalp simgeleri canını gösterir.\nDüşmanlara sana vurursa can kaybedersin!, HEALTH SYSTEM:\nThe heart icons in the top left show your health.\nYou'll lose health if enemies hit you!
+TEACHER_MSG_16, PUAN SİSTEMİ:\nBölümü geçmek için minimum 100 puan gerekir.\nÇöp topla ve geri dönüştür!, SCORE SYSTEM:\nYou need at least 100 points to complete the level.\nCollect trash and recycle it!
+TEACHER_MSG_17, MATEMATİK SORULARI:\nÖğretmen NPC'sine E basınca soru sorar.\nDoğru cevap verirsen puan kazanırsın!, MATH QUESTIONS:\nPress E on the Teacher NPC and they'll ask you a question.\nAnswer correctly to earn points!
+TEACHER_MSG_18, MATEMATİK SORULARI:\nTerzi NPC'sine E basınca soru sorar.\nTüm sorulara Doğru cevap verirsen kostümünü onarır!Ama dikkat et terzi sorduğu soruların tamamını doğru cevaplanmasını ister, MATH QUESTIONS:\nPress E on the Tailor NPC and they'll ask you a question.\nAnswer every question correctly and they'll repair your costume! But watch out - the tailor expects every single question answered correctly.
+TEACHER_MSG_19, İPUCU:\nGizli bölümler var! Bazen garip görünen yerlere gitmek seni başka bir mini levele götürebilir!, TIP:\nThere are hidden areas! Sometimes heading toward a strange-looking spot can take you to another mini level!
+TEACHER_MSG_20," KONTROLLER:\nOk tuşları veya WASD ile hareket, Space ile zıpla!"," CONTROLS:\nMove with the arrow keys or WASD, jump with Space!"
+TEACHER_MSG_21," GİZLİ ALANLAR:\nDuvarların arkasını kontrol et, sürprizler olabilir!", HIDDEN AREAS:\nCheck behind walls - there might be surprises!
+TEACHER_MSG_22,Bu kadar bilgi yeterli! İyi şanslar!\n(Tekrar gelirsen yeni infolar öğrenebilirsin! ),That's enough info for now! Good luck!\n(Come back again and you can learn new info!)
+LEVEL_TOTAL_MISSING_FORMAT,Toplam Puan: {0}/{1}\nEksik: {2} puan!,Total Score: {0}/{1}\nMissing: {2} points!
+LEVEL_INSUFFICIENT_FORMAT,Yetersiz! Daha {0} puan gerekli.,Not enough! {0} more points needed.

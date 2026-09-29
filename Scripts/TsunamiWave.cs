@@ -7,9 +7,9 @@ public partial class TsunamiWave : Area2D
     private int direction = 1;
     private float speed = 400.0f;
     private float lifetime = 10.0f;
-    private List<Node2D> collectedEnemies = new List<Node2D>();
-    private bool isCollecting = true;
+    private int damage = 2;
 
+    private HashSet<Node2D> damagedEnemies = new HashSet<Node2D>();
     private AnimatedSprite2D sprite;
     private CollisionShape2D collision;
 
@@ -20,125 +20,79 @@ public partial class TsunamiWave : Area2D
         sprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
         collision = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
 
-        BodyEntered += OnBodyEntered;
+        GD.Print($"[TSUNAMI] 🔍 Monitoring: {Monitoring}");
+        GD.Print($"[TSUNAMI] 🔍 CollisionLayer: {CollisionLayer}");
+        GD.Print($"[TSUNAMI] 🔍 CollisionMask: {CollisionMask}");
+        GD.Print($"[TSUNAMI] 🔍 CollisionShape2D: {collision != null}");
 
-        // Collision ayarları
-        CollisionLayer = 0;
-        CollisionMask = 1 | 4; // Layer 1 (platformlar) + Layer 3 (düşmanlar)
-
-        // Sprite animasyonunu başlat
         if (sprite != null)
             sprite.Play("default");
 
-        // Lifetime sonunda düşmanları fırlat
-        var timer = GetTree().CreateTimer(lifetime);
-        timer.Timeout += ThrowEnemies;
+        GetTree().CreateTimer(lifetime).Timeout += () => QueueFree();
 
-        GD.Print("[TSUNAMI] Tsunami oluşturuldu!");
+        GD.Print("[TSUNAMI] 🌊 Tsunami oluşturuldu!");
     }
 
-    public void Setup(int dir, int damage, bool canStun, float stunDuration)
+    public void Setup(int dir, int dmg, bool canStun, float stunDuration)
     {
         direction = dir;
+        damage = dmg;
+
         if (sprite != null)
             sprite.FlipH = direction < 0;
 
-        GD.Print($"[TSUNAMI] Setup: direction={dir}");
+        GD.Print($"[TSUNAMI] Setup: direction={dir}, damage={damage}");
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!isCollecting) return;
-
         float dt = (float)delta;
 
-        // İlerle
+        // ✅ Hareket
         GlobalPosition += new Vector2(direction * speed * dt, 0);
 
-        // Toplanan düşmanları yanında taşı
-        for (int i = collectedEnemies.Count - 1; i >= 0; i--)
+        // ✅ OVERLAP KONTROL
+        var overlappingBodies = GetOverlappingBodies();
+
+        foreach (var body in overlappingBodies)
         {
-            var enemy = collectedEnemies[i];
-            if (!IsInstanceValid(enemy))
+            // Düşmana çarptı
+            if (body is Node2D node && node.IsInGroup("enemy"))
             {
-                collectedEnemies.RemoveAt(i);
-                continue;
+                // ✅ İlk çarpışta hasar ver
+                if (!damagedEnemies.Contains(node))
+                {
+                    DamageEnemy(node);
+                }
+
+                // ✅ YENİ: Düşmanı tsunami'nin içinde taşı!
+                node.GlobalPosition = GlobalPosition + new Vector2(0, -30);
             }
 
-            enemy.GlobalPosition = GlobalPosition + new Vector2(0, -30);
+            // Duvara çarptı
+            if (body is TileMap || body is StaticBody2D)
+            {
+                GD.Print("[TSUNAMI] 💥 Duvara çarptı!");
+                QueueFree();
+                return;
+            }
         }
     }
 
-    private void OnBodyEntered(Node2D body)
+    private void DamageEnemy(Node2D enemy)
     {
-        // Düşman topla
-        if (body.IsInGroup("enemy") && isCollecting)
+        damagedEnemies.Add(enemy);
+
+        GD.Print($"[TSUNAMI] ⚔️ {enemy.Name} düşmanına hasar veriliyor...");
+
+        if (enemy.HasMethod("TakeDamage"))
         {
-            if (!collectedEnemies.Contains(body))
-            {
-                collectedEnemies.Add(body);
-
-                // Düşmanı dondur
-                if (body.HasMethod("Freeze"))
-                {
-                    body.Call("Freeze");
-                }
-                else if (body.HasMethod("ApplySlow"))
-                {
-                    body.Call("ApplySlow", 1.0f, 999f); // Tamamen durdur
-                }
-
-                // Düşman fiziksel hareketi durdur
-                if (body is CharacterBody2D enemyBody)
-                {
-                    enemyBody.Velocity = Vector2.Zero;
-                }
-
-                GD.Print($"[TSUNAMI] 🌊 {body.Name} toplandı! Toplam: {collectedEnemies.Count}");
-            }
+            enemy.Call("TakeDamage", damage);
+            GD.Print($"[TSUNAMI] ✅ {enemy.Name} düşmanına {damage} hasar verildi!");
         }
-        // Duvara çarptı
-        else if (body is TileMap || body is StaticBody2D)
+        else
         {
-            GD.Print("[TSUNAMI] Duvara çarptı!");
-            ThrowEnemies();
+            GD.PrintErr($"[TSUNAMI] ❌ {enemy.Name} düşmanında TakeDamage metodu yok!");
         }
-    }
-
-    private void ThrowEnemies()
-    {
-        isCollecting = false;
-
-        GD.Print($"[TSUNAMI] Düşmanlar fırlatılıyor: {collectedEnemies.Count}");
-
-        for (int i = collectedEnemies.Count - 1; i >= 0; i--)
-        {
-            var enemy = collectedEnemies[i];
-            if (!IsInstanceValid(enemy))
-            {
-                collectedEnemies.RemoveAt(i);
-                continue;
-            }
-
-            // Düşmanı fırlat
-            if (enemy is CharacterBody2D enemyBody)
-            {
-                enemyBody.Velocity = new Vector2(direction * 800, -500);
-                GD.Print($"[TSUNAMI] ⚡ {enemy.Name} fırlatıldı!");
-            }
-
-            // Unfreeze
-            if (enemy.HasMethod("Unfreeze"))
-            {
-                enemy.Call("Unfreeze");
-            }
-            else if (enemy.HasMethod("ApplySlow"))
-            {
-                enemy.Call("ApplySlow", 0f, 0f); // Slow'u kaldır
-            }
-        }
-
-        collectedEnemies.Clear();
-        QueueFree();
     }
 }

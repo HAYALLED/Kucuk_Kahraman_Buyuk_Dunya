@@ -264,15 +264,15 @@ public partial class ProfileManager : Control
 
         if (userId <= 0)
         {
-            ShowErrorPopup("Giriş yapmalısınız!");
+            ShowErrorPopup(Tr("PROFILE_LOGIN_REQUIRED"));
             return;
         }
 
         // ✅ ONAY DİALOGU
         var confirm = new ConfirmationDialog();
-        confirm.DialogText = "Devre dışı bıraktığınız TÜM soruları tekrar aktif etmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!";
-        confirm.Title = "TÜM SORULARI TEKRAR AKTİF ET";
-        confirm.OkButtonText = "EVET, HEPSİNİ AKTİF ET";
+        confirm.DialogText = Tr("PROFILE_REACTIVATE_CONFIRM").Replace("\\n", "\n");
+        confirm.Title = Tr("PROFILE_REACTIVATE_TITLE");
+        confirm.OkButtonText = Tr("PROFILE_REACTIVATE_OK");
         confirm.CancelButtonText = "HAYIR";
 
         confirm.Confirmed += () =>
@@ -282,7 +282,7 @@ public partial class ProfileManager : Control
 
             if (success)
             {
-                ShowMessage("Tüm sorular tekrar aktif edildi!", Colors.Green);
+                ShowMessage(Tr("PROFILE_REACTIVATE_SUCCESS"), Colors.Green);
 
                 // ✅ Listeyi yenile
                 if (mathQuestionsEnabled)
@@ -292,7 +292,7 @@ public partial class ProfileManager : Control
             }
             else
             {
-                ShowErrorPopup("Hiç devre dışı soru bulunamadı!");
+                ShowErrorPopup(Tr("PROFILE_NO_DISABLED_QUESTIONS"));
             }
 
             confirm.QueueFree();
@@ -421,7 +421,7 @@ public partial class ProfileManager : Control
 
         if (selectedIndex < 0)
         {
-            ShowMessage("Lütfen bir soru seçin!", Colors.Orange);
+            ShowMessage(Tr("PROFILE_SELECT_QUESTION"), Colors.Orange);
             return;
         }
 
@@ -433,14 +433,14 @@ public partial class ProfileManager : Control
 
         if (activeQuestionCount <= MINIMUM_QUESTIONS_PER_DIFFICULTY)
         {
-            ShowErrorPopup($"Bu zorluk seviyesinde en az {MINIMUM_QUESTIONS_PER_DIFFICULTY} soru kalmalı!\n\nŞu an: {activeQuestionCount} aktif soru var.");
+            ShowErrorPopup(string.Format(Tr("PROFILE_MIN_QUESTIONS_FORMAT").Replace("\\n", "\n"), MINIMUM_QUESTIONS_PER_DIFFICULTY, activeQuestionCount));
             return;
         }
 
         var confirm = new ConfirmationDialog();
-        confirm.DialogText = $"Bu soruyu devre dışı bırakmak istediğinize emin misiniz?\n\n\"{questionText}\"\n\nKalan aktif soru sayısı: {activeQuestionCount - 1}";
-        confirm.Title = "SORU DEVRE DIŞI BIRAKMA";
-        confirm.OkButtonText = "EVET, DEVRE DIŞI BIRAK";
+        confirm.DialogText = string.Format(Tr("PROFILE_DISABLE_CONFIRM_FORMAT").Replace("\\n", "\n"), questionText, activeQuestionCount - 1);
+        confirm.Title = Tr("PROFILE_DISABLE_TITLE");
+        confirm.OkButtonText = Tr("PROFILE_DISABLE_OK");
         confirm.CancelButtonText = "HAYIR";
 
         confirm.Confirmed += () =>
@@ -449,12 +449,12 @@ public partial class ProfileManager : Control
 
             if (Database.DisableQuestionForUser(userId, questionId))
             {
-                ShowMessage("Soru başarıyla devre dışı bırakıldı!", Colors.Green);
+                ShowMessage(Tr("PROFILE_DISABLE_SUCCESS"), Colors.Green);
                 LoadQuestionsForRemove();
             }
             else
             {
-                ShowMessage("Soru devre dışı bırakılamadı!", Colors.Red);
+                ShowMessage(Tr("PROFILE_DISABLE_FAILED"), Colors.Red);
             }
 
             confirm.QueueFree();
@@ -483,7 +483,7 @@ public partial class ProfileManager : Control
 
         if (string.IsNullOrEmpty(question))
         {
-            ShowErrorPopup("Soru boş olamaz!");
+            ShowErrorPopup(Tr("PROFILE_QUESTION_EMPTY"));
             return;
         }
 
@@ -491,12 +491,12 @@ public partial class ProfileManager : Control
 
         if (userId <= 0)
         {
-            ShowErrorPopup("Soru eklemek için giriş yapmalısınız!");
+            ShowErrorPopup(Tr("PROFILE_ADD_LOGIN_REQUIRED"));
             return;
         }
 
         var confirm = new ConfirmationDialog();
-        confirm.DialogText = $"Bu soru TÜM KULLANICILAR için eklenecek!\n\nSoru: {question}\nZorluk: {difficulty}\n\nCevap otomatik hesaplanacak. Emin misiniz?";
+        confirm.DialogText = string.Format(Tr("PROFILE_ADD_CONFIRM_FORMAT").Replace("\\n", "\n"), question, difficulty);
         confirm.Title = "SORU EKLEME";
         confirm.OkButtonText = "EVET, EKLE";
         confirm.CancelButtonText = "HAYIR";
@@ -507,13 +507,13 @@ public partial class ProfileManager : Control
 
             if (success)
             {
-                ShowMessage("Soru başarıyla eklendi!", Colors.Green);
+                ShowMessage(Tr("PROFILE_ADD_SUCCESS"), Colors.Green);
                 addQuestionInput.Text = "";
                 LoadQuestionsForRemove();
             }
             else
             {
-                ShowErrorPopup("Soru eklenemedi! Lütfen konsolu kontrol edin.");
+                ShowErrorPopup(Tr("PROFILE_ADD_FAILED"));
             }
 
             confirm.QueueFree();
@@ -533,7 +533,7 @@ public partial class ProfileManager : Control
     {
         var errorDialog = new AcceptDialog();
         errorDialog.DialogText = message;
-        errorDialog.Title = "❌ HATA";
+        errorDialog.Title = Tr("PROFILE_ERROR_TITLE");
         errorDialog.OkButtonText = "TAMAM";
         errorDialog.Size = new Vector2I(500, 150);
 
@@ -611,7 +611,7 @@ public partial class ProfileManager : Control
 
         if (userId > 0 && profile.IsLoggedIn)
         {
-            currentProfileLabel.Text = $"Aktif Profil: {profile.CurrentUserName}";
+            currentProfileLabel.Text = string.Format(Tr("PROFILE_ACTIVE_PROFILE_FORMAT"), profile.CurrentUserName);
             usernameInput.Editable = false;
             passwordInput.Editable = false;
             loginButton.Disabled = true;
@@ -622,7 +622,7 @@ public partial class ProfileManager : Control
         }
         else
         {
-            currentProfileLabel.Text = "Aktif Profil: Misafir";
+            currentProfileLabel.Text = Tr("PROFILE_ACTIVE_GUEST_FULL");
             usernameInput.Editable = true;
             passwordInput.Editable = true;
             loginButton.Disabled = false;
@@ -640,7 +640,7 @@ public partial class ProfileManager : Control
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            ShowMessage("Kullanıcı adı ve şifre boş olamaz!", Colors.Red);
+            ShowMessage(Tr("PROFILE_EMPTY_CREDENTIALS"), Colors.Red);
             return;
         }
 
@@ -648,7 +648,7 @@ public partial class ProfileManager : Control
 
         if (userData == null)
         {
-            ShowMessage("Kullanıcı bulunamadı!", Colors.Red);
+            ShowMessage(Tr("PROFILE_USER_NOT_FOUND"), Colors.Red);
             return;
         }
 
@@ -656,7 +656,7 @@ public partial class ProfileManager : Control
 
         if (storedPassword != password)
         {
-            ShowMessage("Şifre hatalı!", Colors.Red);
+            ShowMessage(Tr("PROFILE_WRONG_PASSWORD"), Colors.Red);
             return;
         }
 
@@ -668,7 +668,7 @@ public partial class ProfileManager : Control
         SaveGame.Instance.SetCurrentUserId(userId);
         UserProfile.Instance.Login(username, password);
 
-        ShowMessage($"Hoş geldin, {username}!", Colors.Green);
+        ShowMessage(string.Format(Tr("PROFILE_WELCOME_FORMAT"), username), Colors.Green);
         UpdateUI();
         ClearInputs();
 
@@ -691,13 +691,13 @@ public partial class ProfileManager : Control
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            ShowMessage("Kullanıcı adı ve şifre boş olamaz!", Colors.Red);
+            ShowMessage(Tr("PROFILE_EMPTY_CREDENTIALS"), Colors.Red);
             return;
         }
 
         if (password.Length < 4)
         {
-            ShowMessage("Şifre en az 4 karakter olmalı!", Colors.Orange);
+            ShowMessage(Tr("PROFILE_PASSWORD_TOO_SHORT"), Colors.Orange);
             return;
         }
 
@@ -705,7 +705,7 @@ public partial class ProfileManager : Control
 
         if (newUserId <= 0)
         {
-            ShowMessage("Bu kullanıcı adı zaten kullanılıyor!", Colors.Red);
+            ShowMessage(Tr("PROFILE_USERNAME_TAKEN"), Colors.Red);
             return;
         }
 
@@ -714,7 +714,7 @@ public partial class ProfileManager : Control
         SaveGame.Instance.SetCurrentUserId(newUserId);
         UserProfile.Instance.CreateAccount(username, password);
 
-        ShowMessage($"Hesap oluşturuldu! Hoş geldin, {username}!", Colors.Green);
+        ShowMessage(string.Format(Tr("PROFILE_ACCOUNT_CREATED_FORMAT"), username), Colors.Green);
         UpdateUI();
         ClearInputs();
 
@@ -737,7 +737,7 @@ public partial class ProfileManager : Control
         SaveGame.Instance.ClearCurrentUserId();
         UserProfile.Instance.Logout();
 
-        ShowMessage("Çıkış yapıldı!", Colors.Yellow);
+        ShowMessage(Tr("PROFILE_LOGGED_OUT"), Colors.Yellow);
         UpdateUI();
         ClearInputs();
 

@@ -20,6 +20,8 @@ public partial class PointsWood : Area2D
 
         // Collision sinyali
         BodyEntered += OnBodyEntered;
+
+        AddToGroup("points");
     }
 
     private void OnBodyEntered(Node2D body)
@@ -35,8 +37,23 @@ public partial class PointsWood : Area2D
             // Toplama efekti (opsiyonel)
             // PlayPickupEffect();
 
-            QueueFree();
+            CallDeferred("queue_free");
         }
+    }
+    public void Collect(Player_controller player)
+    {
+        if (player.HasMethod("AddWood"))
+        {
+            player.Call("AddWood", pointValue);
+        }
+
+        CallDeferred("queue_free");
+    }
+
+
+    public void CollectByDrone(Player_controller player)
+    {
+        Collect(player);
     }
 
     public override void _Process(double delta)

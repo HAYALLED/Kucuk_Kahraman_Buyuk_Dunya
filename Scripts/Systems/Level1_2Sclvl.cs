@@ -99,24 +99,11 @@ public partial class Level1_2Sclvl : Area2D
 
         try
         {
-            // Kostüm
-            if (body.HasMethod("GetCurrentCostumeIndex"))
+            if (body.HasMethod("GetCostumeHealthSaveData"))
             {
-                int costumeIndex = (int)body.Call("GetCurrentCostumeIndex");
-                root.SetMeta("SavedCostume", costumeIndex);
-                GD.Print($"[SECRET] 💾 Kostüm kaydedildi: {costumeIndex}");
-            }
-
-            // Can
-            if (body.HasMethod("GetCurrentHealth"))
-            {
-                int currentHealth = (int)body.Call("GetCurrentHealth");
-                int maxHealth = (int)body.Get("MaxHealth");
-
-                root.SetMeta("SavedHealth", currentHealth);
-                root.SetMeta("SavedMaxHealth", maxHealth);
-
-                GD.Print($"[SECRET] 💾 Can kaydedildi: {currentHealth}/{maxHealth}");
+                var data = (Godot.Collections.Dictionary)body.Call("GetCostumeHealthSaveData");
+                root.SetMeta("SavedCostumeHealthData", data);
+                GD.Print("[SECRET] 💾 Tüm kostümlerin canı kaydedildi!");
             }
         }
         catch (Exception e)

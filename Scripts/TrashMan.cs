@@ -22,6 +22,7 @@ public partial class TrashMan : CharacterBody2D
     private bool isStunned = false;
     private float stunTimer = 0;
     private float originalSpeed;
+    private int bonusDamage = 0; // TrashKingEvent
     // Node'lar
     private AnimatedSprite2D animatedSprite;
     private Area2D attackCollision;
@@ -130,6 +131,8 @@ public partial class TrashMan : CharacterBody2D
         Move(delta);
     }
     // Yeni fonksiyonlar ekle
+    public void AddBonusDamage(int amount) { bonusDamage = Mathf.Max(0, bonusDamage + amount); }
+
     public void ApplyStun(float duration)
     {
         isStunned = true;
@@ -255,7 +258,7 @@ public partial class TrashMan : CharacterBody2D
         {
             if (body.HasMethod("TakeDamage"))
             {
-                body.Call("TakeDamage", 1);
+                body.Call("TakeDamage", 1 + bonusDamage);
             }
         }
     }

@@ -121,39 +121,19 @@ public partial class Level3 : Node2D
 
         try
         {
-            if (root.HasMeta("SavedHealth"))
+            if (root.HasMeta("SavedCostumeHealthData"))
             {
-                int health = (int)root.GetMeta("SavedHealth");
-                int maxHealth = (int)root.GetMeta("SavedMaxHealth");
-
-                player.MaxHealth = maxHealth;
-
-                int diff = health - player.GetCurrentHealth();
-                if (diff > 0) player.Heal(diff);
-                else if (diff < 0) player.TakeDamage(-diff);
-
-                player.UpdateHealthUI();
-
-                root.RemoveMeta("SavedHealth");
-                root.RemoveMeta("SavedMaxHealth");
-            }
-
-            if (root.HasMeta("SavedCostume"))
-            {
-                int costumeIndex = (int)root.GetMeta("SavedCostume");
+                var data = (Godot.Collections.Dictionary)root.GetMeta("SavedCostumeHealthData");
                 Callable.From(() =>
                 {
                     if (player != null && IsInstanceValid(player))
-                        player.Call("RestoreCostume", costumeIndex);
+                    {
+                        player.RestoreCostumeHealthSaveData(data);
+                        player.UpdateHealthUI();
+                    }
                 }).CallDeferred();
-                root.RemoveMeta("SavedCostume");
+                root.RemoveMeta("SavedCostumeHealthData");
             }
-
-            Callable.From(() =>
-            {
-                if (player != null && IsInstanceValid(player))
-                    player.UpdateHealthUI();
-            }).CallDeferred();
         }
         catch (Exception e)
         {
@@ -210,7 +190,7 @@ public partial class Level3 : Node2D
 
         if (currentLevelScore >= MinimumScore)
         {
-            ShowMessage($"Harika! {MinimumScore} puana ulaştınız!", Colors.Green);
+            ShowMessage(string.Format(Tr("LEVEL_MILESTONE_FORMAT"), MinimumScore), Colors.Green);
             GetTree().CreateTimer(3.0).Timeout += LevelPassed;
         }
     }
@@ -221,13 +201,13 @@ public partial class Level3 : Node2D
 
         if (currentLevelScore >= MinimumScore)
         {
-            ShowMessage($"Tebrikler! {currentLevelScore} puan topladın!\n(Hedef: {MinimumScore})", Colors.Green);
+            ShowMessage(string.Format(Tr("LEVEL_COLLECTED_FORMAT").Replace("\\n", "\n"), currentLevelScore, MinimumScore), Colors.Green);
             GetTree().CreateTimer(3.0).Timeout += LevelPassed;
         }
         else
         {
             int missing = MinimumScore - currentLevelScore;
-            ShowMessage($"Toplam Puan: {currentLevelScore}/{MinimumScore}\nEksik: {missing} puan!", Colors.Yellow);
+            ShowMessage(string.Format(Tr("LEVEL_TOTAL_MISSING_FORMAT").Replace("\\n", "\n"), currentLevelScore, MinimumScore, missing), Colors.Yellow);
         }
     }
 
@@ -240,7 +220,7 @@ public partial class Level3 : Node2D
         SaveGame.Instance.MarkLevelCompleted("level_3");
         currentLevelScore = 0;
 
-        ShowMessage("TEBRİKLER! Level 3 geçildi!", Colors.Green);
+        ShowMessage(Tr("LEVEL3_COMPLETE"), Colors.Green);
 
         GetTree().CreateTimer(3.0).Timeout += () =>
         {
@@ -268,7 +248,7 @@ public partial class Level3 : Node2D
     private void LevelFailed()
     {
         int remaining = MinimumScore - currentLevelScore;
-        ShowMessage($"Yetersiz! Daha {remaining} puan gerekli.", Colors.Orange);
+        ShowMessage(string.Format(Tr("LEVEL_INSUFFICIENT_FORMAT"), remaining), Colors.Orange);
     }
 
     private async void ShowMessage(string text, Color color)

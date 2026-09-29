@@ -6,6 +6,7 @@ public partial class Settings : Control
     private CheckBox fullscreenCheck;
     private OptionButton resolutionOption;
     private CheckBox vsyncCheck;
+    private OptionButton languageOption;
 
     // Ses
     private HSlider masterSlider;
@@ -27,6 +28,7 @@ public partial class Settings : Control
         // ===== EKRAN =====
         fullscreenCheck = GetNode<CheckBox>("MarginContainer/VBoxContainer/TabContainer/Ekran/VBoxContainer/FullscreenCheck");
         resolutionOption = GetNode<OptionButton>("MarginContainer/VBoxContainer/TabContainer/Ekran/VBoxContainer/HBoxContainer/ResolutionOption");
+        languageOption = GetNode<OptionButton>("MarginContainer/VBoxContainer/TabContainer/Ekran/VBoxContainer/HBoxContainer/LanguageOption");
         vsyncCheck = GetNode<CheckBox>("MarginContainer/VBoxContainer/TabContainer/Ekran/VBoxContainer/VSyncCheck");
 
         // ===== SES =====
@@ -87,15 +89,26 @@ public partial class Settings : Control
 
     private void InitializeOptions()
     {
-        // Çözünürlükler
+        // Çözünürlükler (dile bağlı değil)
         resolutionOption.AddItem("1280x720");
         resolutionOption.AddItem("1920x1080");
         resolutionOption.AddItem("2560x1440");
 
+        // Diller (kendi öz adlarıyla gösterilir, çevrilmez)
+        languageOption.AddItem("Türkçe");
+        languageOption.AddItem("English");
+
         // Zorluklar
-        difficultyOption.AddItem("Kolay");
-        difficultyOption.AddItem("Orta");
-        difficultyOption.AddItem("Zor");
+        difficultyOption.AddItem(Tr("DIFFICULTY_EASY"));
+        difficultyOption.AddItem(Tr("DIFFICULTY_MEDIUM"));
+        difficultyOption.AddItem(Tr("DIFFICULTY_HARD"));
+    }
+
+    private void RefreshLocalizedOptionTexts()
+    {
+        difficultyOption.SetItemText(0, Tr("DIFFICULTY_EASY"));
+        difficultyOption.SetItemText(1, Tr("DIFFICULTY_MEDIUM"));
+        difficultyOption.SetItemText(2, Tr("DIFFICULTY_HARD"));
     }
 
     private void LoadCurrentSettings()
@@ -122,6 +135,8 @@ public partial class Settings : Control
         else
             resolutionOption.Selected = 1; // Default: 1920x1080
 
+        languageOption.Selected = profile.Language == "en" ? 1 : 0;
+
         // Ses
         masterSlider.Value = profile.MasterVolume;
         musicSlider.Value = profile.MusicVolume;
@@ -143,6 +158,7 @@ public partial class Settings : Control
     {
         fullscreenCheck.Toggled += OnFullscreenToggled;
         resolutionOption.ItemSelected += OnResolutionSelected;
+        languageOption.ItemSelected += OnLanguageSelected;
         vsyncCheck.Toggled += OnVSyncToggled;
 
         masterSlider.ValueChanged += OnMasterVolumeChanged;
@@ -195,6 +211,31 @@ public partial class Settings : Control
         UserProfile.Instance.Resolution = resolution;
         UserProfile.Instance.ApplyDisplaySettings();
         UserProfile.Instance.SaveSettings();
+    }
+
+    private void OnLanguageSelected(long index)
+    {
+        // ✅ İlk yüklemede tetiklenme - göz ardı et
+        if (_isInitializing)
+        {
+            GD.Print("[SETTINGS] ⚠️ Language signal - ilk yükleme, göz ardı edildi");
+            return;
+        }
+
+        string locale = index switch
+        {
+            0 => "tr",
+            1 => "en",
+            _ => "tr"
+        };
+
+        GD.Print($"[SETTINGS] 🌐 Dil değiştirildi: {locale}");
+
+        UserProfile.Instance.Language = locale;
+        UserProfile.Instance.ApplyLanguageSettings();
+        UserProfile.Instance.SaveSettings();
+
+        RefreshLocalizedOptionTexts();
     }
 
     private void OnVSyncToggled(bool pressed)
@@ -272,10 +313,10 @@ public partial class Settings : Control
     private void OnResetPressed()
     {
         var confirm = new ConfirmationDialog();
-        confirm.DialogText = "Tüm ilerleme sıfırlanacak! Emin misiniz?";
-        confirm.Title = "ONAY";
-        confirm.OkButtonText = "EVET, SIFIRLA";
-        confirm.CancelButtonText = "HAYIR";
+        confirm.DialogText = Tr("SETTINGS_RESET_CONFIRM_TEXT");
+        confirm.Title = Tr("SETTINGS_RESET_CONFIRM_TITLE");
+        confirm.OkButtonText = Tr("SETTINGS_RESET_OK");
+        confirm.CancelButtonText = Tr("SETTINGS_RESET_CANCEL");
 
         confirm.Confirmed += () =>
         {

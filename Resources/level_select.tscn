@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://qbsun2idmkvn"]
+[gd_scene format=3 uid="uid://qbsun2idmkvn"]
 
 [ext_resource type="Script" uid="uid://dd8xbnaukvrny" path="res://Scripts/Systems/LevelSelect.cs" id="1_vcx8e"]
 [ext_resource type="Texture2D" uid="uid://cx1hkmbfdcvp8" path="res://Sprites/background.png" id="2_g2u2b"]
@@ -21,7 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://b60llasdkdo22" path="res://Sprites/Level_layout-press_cleared3.png" id="16_disqu"]
 [ext_resource type="Texture2D" uid="uid://b2424qlqkxk8b" path="res://Sprites/Level_layout-hover_notcleared3.png" id="16_x8o2c"]
 
-[node name="LevelSelect" type="Control"]
+[node name="LevelSelect" type="Control" unique_id=898541047]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -47,21 +47,22 @@ Level3NormalClicked = ExtResource("15_hu31b")
 Level3CompletedIdle = ExtResource("15_x8o2c")
 Level3CompletedClicked = ExtResource("16_disqu")
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1002155903]
 layout_mode = 0
 offset_right = 1080.0
 offset_bottom = 640.0
 texture = ExtResource("2_g2u2b")
 
-[node name="TextureRect2" type="TextureRect" parent="."]
+[node name="TextureRect2" type="NinePatchRect" parent="." unique_id=987199620]
 layout_mode = 0
 offset_left = 144.0
 offset_top = 99.0
 offset_right = 944.0
 offset_bottom = 499.0
 texture = ExtResource("3_7gfbu")
+region_rect = Rect2(1.6399727, 0.8938246, 60.954235, 62.307575)
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=2024230493]
 layout_mode = 0
 offset_left = 213.0
 offset_top = -8.0
@@ -69,9 +70,9 @@ offset_right = 892.0
 offset_bottom = 129.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 100
-text = "LEVEL SEÇİNİZ"
+text = "LEVEL_SELECT_TITLE"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=113744374]
 custom_minimum_size = Vector2(80, 10)
 layout_mode = 0
 offset_left = 150.0
@@ -80,28 +81,28 @@ offset_right = 403.33334
 offset_bottom = 236.0
 scale = Vector2(3, 3)
 
-[node name="level1Button" type="TextureButton" parent="HBoxContainer"]
+[node name="level1Button" type="TextureButton" parent="HBoxContainer" unique_id=1045329119]
 layout_mode = 2
 texture_normal = ExtResource("2_sr74g")
 texture_pressed = ExtResource("3_a28yo")
 texture_hover = ExtResource("4_wfao6")
 
-[node name="level2Button" type="TextureButton" parent="HBoxContainer"]
+[node name="level2Button" type="TextureButton" parent="HBoxContainer" unique_id=181146753]
 layout_mode = 2
 texture_normal = ExtResource("5_5dlir")
 texture_pressed = ExtResource("6_g2u2b")
 texture_hover = ExtResource("7_4ducj")
 
-[node name="level3Button" type="TextureButton" parent="HBoxContainer"]
+[node name="level3Button" type="TextureButton" parent="HBoxContainer" unique_id=655125599]
 layout_mode = 2
 texture_normal = ExtResource("14_b1spy")
 texture_pressed = ExtResource("15_hu31b")
 texture_hover = ExtResource("16_x8o2c")
 
-[node name="level4Button" type="TextureButton" parent="HBoxContainer"]
+[node name="level4Button" type="TextureButton" parent="HBoxContainer" unique_id=1357818238]
 layout_mode = 2
 
-[node name="BackButton" type="TextureButton" parent="."]
+[node name="BackButton" type="TextureButton" parent="." unique_id=1018704749]
 layout_mode = 0
 offset_top = 4.0
 offset_right = 40.0
@@ -109,7 +110,7 @@ offset_bottom = 44.0
 scale = Vector2(5, 5)
 texture_normal = ExtResource("10_4mnfr")
 
-[node name="tutorialButton" type="TextureButton" parent="."]
+[node name="tutorialButton" type="TextureButton" parent="." unique_id=1418188432]
 layout_mode = 0
 offset_left = 780.0
 offset_top = 351.0

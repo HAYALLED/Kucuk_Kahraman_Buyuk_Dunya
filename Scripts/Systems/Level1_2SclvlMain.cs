@@ -106,38 +106,19 @@ public partial class Level1_2SclvlMain : Node2D
 
         try
         {
-            // ✅ Can restore et
-            if (root.HasMeta("SavedHealth"))
-            {
-                int health = (int)root.GetMeta("SavedHealth");
-                int maxHealth = (int)root.GetMeta("SavedMaxHealth");
-
-                player.Set("MaxHealth", maxHealth);
-
-                int currentHealth = (int)player.Call("GetCurrentHealth");
-                int diff = health - currentHealth;
-
-                if (diff > 0)
-                    player.Call("Heal", diff);
-                else if (diff < 0)
-                    player.Call("TakeDamage", -diff);
-
-                GD.Print($"[SECRET LEVEL] 🔄 Can geri yüklendi: {health}/{maxHealth}");
-            }
-
             // ✅ 2 frame bekle - collision'lar tamamen hazır olsun
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 
-            // ✅ Kostüm restore - ARTIK GÜVENLİ!
-            if (root.HasMeta("SavedCostume"))
+            // ✅ Tüm kostümlerin canı + aktif kostüm - TEK PAKET, GÜVENLİ!
+            if (root.HasMeta("SavedCostumeHealthData"))
             {
-                int costumeIndex = (int)root.GetMeta("SavedCostume");
+                var data = (Godot.Collections.Dictionary)root.GetMeta("SavedCostumeHealthData");
 
                 if (player != null && IsInstanceValid(player))
                 {
-                    player.Call("RestoreCostume", costumeIndex);
-                    GD.Print($"[SECRET LEVEL] ✅ Kostüm geri yüklendi: {costumeIndex}");
+                    player.Call("RestoreCostumeHealthSaveData", data);
+                    GD.Print("[SECRET LEVEL] 🔄 Tüm kostümlerin canı geri yüklendi!");
                 }
             }
 
@@ -224,24 +205,11 @@ public partial class Level1_2SclvlMain : Node2D
 
         try
         {
-            // Kostüm
-            if (player.HasMethod("GetCurrentCostumeIndex"))
+            if (player.HasMethod("GetCostumeHealthSaveData"))
             {
-                int costumeIndex = (int)player.Call("GetCurrentCostumeIndex");
-                root.SetMeta("SavedCostume", costumeIndex);
-                GD.Print($"[SECRET LEVEL] 💾 Kostüm kaydedildi: {costumeIndex}");
-            }
-
-            // Can
-            if (player.HasMethod("GetCurrentHealth"))
-            {
-                int currentHealth = (int)player.Call("GetCurrentHealth");
-                int maxHealth = (int)player.Get("MaxHealth");
-
-                root.SetMeta("SavedHealth", currentHealth);
-                root.SetMeta("SavedMaxHealth", maxHealth);
-
-                GD.Print($"[SECRET LEVEL] 💾 Can kaydedildi: {currentHealth}/{maxHealth}");
+                var data = (Godot.Collections.Dictionary)player.Call("GetCostumeHealthSaveData");
+                root.SetMeta("SavedCostumeHealthData", data);
+                GD.Print("[SECRET LEVEL] 💾 Tüm kostümlerin canı kaydedildi!");
             }
         }
         catch (Exception e)

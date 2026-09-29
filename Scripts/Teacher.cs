@@ -8,7 +8,7 @@ public partial class Teacher : Area2D
     [ExportGroup("Minigame Ayarları")]
     [Export] public int QuestionCount = 2;
     [Export] public float TimeLimit = 30f;
-    [Export] public string Difficulty = "";
+    [Export] public string Difficulty = "Orta";
 
     [ExportGroup("Puan Ayarları")]
     [Export] public int PointsPerCorrect = 10;
@@ -20,6 +20,10 @@ public partial class Teacher : Area2D
 
     public override void _Ready()
     {
+        // ✅ HER ZAMAN UserProfile'dan zorluğu al!
+        Difficulty = UserProfile.Instance.Difficulty;
+        GD.Print($"[TEACHER] 🎓 Zorluk: {Difficulty}");
+
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
 
@@ -64,37 +68,40 @@ public partial class Teacher : Area2D
 
     private void StartMinigame()
     {
-        if (MathMinigameScene == null) return;
+        if (MathMinigameScene == null)
+        {
+            GD.PrintErr("[TEACHER] MathMinigameScene atanmamış!");
+            return;
+        }
 
         var minigame = MathMinigameScene.Instantiate<MathMinigame>();
         minigame.QuestionCount = QuestionCount;
         minigame.TimeLimit = TimeLimit;
         minigame.Difficulty = Difficulty;
         minigame.GameType = MathMinigame.MinigameType.Teacher;
-
-        // Callback - sonuç gelince puan ver
         minigame.OnMinigameComplete = OnMinigameResult;
 
         GetTree().CurrentScene.AddChild(minigame);
-        GetTree().CallDeferred("set_pause", true);
+        GetTree().Paused = true;
         minigame.ProcessMode = ProcessModeEnum.Always;
+
+        GD.Print($"[TEACHER] 📚 Minigame başlatıldı - Zorluk: {Difficulty}");
     }
 
     private void OnMinigameResult(int correct, int wrong, int total)
     {
         int points = (correct * PointsPerCorrect) + (wrong * PointsPerWrong);
 
-        // ✅ BASIT ÇÖZÜM: Player'ın UpdateTeacherScore'unu çağır (AddMetal gibi!)
         if (player != null && player.HasMethod("UpdateTeacherScore"))
         {
             player.Call("UpdateTeacherScore", points);
-            GD.Print($"[TEACHER] ✅ Player.UpdateTeacherScore çağrıldı: {points} puan");
-        }
-        else
-        {
-            GD.PrintErr("[TEACHER] ❌ Player'da UpdateTeacherScore metodu yok!");
+            GD.Print($"[TEACHER] ✅ {points} puan verildi!");
         }
 
         GD.Print($"[TEACHER] Sonuç: {correct} doğru, {wrong} yanlış = {points} puan");
+
+        // ✅ MINIGAME BİTTİ, TEACHER NPC'Yİ SİL!
+        QueueFree();
+        GD.Print("[TEACHER] 👋 Teacher NPC yok oldu!");
     }
 }

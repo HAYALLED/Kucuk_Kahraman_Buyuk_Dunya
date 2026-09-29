@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://wuunacymi6aw"]
+[gd_scene load_steps=40 format=3 uid="uid://wuunacymi6aw"]
 
 [ext_resource type="Script" uid="uid://32u375cye4t8" path="res://Scripts/RecyclingMinigame.cs" id="1_b1r3m"]
 [ext_resource type="Texture2D" uid="uid://bn6bdvjn8ulkr" path="res://Sprites/points-metal.png" id="2_t5g6x"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://f1olb7ga54tx" path="res://Assets/Scenes/metal_recycle_bin.tscn" id="6_fqkwl"]
 [ext_resource type="Texture2D" uid="uid://ilwvsli3u2mm" path="res://Sprites/points-wood.png" id="6_xa0pp"]
 [ext_resource type="PackedScene" uid="uid://dcsw3wpkudxyy" path="res://Assets/Scenes/plastic_recycle_bin.tscn" id="7_0wnd6"]
+[ext_resource type="Texture2D" uid="uid://o3tlduoy50q5" path="res://Sprites/scores-scoreboard_background.png" id="8_panel"]
 
 [sub_resource type="Theme" id="Theme_ixcaq"]
 
@@ -21,9 +22,105 @@ texture = ExtResource("2_vpwel")
 texture_margin_right = 1.0
 expand_margin_bottom = 100.0
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_metal_0"]
+atlas = ExtResource("2_t5g6x")
+region = Rect2(2, 2, 11, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_metal_1"]
+atlas = ExtResource("2_t5g6x")
+region = Rect2(18, 2, 11, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_metal_2"]
+atlas = ExtResource("2_t5g6x")
+region = Rect2(34, 2, 11, 11)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_metal_3"]
+atlas = ExtResource("2_t5g6x")
+region = Rect2(51, 2, 9, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_metal_4"]
+atlas = ExtResource("2_t5g6x")
+region = Rect2(67, 3, 8, 11)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_glass_0"]
+atlas = ExtResource("3_pvv8v")
+region = Rect2(3, 1, 9, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_glass_1"]
+atlas = ExtResource("3_pvv8v")
+region = Rect2(19, 1, 9, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_glass_2"]
+atlas = ExtResource("3_pvv8v")
+region = Rect2(34, 2, 11, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_glass_3"]
+atlas = ExtResource("3_pvv8v")
+region = Rect2(51, 3, 8, 11)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_plastic_0"]
+atlas = ExtResource("4_hx21l")
+region = Rect2(1, 0, 14, 15)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_plastic_1"]
+atlas = ExtResource("4_hx21l")
+region = Rect2(18, 0, 10, 15)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_plastic_2"]
+atlas = ExtResource("4_hx21l")
+region = Rect2(34, 0, 11, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_plastic_3"]
+atlas = ExtResource("4_hx21l")
+region = Rect2(50, 0, 12, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_plastic_4"]
+atlas = ExtResource("4_hx21l")
+region = Rect2(67, 3, 8, 11)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_plastic_5"]
+atlas = ExtResource("4_hx21l")
+region = Rect2(81, 0, 14, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_food_0"]
+atlas = ExtResource("5_fm1ah")
+region = Rect2(2, 3, 13, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_food_1"]
+atlas = ExtResource("5_fm1ah")
+region = Rect2(20, 2, 9, 11)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_food_2"]
+atlas = ExtResource("5_fm1ah")
+region = Rect2(35, 3, 9, 10)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_food_3"]
+atlas = ExtResource("5_fm1ah")
+region = Rect2(50, 2, 10, 11)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wood_0"]
+atlas = ExtResource("6_xa0pp")
+region = Rect2(1, 1, 14, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wood_1"]
+atlas = ExtResource("6_xa0pp")
+region = Rect2(19, 0, 10, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wood_2"]
+atlas = ExtResource("6_xa0pp")
+region = Rect2(35, 3, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wood_3"]
+atlas = ExtResource("6_xa0pp")
+region = Rect2(52, 2, 11, 11)
+
 [node name="RecyclingMinigame" type="CanvasLayer"]
 script = ExtResource("1_b1r3m")
-TrashTextures = [ExtResource("2_t5g6x"), ExtResource("3_pvv8v"), ExtResource("4_hx21l"), ExtResource("5_fm1ah"), ExtResource("6_xa0pp")]
+MetalVariants = [SubResource("AtlasTexture_metal_0"), SubResource("AtlasTexture_metal_1"), SubResource("AtlasTexture_metal_2"), SubResource("AtlasTexture_metal_3"), SubResource("AtlasTexture_metal_4")]
+GlassVariants = [SubResource("AtlasTexture_glass_0"), SubResource("AtlasTexture_glass_1"), SubResource("AtlasTexture_glass_2"), SubResource("AtlasTexture_glass_3")]
+PlasticVariants = [SubResource("AtlasTexture_plastic_0"), SubResource("AtlasTexture_plastic_1"), SubResource("AtlasTexture_plastic_2"), SubResource("AtlasTexture_plastic_3"), SubResource("AtlasTexture_plastic_4"), SubResource("AtlasTexture_plastic_5")]
+OrganicVariants = [SubResource("AtlasTexture_food_0"), SubResource("AtlasTexture_food_1"), SubResource("AtlasTexture_food_2"), SubResource("AtlasTexture_food_3")]
+PaperVariants = [SubResource("AtlasTexture_wood_0"), SubResource("AtlasTexture_wood_1"), SubResource("AtlasTexture_wood_2"), SubResource("AtlasTexture_wood_3")]
 DraggableTrashScene = ExtResource("3_ypikl")
 
 [node name="GameArea" type="Control" parent="."]
@@ -32,87 +129,114 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="background" type="ColorRect" parent="GameArea"]
-layout_mode = 0
-offset_right = 540.0
-offset_bottom = 300.0
-color = Color(0.64941347, 0.9632396, 0.96877533, 1)
+[node name="PanelBackground" type="NinePatchRect" parent="GameArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_panel")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
 
-[node name="FuseBar" type="ProgressBar" parent="GameArea"]
+[node name="MainLayout" type="MarginContainer" parent="GameArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="GameArea/MainLayout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="GameArea/MainLayout/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "RECYCLE_TITLE"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CampaignLabel" type="Label" parent="GameArea/MainLayout/VBox"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.1, 1)
+horizontal_alignment = 1
+
+[node name="StatsRow" type="HBoxContainer" parent="GameArea/MainLayout/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ScoreLabel" type="Label" parent="GameArea/MainLayout/VBox/StatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 0
+
+[node name="CorrectLabel" type="Label" parent="GameArea/MainLayout/VBox/StatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.28235295, 0.8392157, 0.16862746, 1)
+horizontal_alignment = 1
+
+[node name="WrongLabel" type="Label" parent="GameArea/MainLayout/VBox/StatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.24705882, 0.18431373, 1)
+horizontal_alignment = 1
+
+[node name="TimeLabel" type="Label" parent="GameArea/MainLayout/VBox/StatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 2
+
+[node name="FuseBar" type="ProgressBar" parent="GameArea/MainLayout/VBox"]
 modulate = Color(1, 0.3647059, 0.22745098, 0.7176471)
-layout_mode = 0
-offset_top = -1.0
-offset_right = 400.0
-offset_bottom = 29.0
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
 theme = SubResource("Theme_ixcaq")
 theme_override_colors/font_color = Color(0.9490196, 0.3019608, 0.9490196, 1)
 theme_override_styles/fill = SubResource("StyleBoxTexture_ih1ht")
 value = 100.0
 
-[node name="TrashSpawnPoint" type="Control" parent="GameArea"]
-anchors_preset = 0
-offset_left = 205.0
-offset_top = 51.0
-offset_right = 245.0
-offset_bottom = 91.0
-
-[node name="title" type="Label" parent="GameArea"]
-layout_mode = 0
-offset_left = 132.0
-offset_top = -27.0
-offset_right = 439.0
-offset_bottom = -4.0
-text = "HAYDİ ARKADAŞLAR ÇÖPLERİ AYIRALIM "
-
-[node name="ScoreLabel" type="Label" parent="GameArea"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 29.0
-offset_right = 134.0
-offset_bottom = 56.0
-text = "TOPLAM PUANIN = BLANK"
-
-[node name="CorrectLabel" type="Label" parent="GameArea"]
-layout_mode = 0
-offset_left = 407.0
-offset_top = 4.0
-offset_right = 536.0
-offset_bottom = 27.0
-theme_override_colors/font_color = Color(0.28235295, 0.8392157, 0.16862746, 1)
-text = "DOĞRU = BLANK"
-
-[node name="WrongLabel" type="Label" parent="GameArea"]
-layout_mode = 0
-offset_left = 408.0
-offset_top = 28.0
-offset_right = 533.0
-offset_bottom = 51.0
-theme_override_colors/font_color = Color(1, 0.24705882, 0.18431373, 1)
-text = "YANLIŞ = BLANK"
-
-[node name="BinsContainer" type="HBoxContainer" parent="GameArea"]
-custom_minimum_size = Vector2(25, 0)
-layout_mode = 0
-offset_top = 198.0
-offset_right = 600.0
-offset_bottom = 298.0
-
-[node name="FoodRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("3_tv68d")]
-custom_minimum_size = Vector2(100, 0)
+[node name="TrashSpawnArea" type="CenterContainer" parent="GameArea/MainLayout/VBox"]
+custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="WoodRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("4_ypikl")]
-custom_minimum_size = Vector2(100, 0)
+[node name="TrashSpawnPoint" type="Control" parent="GameArea/MainLayout/VBox/TrashSpawnArea"]
 layout_mode = 2
+custom_minimum_size = Vector2(80, 80)
 
-[node name="GlassRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("5_pmvdj")]
-custom_minimum_size = Vector2(100, 0)
+[node name="BinsContainer" type="HBoxContainer" parent="GameArea/MainLayout/VBox"]
+custom_minimum_size = Vector2(0, 190)
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
 
-[node name="MetalRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("6_fqkwl")]
-custom_minimum_size = Vector2(100, 0)
+[node name="FoodRecycleBin" parent="GameArea/MainLayout/VBox/BinsContainer" instance=ExtResource("3_tv68d")]
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="PlasticRecycleBin" parent="GameArea/BinsContainer" instance=ExtResource("7_0wnd6")]
-custom_minimum_size = Vector2(100, 0)
+[node name="WoodRecycleBin" parent="GameArea/MainLayout/VBox/BinsContainer" instance=ExtResource("4_ypikl")]
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GlassRecycleBin" parent="GameArea/MainLayout/VBox/BinsContainer" instance=ExtResource("5_pmvdj")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MetalRecycleBin" parent="GameArea/MainLayout/VBox/BinsContainer" instance=ExtResource("6_fqkwl")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlasticRecycleBin" parent="GameArea/MainLayout/VBox/BinsContainer" instance=ExtResource("7_0wnd6")]
+layout_mode = 2
+size_flags_horizontal = 3

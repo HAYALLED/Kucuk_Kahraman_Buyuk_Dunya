@@ -35,6 +35,7 @@ public partial class UserProfile : Node
     public bool IsFullscreen { get; set; } = false;
     public Vector2I Resolution { get; set; } = new Vector2I(1280, 720);
     public bool VSync { get; set; } = true;
+    public string Language { get; set; } = "tr";
 
     // ===== SES AYARLARI =====
     public float MasterVolume { get; set; } = 1.0f;
@@ -244,6 +245,7 @@ public partial class UserProfile : Node
             { "resolutionX", Resolution.X },
             { "resolutionY", Resolution.Y },
             { "vsync", VSync },
+            { "language", Language },
             { "masterVolume", MasterVolume },
             { "musicVolume", MusicVolume },
             { "sfxVolume", SFXVolume }
@@ -263,6 +265,7 @@ public partial class UserProfile : Node
         if (!FileAccess.FileExists(SETTINGS_PATH))
         {
             GD.Print("[PROFILE] Ayar dosyası bulunamadı, varsayılanlar kullanılıyor.");
+            ApplyLanguageSettings();
             return;
         }
 
@@ -284,12 +287,21 @@ public partial class UserProfile : Node
             Resolution = new Vector2I(resX, resY);
 
             VSync = settings.ContainsKey("vsync") ? (bool)settings["vsync"] : true;
+            Language = settings.ContainsKey("language") ? (string)settings["language"] : "tr";
             MasterVolume = settings.ContainsKey("masterVolume") ? (float)(double)settings["masterVolume"] : 1.0f;
             MusicVolume = settings.ContainsKey("musicVolume") ? (float)(double)settings["musicVolume"] : 0.8f;
             SFXVolume = settings.ContainsKey("sfxVolume") ? (float)(double)settings["sfxVolume"] : 1.0f;
 
+            ApplyLanguageSettings();
+
             GD.Print($"[PROFILE] Ayarlar yüklendi! Kullanıcı: {CurrentUserName}");
         }
+    }
+
+    public void ApplyLanguageSettings()
+    {
+        TranslationServer.SetLocale(Language);
+        GD.Print($"[PROFILE] 🌐 Dil uygulandı: {Language}");
     }
 
     public void ApplyDisplaySettings()

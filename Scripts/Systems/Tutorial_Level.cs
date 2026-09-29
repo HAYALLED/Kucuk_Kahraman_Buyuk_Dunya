@@ -10,6 +10,45 @@ public partial class Tutorial_Level : Node2D
     private Label messageLabel;
     private Player_controller player;
 
+    // ✅ Sabit (multi-line) tabela metinleri - CSV'de "\n" olarak kaçışlı,
+    // Godot'un otomatik çeviri sistemi bunu gerçek satır sonuna çeviremediği için
+    // burada elle Tr() + Replace ile çözülüyor.
+    private static readonly (string NodeName, string Key)[] SignLabels =
+    {
+        ("InteractionLabel", "TUTORIAL_LABEL_MOVE"),
+        ("InteractionLabel2", "TUTORIAL_LABEL_JUMP"),
+        ("InteractionLabel3", "TUTORIAL_LABEL_BAT_THROW"),
+        ("InteractionLabel4", "TUTORIAL_LABEL_BAT_RIGHTCLICK"),
+        ("InteractionLabel5", "TUTORIAL_LABEL_SPIDER_SWITCH"),
+        ("InteractionLabel6", "TUTORIAL_LABEL_SPIDER_SWING"),
+        ("InteractionLabel7", "TUTORIAL_LABEL_SUPER_FLY"),
+        ("InteractionLabel8", "TUTORIAL_LABEL_MAIN_GOAL"),
+        ("InteractionLabel9", "TUTORIAL_LABEL_COSTUME_PICKUP"),
+        ("InteractionLabel10", "TUTORIAL_LABEL_BUCKET_THROW"),
+        ("InteractionLabel11", "TUTORIAL_LABEL_SPEED_COSTUME"),
+        ("InteractionLabel12", "TUTORIAL_LABEL_FINAL"),
+        ("InteractionLabel13", "TUTORIAL_LABEL_SPIDER_STUN"),
+        ("InteractionLabel14", "TUTORIAL_LABEL_COSTUME_KEYS"),
+    };
+
+    private void RefreshSignLabels()
+    {
+        foreach (var (nodeName, key) in SignLabels)
+        {
+            var label = GetNodeOrNull<Label>(nodeName);
+            if (label != null)
+                label.Text = Tr(key).Replace("\\n", "\n");
+        }
+    }
+
+    public override void _Notification(int what)
+    {
+        base._Notification(what);
+
+        if (what == NotificationTranslationChanged)
+            RefreshSignLabels();
+    }
+
     public override void _Ready()
     {
         Database.Init();
@@ -25,6 +64,7 @@ public partial class Tutorial_Level : Node2D
         CreateMessageLabel();
         AddPauseMenu();
         CheckReturnFromSettings();
+        RefreshSignLabels();
 
         // ✅ TUTORIAL'DA SECRET LEVEL YOK!
         // GetSecretReturnPosition() ve SetPlayerSpawnPosition() kaldırıldı!
@@ -118,7 +158,7 @@ public partial class Tutorial_Level : Node2D
 
         if (currentLevelScore >= MinimumScore)
         {
-            ShowMessage($"Harika! {MinimumScore} puana ulaştınız!", Colors.Green);
+            ShowMessage(string.Format(Tr("LEVEL_MILESTONE_FORMAT"), MinimumScore), Colors.Green);
             GetTree().CreateTimer(3.0).Timeout += LevelPassed;
         }
     }
@@ -135,13 +175,13 @@ public partial class Tutorial_Level : Node2D
 
         if (currentLevelScore >= MinimumScore)
         {
-            ShowMessage($"Tebrikler! {currentLevelScore} puan topladın!\n(Hedef: {MinimumScore})", Colors.Green);
+            ShowMessage(string.Format(Tr("LEVEL_COLLECTED_FORMAT").Replace("\\n", "\n"), currentLevelScore, MinimumScore), Colors.Green);
             GetTree().CreateTimer(3.0).Timeout += LevelPassed;
         }
         else
         {
             int missing = MinimumScore - currentLevelScore;
-            ShowMessage($"Toplam Puan: {currentLevelScore}/{MinimumScore}\nEksik: {missing} puan!", Colors.Yellow);
+            ShowMessage(string.Format(Tr("LEVEL_TOTAL_MISSING_FORMAT").Replace("\\n", "\n"), currentLevelScore, MinimumScore, missing), Colors.Yellow);
         }
     }
 
@@ -156,7 +196,7 @@ public partial class Tutorial_Level : Node2D
         // ✅ TUTORIAL LEVEL COMPLETED!
         SaveGame.Instance.MarkLevelCompleted("tutorial");
 
-        ShowMessage($"TEBRİKLER! Tutorial tamamlandı!", Colors.Green);
+        ShowMessage(Tr("TUTORIAL_COMPLETE"), Colors.Green);
         GD.Print($"[TUTORIAL] ✅ TUTORIAL TAMAMLANDI VE KAYDEDİLDİ!");
 
         // ✅ FIX: Gereksiz if'ler kaldırıldı!

@@ -11,18 +11,31 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2sqg5")
-AcceptedTrashTypes = PackedInt32Array(0)
+AcceptedTrashTypes = PackedInt32Array(1)
 
-[node name="TextureRect" type="TextureRect" parent="."]
-layout_mode = 0
-offset_right = 60.0
-offset_bottom = 60.0
+[node name="CenterBox" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="CenterBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 4
+
+[node name="BinIcon" type="TextureRect" parent="CenterBox/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+custom_minimum_size = Vector2(110, 110)
 texture = ExtResource("1_j5453")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Label" type="Label" parent="."]
-layout_mode = 0
-offset_left = 1.0
-offset_top = 61.0
-offset_right = 52.0
-offset_bottom = 84.0
-text = "Glass"
+[node name="BinLabel" type="Label" parent="CenterBox/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+horizontal_alignment = 1
+text = "RECYCLE_TRASH_GLASS"

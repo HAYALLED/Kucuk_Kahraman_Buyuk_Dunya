@@ -3,7 +3,6 @@ using System;
 
 public partial class Level1 : Node2D
 {
-    [Export] public PackedScene RecyclingMinigameScene;
     [Export] public int MinimumScore = 100;
 
     private int currentLevelScore = 0;
@@ -14,6 +13,7 @@ public partial class Level1 : Node2D
     public override void _Ready()
     {
         Database.Init();
+        Database.InsertLevels(); // ✅ EKLE
         Database.InsertSampleMathQuestions();
 
         bool dbOk = Database.HealthCheck();
@@ -23,6 +23,10 @@ public partial class Level1 : Node2D
             GD.PrintErr("[DB] Veritabanı HATALI ❌");
 
         CreateMessageLabel();
+
+        AddPauseMenu();
+
+        CheckReturnFromSettings();
 
         Vector2? returnPos = GetSecretReturnPosition();
 
@@ -39,6 +43,38 @@ public partial class Level1 : Node2D
         GD.Print($"[LEVEL] Hedef: {MinimumScore} puan");
     }
 
+    private void CheckReturnFromSettings()
+    {
+        if (GetTree().Root.HasMeta("ReturnToPause"))
+        {
+            GD.Print("[LEVEL] 🔙 Settings'den geri dönüldü, pause açılıyor...");
+
+            // 0.1 saniye bekle (scene yüklensin)
+            GetTree().CreateTimer(0.1).Timeout += () =>
+            {
+                // Pause'u aç
+                GetTree().Paused = true;
+
+                // PauseMenu'yu göster
+                var pauseMenu = GetNodeOrNull<CanvasLayer>("PauseMenu");
+                if (pauseMenu != null)
+                {
+                    pauseMenu.Show();
+                }
+            };
+
+            // Meta'yı temizle (sadece ReturnToPause, PausedLevel Settings.cs'de temizlendi)
+            GetTree().Root.RemoveMeta("ReturnToPause");
+        }
+    }
+
+    private void AddPauseMenu()
+    {
+        var pauseScene = GD.Load<PackedScene>("res://Resources/PauseMenu.tscn");
+        var pauseMenu = pauseScene.Instantiate();
+        AddChild(pauseMenu);
+        GD.Print("[LEVEL] ✅ Pause menüsü eklendi!");
+    }
     private void RestorePlayerTrash()
     {
         var player = GetNodeOrNull<Player_controller>("Player");
@@ -94,61 +130,30 @@ public partial class Level1 : Node2D
 
         try
         {
-
-            // ✅ Can
-            if (root.HasMeta("SavedHealth"))
+            // ✅ Tüm kostümlerin canı + aktif kostüm - TEK PAKET
+            if (root.HasMeta("SavedCostumeHealthData"))
             {
-                int health = (int)root.GetMeta("SavedHealth");
-                int maxHealth = (int)root.GetMeta("SavedMaxHealth");
-
-                player.MaxHealth = maxHealth;
-
-                int currentHealth = player.GetCurrentHealth();
-                int diff = health - currentHealth;
-
-                if (diff > 0)
-                    player.Heal(diff);
-                else if (diff < 0)
-                    player.TakeDamage(-diff);
-
-                player.UpdateHealthUI();
-
-                GD.Print($"[LEVEL] 🔄 Can geri yüklendi: {health}/{maxHealth}");
-
-                root.RemoveMeta("SavedHealth");
-                root.RemoveMeta("SavedMaxHealth");
-            }
-            // ✅ Kostüm - Callable ile
-            if (root.HasMeta("SavedCostume"))
-            {
-                int costumeIndex = (int)root.GetMeta("SavedCostume");
+                var data = (Godot.Collections.Dictionary)root.GetMeta("SavedCostumeHealthData");
 
                 Callable.From(() =>
                 {
                     if (player != null && IsInstanceValid(player))
                     {
-                        player.Call("RestoreCostume", costumeIndex);
-                        GD.Print($"[LEVEL] 🔄 Kostüm geri yüklendi: {costumeIndex}");
+                        player.RestoreCostumeHealthSaveData(data);
+                        player.UpdateHealthUI();
+                        GD.Print("[LEVEL] 🔄 Tüm kostümlerin canı geri yüklendi!");
                     }
                 }).CallDeferred();
 
-                root.RemoveMeta("SavedCostume");
+                root.RemoveMeta("SavedCostumeHealthData");
             }
-
-            // ✅ UI
-            Callable.From(() =>
-            {
-                if (player != null && IsInstanceValid(player))
-                {
-                    player.UpdateHealthUI();
-                }
-            }).CallDeferred();
         }
         catch (Exception e)
         {
             GD.PrintErr($"[LEVEL] ❌ RestorePlayerState hatası: {e.Message}");
         }
     }
+
     private Vector2? GetSecretReturnPosition()
     {
         if (GetTree().Root.HasMeta("ReturnFromSecret"))
@@ -196,14 +201,6 @@ public partial class Level1 : Node2D
         }
     }
 
-    public override void _Process(double delta)
-    {
-        if (Input.IsActionJustPressed("special_ability") && !levelCompleted)
-        {
-            TryStartMinigame();
-        }
-    }
-
     private void CreateMessageLabel()
     {
         var uiLayer = new CanvasLayer();
@@ -232,8 +229,8 @@ public partial class Level1 : Node2D
 
         if (currentLevelScore >= MinimumScore)
         {
-            ShowMessage($"Harika! {MinimumScore} puana ulaştınız!", Colors.Green);
-            levelCompleted = true;
+            ShowMessage(string.Format(Tr("LEVEL_MILESTONE_FORMAT"), MinimumScore), Colors.Green);
+            GetTree().CreateTimer(3.0).Timeout += LevelPassed;
         }
     }
 
@@ -244,67 +241,13 @@ public partial class Level1 : Node2D
 
         if (currentLevelScore >= MinimumScore)
         {
-            ShowMessage($"Tebrikler! {currentLevelScore} puan topladın!\n(Hedef: {MinimumScore})", Colors.Green);
-            levelCompleted = true;
+            ShowMessage(string.Format(Tr("LEVEL_COLLECTED_FORMAT").Replace("\\n", "\n"), currentLevelScore, MinimumScore), Colors.Green);
+            GetTree().CreateTimer(3.0).Timeout += LevelPassed;
         }
         else
         {
             int missing = MinimumScore - currentLevelScore;
-            ShowMessage($"Toplam Puan: {currentLevelScore}/{MinimumScore}\nEksik: {missing} puan!", Colors.Yellow);
-        }
-    }
-
-    private void TryStartMinigame()
-    {
-        if (player == null)
-        {
-            GD.PrintErr("[LEVEL] Player bulunamadı!");
-            return;
-        }
-
-        if (player.TotalPoints == 0)
-        {
-            ShowMessage("Geri dönüşüm için çöpünüz yok! Önce çöp toplayın.", Colors.Red);
-            GD.Print("[LEVEL] ❌ Çöp yok!");
-            return;
-        }
-
-        StartMinigame();
-    }
-
-    private void StartMinigame()
-    {
-        var minigame = RecyclingMinigameScene.Instantiate<RecyclingMinigame>();
-        AddChild(minigame);
-
-        int[] collectedTrash = player.GetAllPoints();
-        minigame.Setup(collectedTrash, player);
-
-        GetTree().CallDeferred("set_pause", true);
-
-        GD.Print($"[LEVEL] Minigame başladı! Çöp sayısı: {player.TotalPoints}");
-    }
-
-    public void OnMinigameFinished(int correct, int wrong, int minigameScore)
-    {
-        GD.Print($"[LEVEL] Minigame bitti! Puan: {minigameScore}");
-
-        currentLevelScore += minigameScore;
-
-        if (player != null)
-        {
-            player.UpdateScoresUI(currentLevelScore, MinimumScore);
-        }
-
-        if (currentLevelScore >= MinimumScore)
-        {
-            ShowMessage($"Tebrikler! {currentLevelScore} puan topladın!\n(Hedef: {MinimumScore})", Colors.Green);
-            levelCompleted = true;
-        }
-        else
-        {
-            int missing = MinimumScore - currentLevelScore;
-            ShowMessage($"Toplam Puan: {currentLevelScore}/{MinimumScore}\nEksik: {missing} puan!", Colors.Yellow);
+            ShowMessage(string.Format(Tr("LEVEL_TOTAL_MISSING_FORMAT").Replace("\\n", "\n"), currentLevelScore, MinimumScore, missing), Colors.Yellow);
         }
     }
 
@@ -322,30 +265,61 @@ public partial class Level1 : Node2D
 
     private void LevelPassed()
     {
+        if (levelCompleted) return;
         levelCompleted = true;
+
+        // ✅ SKORLARI KAYDET!
+        SaveLevelScore();
+
+        SaveGame.Instance.MarkLevelCompleted("level_1");
         currentLevelScore = 0;
 
-        ShowMessage($"TEBRİKLER! Level geçildi!", Colors.Green);
-        GD.Print($"[LEVEL] ✅ GEÇTİN!");
+        ShowMessage(Tr("LEVEL1_COMPLETE"), Colors.Green);
+        GD.Print($"[LEVEL] ✅ LEVEL 1 GEÇİLDİ VE KAYDEDİLDİ!");
 
         GetTree().CreateTimer(3.0).Timeout += () =>
         {
             if (ResourceLoader.Exists("res://Assets/Scenes/Areas/Level2.tscn"))
-            {
                 GetTree().ChangeSceneToFile("res://Assets/Scenes/Areas/Level2.tscn");
-            }
+            else if (ResourceLoader.Exists("res://Assets/Scenes/Areas/level_2.tscn"))
+                GetTree().ChangeSceneToFile("res://Assets/Scenes/Areas/level_2.tscn");
             else
-            {
-                GD.Print("[LEVEL] Level2 yok, Level1 tekrar başlıyor!");
-                GetTree().ReloadCurrentScene();
-            }
+                GetTree().ChangeSceneToFile("res://Resources/level_select.tscn");
         };
     }
 
+    // ✅ TEK SaveLevelScore() METODU
+    // ✅ TEK SaveLevelScore() METODU
+    private void SaveLevelScore()
+    {
+        try
+        {
+            // ✅ DÜZELT: GetCurrentUserId() → CurrentUserID
+            int userId = SaveGame.Instance.GetCurrentUserId();
+
+            if (userId <= 0)
+            {
+                GD.PrintErr("[LEVEL] ❌ Geçerli kullanıcı yok, skor kaydedilemedi!");
+                return;
+            }
+
+            // Level 1 = LevelID 1
+            bool success = Database.SaveScore(userId, 1, currentLevelScore);
+
+            if (success)
+                GD.Print($"[LEVEL] ✅ Skor kaydedildi: User={userId}, Level=1, Score={currentLevelScore}");
+            else
+                GD.PrintErr("[LEVEL] ❌ Skor kaydetme başarısız!");
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[LEVEL] ❌ SaveLevelScore hatası: {ex.Message}");
+        }
+    }
     private void LevelFailed()
     {
         int remaining = MinimumScore - currentLevelScore;
-        ShowMessage($"Yetersiz! Daha {remaining} puan gerekli.", Colors.Orange);
+        ShowMessage(string.Format(Tr("LEVEL_INSUFFICIENT_FORMAT"), remaining), Colors.Orange);
         GD.Print($"[LEVEL] ⚠️ Yetersiz! {currentLevelScore}/{MinimumScore}");
     }
 

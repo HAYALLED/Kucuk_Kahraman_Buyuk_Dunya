@@ -3,26 +3,30 @@ using System;
 
 public partial class TrashJuggernaut : CharacterBody2D
 {
-    // Temel Ayarlar
     [Export] public float Speed = 50.0f;
     [Export] public float Gravity = 980.0f;
     [Export] public int MaxHealth = 10;
-
-    // Saldırı Ayarları
     [Export] public float AttackRange = 100.0f;
     [Export] public float AttackCooldown = 2.0f;
-
-    // CHARGE AYARLARI
     [Export] public float ChargeSpeed = 300.0f;
-    [Export] public float MaxChargeDuration = 3.0f;
+    [Export] public float MaxChargeDuration = 4.0f;
     [Export] public float ChargeCooldown = 5.0f;
     [Export] public int ChargeDamage = 2;
+    [Export] public float JumpForce = -350.0f;
+    [Export] public float PlatformJumpCooldown = 1.0f;
+    [Export] public float ChaseJumpForceMultiplier = 1.3f;
+    [Export] public float MinJumpForce = -250.0f;
+    [Export] public float MaxJumpForce = -600.0f;
 
-    // ✅ ATLAMA AYARLARI
-    [Export] public float JumpForce = -350.0f;         // Zıplama gücü
-    [Export] public float PlatformJumpCooldown = 1.0f; // Atlama cooldown
+    // ✅ YENİ: Zıplama İleri Boost
+    [ExportGroup("Zıplama Boost")]
+    [Export] public float JumpForwardBoost = 150.0f;
 
-    // Değişkenler
+    // ✅ YENİ: Kovalama Hızlanma
+    [ExportGroup("Kovalama Hızlanma")]
+    [Export] public float ChaseMaxSpeedMultiplier = 2.0f;
+    [Export] public float ChaseAccelerationTime = 3.0f;
+
     private int currentHealth;
     private int direction = 1;
     private bool isDead = false;
@@ -32,190 +36,205 @@ public partial class TrashJuggernaut : CharacterBody2D
     private bool isStunned = false;
     private float stunTimer = 0;
     private float originalSpeed;
+    private int bonusDamage = 0; // TrashKingEvent
 
-    // CHARGE DEĞİŞKENLERİ
     private bool isCharging = false;
     private float chargeTimer = 0;
     private float chargeCooldownTimer = 0;
     private bool playerInChargeRange = false;
     private bool canCharge = true;
 
-    // ✅ PLATFORM ATLAMA DEĞİŞKENLERİ
-    private bool platformAhead = false;      // Önde platform var mı
-    private float jumpCooldownTimer = 0;     // Atlama cooldown
-    private bool isJumping = false;          // Zıplıyor mu
+    private float jumpCooldownTimer = 0;
+    private bool isJumping = false;
+    private bool isChasing = false;
+    private bool playerInRange = false;
+    private bool justJumped = false;
 
-    // Node'lar
+    private float chaseSpeedMultiplier = 1.0f;
+    private float chaseTimer = 0;
+
+    private Vector2 jumpTargetPoint = Vector2.Zero;
+
     private AnimatedSprite2D animatedSprite;
     private Area2D attackCollision;
     private CollisionShape2D attackShape;
     private Area2D playerDetector;
     private Area2D playerDetectorCharge;
-    private Area2D platformDetector;
     private RayCast2D raycastLeft;
     private RayCast2D raycastRight;
-    private RayCast2D platformRaycast;  // ✅ Önde platform kontrolü
+    private RayCast2D platformRayCast;
     private Node2D player;
 
     public override void _Ready()
     {
         originalSpeed = Speed;
 
-        // Node'ları al
         animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         attackCollision = GetNode<Area2D>("attack_collision");
         playerDetector = GetNode<Area2D>("player_detector");
         playerDetectorCharge = GetNode<Area2D>("player_detector_charg");
-        platformDetector = GetNode<Area2D>("platform_detector");
         raycastLeft = GetNode<RayCast2D>("RayCast2Dleft");
         raycastRight = GetNode<RayCast2D>("RayCast2Dright");
 
+        platformRayCast = GetNodeOrNull<RayCast2D>("PlatformRayCast2");
+        if (platformRayCast != null) { platformRayCast.Enabled = true; platformRayCast.CollisionMask = 1; }
+
         AddToGroup("enemy");
-
         attackShape = attackCollision.GetNode<CollisionShape2D>("CollisionShape2D");
-
         currentHealth = MaxHealth;
         attackCollision.Monitoring = false;
 
         var players = GetTree().GetNodesInGroup("player");
-        if (players.Count > 0)
-            player = players[0] as Node2D;
+        if (players.Count > 0) player = players[0] as Node2D;
 
         playerDetector.CollisionMask = 2;
         playerDetectorCharge.CollisionMask = 2;
 
-        // Sinyaller
         attackCollision.BodyEntered += OnAttackHit;
         playerDetector.BodyEntered += OnPlayerEnterRange;
         playerDetector.BodyExited += OnPlayerExitRange;
         playerDetectorCharge.BodyEntered += OnPlayerEnterChargeRange;
         playerDetectorCharge.BodyExited += OnPlayerExitChargeRange;
 
-        // ✅ Platform detector sinyalleri
-        platformDetector.BodyEntered += OnPlatformDetected;
-        platformDetector.BodyExited += OnPlatformLost;
-        platformDetector.CollisionMask = 1;  // Ground layer
-        platformDetector.Monitoring = true;
-
         animatedSprite.Play("walk");
-
-        if (raycastLeft != null)
-        {
-            raycastLeft.Enabled = true;
-            raycastLeft.CollisionMask = 1;
-        }
-
-        if (raycastRight != null)
-        {
-            raycastRight.Enabled = true;
-            raycastRight.CollisionMask = 1;
-        }
+        if (raycastLeft != null) { raycastLeft.Enabled = true; raycastLeft.CollisionMask = 1; }
+        if (raycastRight != null) { raycastRight.Enabled = true; raycastRight.CollisionMask = 1; }
     }
 
-    // ✅ PLATFORM ALGILAMA
-    private void OnPlatformDetected(Node2D body)
+    // ========================================
+    // PLATFORM KONTROL
+    // ========================================
+    private bool FindPlatformAndSetTarget()
     {
-        if (body.IsInGroup("ground") || body is TileMap || body is StaticBody2D)
+        if (platformRayCast == null) return false;
+
+        platformRayCast.TargetPosition = new Vector2(direction * 250, 30);
+        platformRayCast.ForceRaycastUpdate();
+        if (platformRayCast.IsColliding())
         {
-            platformAhead = true;
+            Vector2 hit = platformRayCast.GetCollisionPoint();
+            if (Mathf.Abs(hit.X - GlobalPosition.X) > 40)
+            { jumpTargetPoint = hit; return true; }
         }
+
+        platformRayCast.TargetPosition = new Vector2(direction * 150, -250);
+        platformRayCast.ForceRaycastUpdate();
+        if (platformRayCast.IsColliding())
+        {
+            Vector2 hit = platformRayCast.GetCollisionPoint();
+            if (Mathf.Abs(hit.X - GlobalPosition.X) > 40)
+            { jumpTargetPoint = hit; return true; }
+        }
+
+        platformRayCast.TargetPosition = new Vector2(direction * 150, 250);
+        platformRayCast.ForceRaycastUpdate();
+        if (platformRayCast.IsColliding())
+        {
+            Vector2 hit = platformRayCast.GetCollisionPoint();
+            if (Mathf.Abs(hit.X - GlobalPosition.X) > 40)
+            { jumpTargetPoint = hit; return true; }
+        }
+
+        return false;
     }
 
-    private void OnPlatformLost(Node2D body)
+    private void CalculateAndJump()
     {
-        // Hala başka platform var mı kontrol et
-        var overlapping = platformDetector.GetOverlappingBodies();
-        platformAhead = overlapping.Count > 0;
+        if (!IsOnFloor()) return;
 
-        if (!platformAhead)
+        float dx = jumpTargetPoint.X - GlobalPosition.X;
+        float dy = jumpTargetPoint.Y - GlobalPosition.Y;
+        float absDx = Mathf.Abs(dx);
+
+        float flightTime = 0.6f;
+        if (absDx > 200) flightTime = 0.8f;
+        if (absDx > 350) flightTime = 1.0f;
+        if (absDx < 80) flightTime = 0.4f;
+
+        float vx = dx / flightTime;
+        float vy = (dy - 0.5f * Gravity * flightTime * flightTime) / flightTime;
+
+        vy = Mathf.Clamp(vy, MaxJumpForce, MinJumpForce);
+        vx = Mathf.Clamp(vx, -500, 500);
+
+        if (isChasing)
         {
-            GD.Print("[JUGGERNAUT] Önde platform yok!");
+            vy *= ChaseJumpForceMultiplier;
+            vy = Mathf.Clamp(vy, MaxJumpForce * 1.3f, MinJumpForce);
         }
+
+        // ✅ İleri boost
+        vx += direction * JumpForwardBoost;
+
+        Velocity = new Vector2(vx, vy);
+        isJumping = true;
+        justJumped = true;
+        jumpCooldownTimer = PlatformJumpCooldown;
     }
 
-    private bool playerInRange = false;
-
+    // ========================================
+    // PLAYER DETECTION
+    // ========================================
     private void OnPlayerEnterRange(Node2D body)
     {
-        if (body.IsInGroup("player"))
-        {
-            playerInRange = true;
-            player = body;
-        }
+        if (body.IsInGroup("player")) { playerInRange = true; player = body; StartChasing(); }
     }
-
     private void OnPlayerExitRange(Node2D body)
     {
-        if (body.IsInGroup("player"))
-        {
-            playerInRange = false;
-        }
+        if (body.IsInGroup("player")) { playerInRange = false; if (!playerInChargeRange) StopChasing(); }
     }
-
     private void OnPlayerEnterChargeRange(Node2D body)
     {
         if (body.IsInGroup("player"))
         {
-            playerInChargeRange = true;
-            player = body;
-
-            if (canCharge && !isCharging && !isAttacking && !isHurt)
-            {
-                StartCharge();
-            }
+            playerInChargeRange = true; player = body; StartChasing();
+            if (canCharge && !isCharging && !isAttacking && !isHurt) StartCharge();
         }
     }
-
     private void OnPlayerExitChargeRange(Node2D body)
     {
-        if (body.IsInGroup("player"))
+        if (body.IsInGroup("player")) { playerInChargeRange = false; if (!playerInRange) StopChasing(); }
+    }
+
+    private void StartChasing()
+    {
+        if (!isChasing) { isChasing = true; chaseTimer = 0; chaseSpeedMultiplier = 1.0f; }
+    }
+
+    private void StopChasing()
+    {
+        isChasing = false; chaseTimer = 0; chaseSpeedMultiplier = 1.0f; Speed = originalSpeed;
+    }
+
+    private void UpdateChaseAcceleration(float dt)
+    {
+        if (isChasing && !isCharging)  // Charge sırasında ChargeSpeed kullanılır
         {
-            playerInChargeRange = false;
+            chaseTimer += dt;
+            float t = Mathf.Clamp(chaseTimer / ChaseAccelerationTime, 0, 1);
+            chaseSpeedMultiplier = Mathf.Lerp(1.0f, ChaseMaxSpeedMultiplier, t);
+            Speed = originalSpeed * chaseSpeedMultiplier;
         }
     }
 
+    // ========================================
+    // PHYSICS
+    // ========================================
     public override void _PhysicsProcess(double delta)
     {
-        // Cooldown timers
-        if (chargeCooldownTimer > 0)
-        {
-            chargeCooldownTimer -= (float)delta;
-            if (chargeCooldownTimer <= 0)
-                canCharge = true;
-        }
+        float dt = (float)delta;
+        if (chargeCooldownTimer > 0) { chargeCooldownTimer -= dt; if (chargeCooldownTimer <= 0) canCharge = true; }
+        if (jumpCooldownTimer > 0) jumpCooldownTimer -= dt;
+        if (attackTimer > 0) attackTimer -= dt;
 
-        // ✅ Jump cooldown
-        if (jumpCooldownTimer > 0)
-            jumpCooldownTimer -= (float)delta;
+        UpdateChaseAcceleration(dt);
 
-        // Stun kontrolü
-        if (isStunned)
-        {
-            stunTimer -= (float)delta;
-            if (stunTimer <= 0)
-            {
-                isStunned = false;
-                Speed = originalSpeed;
-            }
-            return;
-        }
-
+        if (isStunned) { stunTimer -= dt; if (stunTimer <= 0) { isStunned = false; Speed = originalSpeed; } return; }
         if (isDead) return;
         if (isHurt) return;
-
-        if (attackTimer > 0)
-            attackTimer -= (float)delta;
-
-        // CHARGE DURUMU
-        if (isCharging)
-        {
-            ChargeMove(delta);
-            return;
-        }
-
+        if (isCharging) { ChargeMove(delta); return; }
         if (isAttacking) return;
 
-        // Yakın menzilde normal saldırı
         if (playerInRange && player != null && attackTimer <= 0)
         {
             direction = player.GlobalPosition.X > GlobalPosition.X ? 1 : -1;
@@ -224,324 +243,189 @@ public partial class TrashJuggernaut : CharacterBody2D
             return;
         }
 
-        // Normal hareket
         Move(delta);
     }
 
+    // ========================================
+    // CHARGE
+    // ========================================
     private void StartCharge()
     {
         if (player == null) return;
-
-        isCharging = true;
-        canCharge = false;
-        chargeTimer = MaxChargeDuration;
-
+        isCharging = true; canCharge = false; chargeTimer = MaxChargeDuration;
         direction = player.GlobalPosition.X > GlobalPosition.X ? 1 : -1;
         animatedSprite.FlipH = direction > 0;
-
-        // ✅ Platform detector pozisyonunu güncelle
-        UpdatePlatformDetectorPosition();
-
-        if (animatedSprite.SpriteFrames.HasAnimation("charge_atk"))
-        {
-            animatedSprite.Play("charge_atk");
-        }
-
+        if (animatedSprite.SpriteFrames.HasAnimation("charge_atk")) animatedSprite.Play("charge_atk");
         attackCollision.Monitoring = true;
     }
 
     private void ChargeMove(double delta)
     {
         Vector2 velocity = Velocity;
-
         velocity.Y += Gravity * (float)delta;
-        velocity.X = direction * ChargeSpeed;
-
+        velocity.X = direction * ChargeSpeed;  // Charge kendi hızını kullanır
         Velocity = velocity;
         MoveAndSlide();
-
         chargeTimer -= (float)delta;
 
+        if (IsOnWall()) { StopCharge(); return; }
         if (chargeTimer <= 0)
         {
-            StopCharge();
-        }
-        else if (!playerInChargeRange && chargeTimer < MaxChargeDuration - 0.5f)
-        {
-            StopCharge();
-        }
-        else if (IsOnWall())
-        {
-            StopCharge();
+            if (playerInChargeRange)
+            {
+                chargeTimer = MaxChargeDuration;
+                if (player != null) { direction = player.GlobalPosition.X > GlobalPosition.X ? 1 : -1; animatedSprite.FlipH = direction > 0; }
+            }
+            else StopCharge();
         }
     }
 
     private void StopCharge()
     {
-        isCharging = false;
-        attackCollision.Monitoring = false;
-        chargeCooldownTimer = ChargeCooldown;
-
-        animatedSprite.Play("walk");
+        isCharging = false; attackCollision.Monitoring = false;
+        chargeCooldownTimer = ChargeCooldown; animatedSprite.Play("walk");
     }
 
-    public void ApplyStun(float duration)
-    {
-        isStunned = true;
-        stunTimer = duration;
-
-        if (isCharging)
-            StopCharge();
-    }
-
-    public void ApplySlow(float slowPercent, float duration)
-    {
-        Speed = originalSpeed * (1.0f - slowPercent);
-
-        GetTree().CreateTimer(duration).Timeout += () =>
-        {
-            if (!isStunned)
-                Speed = originalSpeed;
-        };
-    }
-
+    // ========================================
+    // HAREKET
+    // ========================================
     private void Move(double delta)
     {
         Vector2 velocity = Velocity;
 
-        // Yerçekimi
-        if (!IsOnFloor())
+        if (justJumped)
         {
-            velocity.Y += Gravity * (float)delta;
-            isJumping = true;
-        }
-        else
-        {
-            velocity.Y = 0;
-            isJumping = false;
+            justJumped = false;
+            MoveAndSlide();
+            return;
         }
 
-        // Yatay hareket
+        if (!IsOnFloor()) { velocity.Y += Gravity * (float)delta; isJumping = true; }
+        else { velocity.Y = 0; isJumping = false; }
+
+        if (isChasing && player != null && IsInstanceValid(player))
+            direction = player.GlobalPosition.X > GlobalPosition.X ? 1 : -1;
+
         velocity.X = direction * Speed;
-
         animatedSprite.FlipH = direction > 0;
-
-        if (attackShape != null)
-        {
-            attackShape.Position = new Vector2(direction * 20, 0);
-        }
-
-        // ✅ Platform detector pozisyonunu güncelle
-        UpdatePlatformDetectorPosition();
+        if (attackShape != null) attackShape.Position = new Vector2(direction * 20, 0);
 
         Velocity = velocity;
         MoveAndSlide();
-
-        // Yön kontrolü (duvar ve uçurum)
         CheckDirection();
-    }
-
-    // ✅ Platform detector'ı yöne göre konumlandır
-    private void UpdatePlatformDetectorPosition()
-    {
-        if (platformDetector == null) return;
-
-        var shape = platformDetector.GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-        if (shape != null)
-        {
-            // Karakterin önünde ve aşağısında
-            shape.Position = new Vector2(direction * 80, 50);
-        }
     }
 
     private void CheckDirection()
     {
         if (raycastLeft == null || raycastRight == null) return;
+        if (IsOnWall()) { direction *= -1; return; }
 
-        // Duvar kontrolü - her zaman dön
-        if (IsOnWall())
-        {
-            direction *= -1;
-            return;
-        }
-
-        // Uçurum kontrolü (sadece yerdeyken)
         if (IsOnFloor())
         {
             bool cliffAhead = false;
+            if (direction > 0 && !raycastRight.IsColliding()) cliffAhead = true;
+            else if (direction < 0 && !raycastLeft.IsColliding()) cliffAhead = true;
 
-            if (direction > 0 && !raycastRight.IsColliding())
+            if (cliffAhead && jumpCooldownTimer <= 0)
             {
-                cliffAhead = true;
-            }
-            else if (direction < 0 && !raycastLeft.IsColliding())
-            {
-                cliffAhead = true;
-            }
-
-            // ✅ Uçurum varsa
-            if (cliffAhead)
-            {
-                // Önde platform var mı?
-                if (platformAhead && jumpCooldownTimer <= 0)
+                if (FindPlatformAndSetTarget())
                 {
-                    // Platform var → ATLA!
-                    JumpToPlatform();
+                    if (isChasing) { CalculateAndJump(); return; }
+                    else
+                    {
+                        float dy = jumpTargetPoint.Y - GlobalPosition.Y;
+                        if (Mathf.Abs(dy) < 80) { CalculateAndJump(); return; }
+                    }
                 }
-                else
-                {
-                    // Platform yok → DÖN
-                    direction *= -1;
-                }
+                direction *= -1;
             }
+            else if (cliffAhead) { direction *= -1; }
         }
     }
 
-    // ✅ PLATFORMA ATLA
-    private void JumpToPlatform()
-    {
-        if (!IsOnFloor()) return;
-
-        Vector2 velocity = Velocity;
-        velocity.Y = JumpForce;
-        velocity.X = direction * Speed * 1.5f;  // Biraz hızlanarak atla
-        Velocity = velocity;
-
-        isJumping = true;
-        jumpCooldownTimer = PlatformJumpCooldown;
-
-    }
-
+    // ========================================
+    // SALDIRI
+    // ========================================
     private async void StartAttack()
     {
-        isAttacking = true;
-        Velocity = Vector2.Zero;
-
-        if (attackShape != null)
-        {
-            attackShape.Position = new Vector2(direction * 20, 0);
-        }
-
+        isAttacking = true; Velocity = Vector2.Zero;
+        if (attackShape != null) attackShape.Position = new Vector2(direction * 20, 0);
         animatedSprite.Play("attack");
-
         while (animatedSprite.Animation == "attack")
         {
-            int frame = animatedSprite.Frame;
-
-            if (frame >= 13 && frame <= 19)
+            if (animatedSprite.Frame >= 13 && animatedSprite.Frame <= 19)
             {
                 attackCollision.Monitoring = true;
                 await ToSignal(GetTree().CreateTimer(0.1), SceneTreeTimer.SignalName.Timeout);
                 attackCollision.Monitoring = false;
                 break;
             }
-
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
         }
-
-        attackTimer = AttackCooldown;
-        isAttacking = false;
-        animatedSprite.Play("walk");
+        attackTimer = AttackCooldown; isAttacking = false; animatedSprite.Play("walk");
     }
 
     private void OnAttackHit(Node2D body)
     {
-        if (body.IsInGroup("player"))
-        {
-            if (body.HasMethod("TakeDamage"))
-            {
-                int damage = isCharging ? ChargeDamage : 1;
-                body.Call("TakeDamage", damage);
-            }
-        }
+        if (body.IsInGroup("player") && body.HasMethod("TakeDamage"))
+            body.Call("TakeDamage", isCharging ? ChargeDamage + bonusDamage : 1 + bonusDamage);
+    }
+
+    // ========================================
+    // HASAR / STUN / ÖLÜM
+    // ========================================
+    public void AddBonusDamage(int amount) { bonusDamage = Mathf.Max(0, bonusDamage + amount); }
+
+    public void ApplyStun(float duration) { isStunned = true; stunTimer = duration; if (isCharging) StopCharge(); }
+    public void ApplySlow(float slowPercent, float duration)
+    {
+        Speed = originalSpeed * (1.0f - slowPercent);
+        GetTree().CreateTimer(duration).Timeout += () => { if (!isStunned) Speed = originalSpeed; };
     }
 
     public void TakeDamage(int damage = 1)
     {
         if (isDead) return;
-
         currentHealth -= damage;
-
-        if (currentHealth <= 0)
-        {
-            Die();
-            return;
-        }
-
+        if (currentHealth <= 0) { Die(); return; }
         PlayHurt();
     }
 
     private async void PlayHurt()
     {
         if (isDead) return;
-
-        isHurt = true;
-        isAttacking = false;
-
-        if (isCharging)
-            StopCharge();
-
+        isHurt = true; isAttacking = false;
+        if (isCharging) StopCharge();
         Velocity = Vector2.Zero;
-
         for (int i = 0; i < 2; i++)
         {
             if (isDead) return;
-
             animatedSprite.Play("hurt");
-
-            double frameCount = animatedSprite.SpriteFrames.GetFrameCount("hurt");
+            double fc = animatedSprite.SpriteFrames.GetFrameCount("hurt");
             double fps = animatedSprite.SpriteFrames.GetAnimationSpeed("hurt");
-            double duration = frameCount / fps;
-
-            await ToSignal(GetTree().CreateTimer(duration), SceneTreeTimer.SignalName.Timeout);
+            await ToSignal(GetTree().CreateTimer(fc / fps), SceneTreeTimer.SignalName.Timeout);
         }
-
         if (isDead) return;
-
-        isHurt = false;
-        animatedSprite.Play("walk");
+        isHurt = false; animatedSprite.Play("walk");
     }
 
     private void Die()
     {
         if (isDead) return;
-
-        isDead = true;
-        isHurt = false;
-        isAttacking = false;
-        isCharging = false;
+        isDead = true; isHurt = false; isAttacking = false; isCharging = false;
         SetPhysicsProcess(false);
-
-        var collision = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-        if (collision != null)
-            collision.SetDeferred("disabled", true);
-
-        if (attackCollision != null)
-            attackCollision.Monitoring = false;
-
-        if (playerDetector != null)
-            playerDetector.Monitoring = false;
-
-        if (playerDetectorCharge != null)
-            playerDetectorCharge.Monitoring = false;
-
+        var col = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
+        if (col != null) col.SetDeferred("disabled", true);
+        if (attackCollision != null) attackCollision.Monitoring = false;
+        if (playerDetector != null) playerDetector.Monitoring = false;
+        if (playerDetectorCharge != null) playerDetectorCharge.Monitoring = false;
         if (animatedSprite.SpriteFrames.HasAnimation("death"))
         {
             animatedSprite.Play("death");
-
-            float frameCount = animatedSprite.SpriteFrames.GetFrameCount("death");
+            float fc = animatedSprite.SpriteFrames.GetFrameCount("death");
             double fps = animatedSprite.SpriteFrames.GetAnimationSpeed("death");
-            double duration = frameCount / fps;
-
-            GetTree().CreateTimer(duration).Timeout += () =>
-            {
-                if (IsInstanceValid(this))
-                    QueueFree();
-            };
+            GetTree().CreateTimer(fc / fps).Timeout += () => { if (IsInstanceValid(this)) QueueFree(); };
         }
-        else
-        {
-            QueueFree();
-        }
+        else QueueFree();
     }
 }

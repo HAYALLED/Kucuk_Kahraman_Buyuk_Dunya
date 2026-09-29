@@ -4,10 +4,8 @@ using System;
 public partial class PointsGoldTrash : Area2D
 {
     private AnimatedSprite2D animatedSprite;
-
     [Export] public int MinPoints = 10;
     [Export] public int MaxPoints = 25;
-
     private Node2D secretLevel = null;
     private bool isCollected = false;
 
@@ -33,8 +31,9 @@ public partial class PointsGoldTrash : Area2D
     private void OnBodyEntered(Node2D body)
     {
         if (isCollected || !body.IsInGroup("player")) return;
-
         isCollected = true;
+
+        GD.Print("[GOLD TRASH] 🎯 Altın çöp toplandı! Çıkış başlıyor...");
 
         // Random puan dağıt
         int totalPoints = GD.RandRange(MinPoints, MaxPoints);
@@ -67,13 +66,103 @@ public partial class PointsGoldTrash : Area2D
 
         GD.Print($"[GOLD TRASH] 🗑️ Toplandı! P:{plastic} M:{metal} G:{glass} F:{food} W:{wood}");
 
-        // ✅ Secret level'e bildir
-        if (secretLevel != null && secretLevel.HasMethod("OnPointCollected"))
+        // ✅ CRITICAL FIX: DOĞRUDAN Secret Level Exit'i tetikle!
+        CallDeferred(nameof(TriggerSecretExit), body);
+    }
+
+    // ✅ YENİ: Secret level'den çıkışı tetikle
+    private void TriggerSecretExit(Node2D player)
+    {
+        if (player == null || !IsInstanceValid(player))
         {
-            secretLevel.Call("OnPointCollected");
+            GD.PrintErr("[GOLD TRASH] ❌ Player invalid!");
+            return;
         }
 
-        // ✅ CRITICAL FIX: CallDeferred ile yok et
-        CallDeferred("queue_free");
+        var root = GetTree().Root;
+        var secretID = "";
+
+        // ✅ Secret ID'yi al
+        if (root.HasMeta("CurrentSecretID"))
+        {
+            secretID = (string)root.GetMeta("CurrentSecretID");
+            GD.Print($"[GOLD TRASH] Secret ID: {secretID}");
+        }
+
+        // ✅ Player state'i kaydet
+        SavePlayerState(player);
+
+        // ✅ Secret'i tamamlandı olarak işaretle
+        if (!string.IsNullOrEmpty(secretID))
+        {
+            root.SetMeta($"SecretCompleted_{secretID}", true);
+            GD.Print($"[GOLD TRASH] ✅ {secretID} tamamlandı olarak işaretlendi!");
+        }
+
+        // ✅ Ana level'e dön
+        string mainLevelPath = GetMainLevelPath();
+
+        GD.Print($"[GOLD TRASH] 🚪 Ana level'e dönülüyor: {mainLevelPath}");
+
+        // ✅ Self'i yok et
+        QueueFree();
+
+        // ✅ Scene değiştir
+        GetTree().CallDeferred("change_scene_to_file", mainLevelPath);
+    }
+
+    // ✅ YENİ: Main level path'ini bul
+    private string GetMainLevelPath()
+    {
+        var root = GetTree().Root;
+
+        if (root.HasMeta("CurrentSecretID"))
+        {
+            string secretID = (string)root.GetMeta("CurrentSecretID");
+
+            if (secretID.StartsWith("level1"))
+                return "res://Assets/Scenes/Areas/area_1.tscn";
+            else if (secretID.StartsWith("level2"))
+                return "res://Assets/Scenes/Areas/Level2.tscn";
+            else if (secretID.StartsWith("level3"))
+                return "res://Assets/Scenes/Areas/Level3.tscn";
+        }
+
+        return "res://Assets/Scenes/Areas/area_1.tscn";
+    }
+
+    // ✅ Player state'i kaydet
+    private void SavePlayerState(Node2D player)
+    {
+        var root = GetTree().Root;
+
+        try
+        {
+            // ✅ Çöpleri kaydet
+            if (player.HasMethod("GetAllPoints"))
+            {
+                int[] trashCounts = (int[])player.Call("GetAllPoints");
+                root.SetMeta("SavedTrash_Plastic", trashCounts[0]);
+                root.SetMeta("SavedTrash_Metal", trashCounts[1]);
+                root.SetMeta("SavedTrash_Glass", trashCounts[2]);
+                root.SetMeta("SavedTrash_Food", trashCounts[3]);
+                root.SetMeta("SavedTrash_Wood", trashCounts[4]);
+
+                int total = trashCounts[0] + trashCounts[1] + trashCounts[2] + trashCounts[3] + trashCounts[4];
+                GD.Print($"[GOLD TRASH] 💾 Çöpler kaydedildi: {total} adet");
+            }
+
+            // ✅ Kostüm + can kaydet (tüm slotlar, tek pakette)
+            if (player.HasMethod("GetCostumeHealthSaveData"))
+            {
+                var data = (Godot.Collections.Dictionary)player.Call("GetCostumeHealthSaveData");
+                root.SetMeta("SavedCostumeHealthData", data);
+                GD.Print("[GOLD TRASH] 💾 Tüm kostümlerin canı kaydedildi!");
+            }
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr($"[GOLD TRASH] ❌ SavePlayerState hatası: {e.Message}");
+        }
     }
 }

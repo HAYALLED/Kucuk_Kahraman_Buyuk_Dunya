@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://cl0iyd1nj6ddl"
+
+[deps]
+
+files=["res://dictionary.tr.translation", "res://dictionary.en.translation"]
+
+source_file="res://dictionary.csv"
+dest_files=["res://dictionary.tr.translation", "res://dictionary.en.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

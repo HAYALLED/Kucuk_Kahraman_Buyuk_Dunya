@@ -15,12 +15,22 @@ public partial class Player_controller : CharacterBody2D
     [Export] public float JumpBufferTime = 0.1f;
     [Export] public float GravityScale = 0.9f;
 
+    // ===== RÜZGAR SİSTEMİ (WindEvent tarafından çağrılır) =====
+    private bool windActive = false;
+    private int windDirection = 0;      // 1=sağ, -1=sol
+    private float windSpeedReduction = 0.5f;
+    private float windPushForce = 60f;
+    private bool windUpward = false;
+    private float windGravityMultiplier = 0.5f;
+    private float windJumpBoost = 1.3f;
+    private float windSpeedBoost = 0.3f;
+
     // Costume slot UI
     private List<TextureRect> costumeSlotIcons = new List<TextureRect>();
     private int currentCostumeIndex = -1;
 
     // Kostüm sistemi
-    [Export] public CostumeResource CurrentCostume;
+    public CostumeResource CurrentCostume;  // [Export] kaldırıldı!
     [Export] public CostumeResource[] CostumeSlots = new CostumeResource[3];
 
     // ===== SCORES UI =====
@@ -58,7 +68,7 @@ public partial class Player_controller : CharacterBody2D
     private Line2D webLine;
     private Sprite2D webAnchorSprite;
     [Export] public Texture2D WebAnchorTexture;
-
+    private RayCast2D swingRayCast;
     // ===== BATMAN GRAPPLE =====
     private bool isGrappling = false;
     private Vector2 grappleTargetPoint;
@@ -68,11 +78,15 @@ public partial class Player_controller : CharacterBody2D
     private Line2D hookLine;
     private Sprite2D hookSprite;
     [Export] public Texture2D HookTexture;
+    private RayCast2D grappleRayCast;
     // ===== AQUAMAN ÖZEL =====
+    private bool canUseBubbleTrap = false;
     private float aquamanStunCooldown = 25.0f;
     private float aquamanStunCooldownTimer = 0;
     private float aquamanStunRadius = 200f;
-    private float aquamanAttackRange = 1.0f; // Çarpan (1.0 = normal, 2.0 = 2kat)
+    private float aquamanStunDuration = 4.0f; // ✅ YENİ: 4 saniye
+    private float aquamanAttackRange = 2.0f; // Çarpan (1.0 = normal, 2.0 = 2kat)
+    private PackedScene bubbleScene; // ✅ YENİ: Bubble scene referansı
     // ===== INTERACTION =====
     private bool isNearInteractable = false;
     private Node2D currentInteractable = null;
@@ -100,19 +114,23 @@ public partial class Player_controller : CharacterBody2D
     private PackedScene plantScene;
     private List<Node2D> activePlants = new List<Node2D>();
 
-    // Drone
+    // ===== ATTACK DRONE (Iron Man) =====
     private bool hasDroneSupport = false;
-    private float droneCollectInterval = 45.0f;
-    private float droneCollectRadius = 200.0f;
-    private float droneTimer = 0;
-
-    // Froze Time
-    private bool canFrozeTime = false;
-    private float frozeTimeSlowPercent = 0.3f;
-    private float frozeTimeDuration = 5.0f;
-    private float frozeTimeCooldown = 30.0f;
-    private float frozeTimeCooldownTimer = 0;
-    private bool isFrozeTimeActive = false;
+    private float droneSpawnInterval = 25.0f;
+    private int maxActiveDrones = 2;
+    private float droneDetectionRadius = 500.0f;
+    private int droneDamage = 2;
+    private float droneSpeed = 400.0f;
+    private float droneLifetime = 10.0f;
+    private float droneSpawnTimer = 0;
+    private PackedScene droneScene;
+    private System.Collections.Generic.List<Node2D> activeDrones = new System.Collections.Generic.List<Node2D>();
+    // Freeze Time (eski: Froze Time)
+    private bool canFreezeTime = false;
+    private float freezeTimeDuration = 10.0f;
+    private float freezeTimeCooldown = 25.0f;
+    private float freezeTimeCooldownTimer = 0;
+    private bool isFreezeTimeActive = false;
 
     // Wall Jump
     private bool canWallJump = false;
@@ -166,10 +184,10 @@ public partial class Player_controller : CharacterBody2D
     [Export] public float ComboResetTime = 0.8f;
     [Export] public float AttackCooldown = 0.2f;
     private float attackCooldownTimer = 0;
-
     public override void _Ready()
     {
-        GD.Print("========== PLAYER READY ==========");
+        CurrentCostume = null;
+        currentCostumeIndex = -1;
 
         playerSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         animatedSprite = playerSprite;
@@ -183,32 +201,57 @@ public partial class Player_controller : CharacterBody2D
         CreateAttackArea();
         AddToGroup("player");
 
-        // İlk kostümü başlat
-        if (currentCostumeIndex < 0)
+        // ✅ CRITICAL FIX: SavedCostumeHealthData meta varsa ilk kostümü GIYME!
+        bool willRestoreLater = GetTree().Root.HasMeta("SavedCostumeHealthData");
+
+        if (!willRestoreLater)
         {
-            for (int i = 0; i < CostumeSlots.Length; i++)
+            // ✅ Normal başlangıç - Inspector'dan ilk kostümü giy
+
+            if (currentCostumeIndex < 0)
             {
-                if (CostumeSlots[i] != null)
+                for (int i = 0; i < CostumeSlots.Length; i++)
                 {
-                    currentCostumeIndex = i;
-                    CurrentCostume = CostumeSlots[i];
-                    ApplyCostume();
-                    break;
+                    if (CostumeSlots[i] != null)
+                    {
+                        currentCostumeIndex = i;
+                        CurrentCostume = CostumeSlots[i];
+                        ApplyCostume();
+                        break;
+                    }
                 }
             }
+        }
+        else
+        {
+            // ✅ Meta restore bekliyor - kostüm GIYILMEYECEK
+            currentCostumeIndex = -1;  // ✅ Resetle!
+            CurrentCostume = null;     // ✅ Null yap!
         }
 
         FindCostumeSlotUI();
         UpdateCostumeSlotUI();
         FindScoresUI();
 
-        // ✅ Ability görselleri oluştur
         CreateAbilityVisuals();
-
-        // ✅ Interaction detector oluştur
         CreateInteractionDetector();
 
-        GD.Print("========== READY BİTTİ ==========");
+        // ✅ YENİ: RayCast2D referansını al
+        grappleRayCast = GetNodeOrNull<RayCast2D>("RayCast2D");
+        if (grappleRayCast != null)
+        {
+            grappleRayCast.Enabled = false;  // Başlangıçta kapalı
+            grappleRayCast.TargetPosition = Vector2.Zero;
+        }
+        else
+        {
+        }
+
+        swingRayCast = grappleRayCast;
+        if (swingRayCast != null)
+        {
+        }
+
     }
 
     // ========================================
@@ -268,7 +311,6 @@ public partial class Player_controller : CharacterBody2D
             hookSprite.Texture = HookTexture;
         AddChild(hookSprite);
 
-        GD.Print("[VISUALS] ✅ Ability görselleri oluşturuldu!");
     }
 
     // ========================================
@@ -295,7 +337,6 @@ public partial class Player_controller : CharacterBody2D
         interactionDetector.AreaExited += OnInteractableAreaExited;
 
         AddChild(interactionDetector);
-        GD.Print("[INTERACTION] ✅ Detector oluşturuldu! Mask: " + interactionDetector.CollisionMask);
     }
 
     private void OnInteractableBodyEntered(Node2D body)
@@ -304,7 +345,6 @@ public partial class Player_controller : CharacterBody2D
         {
             isNearInteractable = true;
             currentInteractable = body;
-            GD.Print($"[INTERACTION] ✅ Yaklaşıldı (Body): {body.Name}");
         }
     }
 
@@ -314,7 +354,6 @@ public partial class Player_controller : CharacterBody2D
         {
             isNearInteractable = false;
             currentInteractable = null;
-            GD.Print($"[INTERACTION] Uzaklaşıldı (Body): {body.Name}");
         }
     }
 
@@ -324,7 +363,6 @@ public partial class Player_controller : CharacterBody2D
         {
             isNearInteractable = true;
             currentInteractable = area;
-            GD.Print($"[INTERACTION] ✅ Yaklaşıldı (Area): {area.Name}");
         }
     }
 
@@ -334,7 +372,6 @@ public partial class Player_controller : CharacterBody2D
         {
             isNearInteractable = false;
             currentInteractable = null;
-            GD.Print($"[INTERACTION] Uzaklaşıldı (Area): {area.Name}");
         }
     }
 
@@ -342,42 +379,33 @@ public partial class Player_controller : CharacterBody2D
     {
         if (currentInteractable == null)
         {
-            GD.Print("[INTERACTION] ❌ currentInteractable NULL!");
             return;
         }
-
-        GD.Print($"[INTERACTION] ✅ Etkileşim başlatılıyor: {currentInteractable.Name}");
 
         // ✅ Farklı metod isimlerini dene
         if (currentInteractable.HasMethod("Interact"))
         {
-            GD.Print("[INTERACTION] Interact() çağrılıyor...");
             currentInteractable.Call("Interact", this);
         }
         else if (currentInteractable.HasMethod("OnInteract"))
         {
-            GD.Print("[INTERACTION] OnInteract() çağrılıyor...");
             currentInteractable.Call("OnInteract", this);
         }
         else if (currentInteractable.HasMethod("_on_player_interact"))
         {
-            GD.Print("[INTERACTION] _on_player_interact() çağrılıyor...");
             currentInteractable.Call("_on_player_interact", this);
         }
         else
         {
-            GD.PrintErr($"[INTERACTION] ❌ {currentInteractable.Name} için Interact metodu bulunamadı!");
         }
     }
 
     private void FindScoresUI()
     {
-        GD.Print("[UI] ========== SCORES UI ARAMA BAŞLIYOR ==========");
 
         var scoresLayer = GetNodeOrNull<CanvasLayer>("scores");
         if (scoresLayer == null)
         {
-            GD.PrintErr("[UI] ❌ scores CanvasLayer bulunamadı!");
             return;
         }
 
@@ -386,67 +414,60 @@ public partial class Player_controller : CharacterBody2D
         try
         {
             trashCountLabel = scoresLayer.GetNode<Label>("VBoxContainer/trashCountLabel");
-            GD.Print("[UI] ✅ trashCountLabel bulundu!");
         }
         catch
         {
-            GD.PrintErr("[UI] ❌ trashCountLabel bulunamadı!");
         }
 
         try
         {
             currentScoreLabel = scoresLayer.GetNode<Label>("VBoxContainer/currentScoreLabel");
-            GD.Print("[UI] ✅ currentScoreLabel bulundu!");
         }
         catch
         {
-            GD.PrintErr("[UI] ❌ currentScoreLabel bulunamadı!");
         }
 
         try
         {
             requiredScoreLabel = scoresLayer.GetNode<Label>("VBoxContainer/requiredScoreLabel");
-            GD.Print("[UI] ✅ requiredScoreLabel bulundu!");
         }
         catch
         {
-            GD.PrintErr("[UI] ❌ requiredScoreLabel bulunamadı!");
         }
 
         if (trashCountLabel != null)
         {
             trashCountLabel.Visible = true;
             trashCountLabel.Modulate = Colors.White;
-            trashCountLabel.Text = "Çöp: 0";
+            trashCountLabel.Text = string.Format(Tr("HUD_TRASH_FORMAT"), 0);
         }
 
         if (currentScoreLabel != null)
         {
             currentScoreLabel.Visible = true;
             currentScoreLabel.Modulate = Colors.White;
-            currentScoreLabel.Text = "Skor: 0";
+            currentScoreLabel.Text = string.Format(Tr("HUD_SCORE_FORMAT"), 0);
         }
 
         if (requiredScoreLabel != null)
         {
             requiredScoreLabel.Visible = true;
             requiredScoreLabel.Modulate = Colors.White;
-            requiredScoreLabel.Text = "Hedef: 100";
+            requiredScoreLabel.Text = string.Format(Tr("HUD_TARGET_FORMAT"), 100);
         }
 
-        GD.Print("[UI] ========== SCORES UI ARAMA BİTTİ ==========");
     }
 
     public void UpdateScoresUI(int currentLevelScore = 0, int requiredScore = 0)
     {
         if (trashCountLabel != null)
-            trashCountLabel.Text = $"Çöp: {TotalPoints}";
+            trashCountLabel.Text = string.Format(Tr("HUD_TRASH_FORMAT"), TotalPoints);
 
         if (currentScoreLabel != null)
-            currentScoreLabel.Text = $"Skor: {currentLevelScore}";
+            currentScoreLabel.Text = string.Format(Tr("HUD_SCORE_FORMAT"), currentLevelScore);
 
         if (requiredScoreLabel != null)
-            requiredScoreLabel.Text = $"Hedef: {requiredScore}";
+            requiredScoreLabel.Text = string.Format(Tr("HUD_TARGET_FORMAT"), requiredScore);
     }
 
     private void FindCostumeSlotUI()
@@ -456,14 +477,12 @@ public partial class Player_controller : CharacterBody2D
         var costumeSlots = GetNodeOrNull<CanvasLayer>("costume_slots");
         if (costumeSlots == null)
         {
-            GD.Print("[UI] costume_slots bulunamadı!");
             return;
         }
 
         var hbox = costumeSlots.GetNodeOrNull<HBoxContainer>("HBoxContainer");
         if (hbox == null)
         {
-            GD.Print("[UI] HBoxContainer bulunamadı!");
             return;
         }
 
@@ -482,7 +501,6 @@ public partial class Player_controller : CharacterBody2D
             }
         }
 
-        GD.Print($"[UI] Toplam {costumeSlotIcons.Count} kostüm slot'u bulundu!");
     }
 
     private void UpdateCostumeSlotUI()
@@ -528,10 +546,17 @@ public partial class Player_controller : CharacterBody2D
         HandleInvincibility(dt);
         UpdateCooldowns(dt);
 
+        //DRONE SPAWN SİSTEMİ!
+        if (hasDroneSupport)
+        {
+            UpdateDroneSystem(dt);
+        }
+
         // ✅ Swing aktifse özel fizik
         if (isSwinging)
         {
             UpdateSwing(dt);
+            MoveAndSlide();
             UpdateAnimations();
             return;
         }
@@ -540,6 +565,7 @@ public partial class Player_controller : CharacterBody2D
         if (isGrappling)
         {
             UpdateGrapple(dt);
+            MoveAndSlide();
             UpdateAnimations();
             return;
         }
@@ -641,8 +667,8 @@ public partial class Player_controller : CharacterBody2D
         if (flyCooldownTimer > 0)
             flyCooldownTimer -= delta;
 
-        if (frozeTimeCooldownTimer > 0)
-            frozeTimeCooldownTimer -= delta;
+        if (freezeTimeCooldownTimer > 0)
+            freezeTimeCooldownTimer -= delta;
 
         if (swingCooldownTimer > 0)
             swingCooldownTimer -= delta;
@@ -654,15 +680,6 @@ public partial class Player_controller : CharacterBody2D
         if (aquamanStunCooldownTimer > 0)
             aquamanStunCooldownTimer -= delta;
 
-        if (droneTimer > 0)
-        {
-            droneTimer -= delta;
-            if (droneTimer <= 0 && hasDroneSupport)
-            {
-                DroneCollect();
-                droneTimer = droneCollectInterval;
-            }
-        }
     }
     private void ApplyCostumeAbilities()
     {
@@ -695,15 +712,30 @@ public partial class Player_controller : CharacterBody2D
         plantExplosionRadius = CurrentCostume.PlantExplosionRadius;
         plantScene = CurrentCostume.PlantScene;
 
+        // ✅ ATTACK DRONE
         hasDroneSupport = CurrentCostume.HasDroneSupport;
-        droneCollectInterval = CurrentCostume.DroneCollectInterval;
-        droneCollectRadius = CurrentCostume.DroneCollectRadius;
-        if (hasDroneSupport) droneTimer = droneCollectInterval;
+        droneSpawnInterval = CurrentCostume.DroneSpawnInterval;
+        maxActiveDrones = CurrentCostume.MaxActiveDrones;
+        droneDetectionRadius = CurrentCostume.DroneDetectionRadius;
+        droneDamage = CurrentCostume.DroneDamage;
+        droneSpeed = CurrentCostume.DroneSpeed;
+        droneLifetime = CurrentCostume.DroneLifetime;
+        droneScene = CurrentCostume.DroneScene;
 
-        canFrozeTime = CurrentCostume.CanFrozeTime;
-        frozeTimeSlowPercent = CurrentCostume.FrozeTimeSlowPercent;
-        frozeTimeDuration = CurrentCostume.FrozeTimeDuration;
-        frozeTimeCooldown = CurrentCostume.FrozeTimeCooldown;
+        // ✅ SPAWN TIMER BAŞLAT!
+        if (hasDroneSupport)
+        {
+            droneSpawnTimer = droneSpawnInterval;  // İlk spawn hemen!
+        }
+        else
+        {
+            // ✅ Tüm aktif drone'ları temizle!
+            ClearAllDrones();
+        }
+
+        canFreezeTime = CurrentCostume.CanFreezeTime;
+        freezeTimeDuration = CurrentCostume.FreezeTimeDuration;
+        freezeTimeCooldown = CurrentCostume.FreezeTimeCooldown;
 
         canWallJump = CurrentCostume.CanWallJump;
         maxWallJumps = CurrentCostume.MaxWallJumps;
@@ -718,19 +750,152 @@ public partial class Player_controller : CharacterBody2D
         jumpEfficiency = CurrentCostume.JumpEfficiency;
         speedMultiplier = CurrentCostume.SpeedEfficiency;
 
-        // ✅ YENİ: Aquaman özel yetenekler
+        // ✅ AQUAMAN BUBBLE TRAP 
+        canUseBubbleTrap = CurrentCostume.CanUseBubbleTrap;
+        bubbleScene = CurrentCostume.BubbleScene;
+        aquamanStunDuration = CurrentCostume.BubbleStunDuration;
+        aquamanStunCooldown = CurrentCostume.BubbleStunCooldown;
+        aquamanStunRadius = CurrentCostume.BubbleStunRadius;
+
+
         if (CurrentCostume.CostumeName == "aquaBoy")
         {
-            aquamanAttackRange = 2.0f; // Saldırı menzili 2x
-            GD.Print("[AQUAMAN] Pasif: Saldırı menzili 2x!");
+            aquamanAttackRange = 2.0f;
         }
         else
         {
             aquamanAttackRange = 1.0f;
         }
 
-        GD.Print($"[COSTUME] Yetenekler: Fly={canFly}, Swing={canSwing}, Grapple={canGrapple}");
     }
+
+    // ========================================
+    // ATTACK DRONE SİSTEMİ
+    // ========================================
+    private void UpdateDroneSystem(float delta)
+    {
+        if (droneScene == null) return;
+
+        // ✅ Ölü/geçersiz drone'ları temizle
+        activeDrones.RemoveAll(drone => drone == null || !IsInstanceValid(drone));
+
+        // ✅ Timer güncelle
+        droneSpawnTimer -= delta;
+
+        if (droneSpawnTimer <= 0)
+        {
+            // ✅ Max drone kontrolü
+            if (activeDrones.Count >= maxActiveDrones)
+            {
+                droneSpawnTimer = 1.0f;  // 1 saniye sonra tekrar kontrol et
+                return;
+            }
+
+            // ✅ Yakında düşman var mı kontrol et!
+            Node2D nearestEnemy = FindNearestEnemy();
+
+            if (nearestEnemy != null)
+            {
+                // ✅ DRONE SPAWN ET!
+                SpawnAttackDrone();
+                droneSpawnTimer = droneSpawnInterval;  // Timer reset (25 saniye)
+            }
+            else
+            {
+                // ✅ Düşman yok, 2 saniye sonra tekrar kontrol et
+                droneSpawnTimer = 2.0f;
+            }
+        }
+    }
+
+    private Node2D FindNearestEnemy()
+    {
+        var enemies = GetTree().GetNodesInGroup("enemy");
+
+        Node2D closestEnemy = null;
+        float closestDistance = droneDetectionRadius;
+
+        foreach (var enemy in enemies)
+        {
+            if (enemy is Node2D enemyNode && IsInstanceValid(enemyNode))
+            {
+                float distance = GlobalPosition.DistanceTo(enemyNode.GlobalPosition);
+
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = enemyNode;
+                }
+            }
+        }
+
+        return closestEnemy;
+    }
+
+    private void SpawnAttackDrone()
+    {
+        if (droneScene == null)
+        {
+            return;
+        }
+
+        var drone = droneScene.Instantiate<Drone>();
+        GetTree().CurrentScene.AddChild(drone);
+
+        // ✅ Player'ın önünde spawn et!
+        Vector2 spawnOffset = new Vector2(facingRight ? 60 : -60, -40);
+        drone.GlobalPosition = GlobalPosition + spawnOffset;
+
+        // ✅ Setup parametreleri
+        drone.Speed = droneSpeed;
+        drone.DetectionRadius = droneDetectionRadius;
+        drone.Damage = droneDamage;
+        drone.Lifetime = droneLifetime;
+
+        // ✅ Listeye ekle!
+        activeDrones.Add(drone);
+
+        // ✅ Drone yok olduğunda listeden çıkar
+        drone.TreeExited += () => activeDrones.Remove(drone);
+
+    }
+
+    private void ClearAllDrones()
+    {
+        foreach (var drone in activeDrones)
+        {
+            if (drone != null && IsInstanceValid(drone))
+            {
+                drone.QueueFree();
+            }
+        }
+
+        activeDrones.Clear();
+    }
+    private void ActivateFreezeTime()
+    {
+        isFreezeTimeActive = true;
+        freezeTimeCooldownTimer = freezeTimeCooldown;
+
+        var enemies = GetTree().GetNodesInGroup("enemy");
+        int stunned = 0;
+
+        foreach (var enemy in enemies)
+        {
+            // ✅ Stun çağır (ApplySlow yerine)
+            if (enemy.HasMethod("ApplyStun"))
+            {
+                enemy.Call("ApplyStun", freezeTimeDuration);
+                stunned++;
+            }
+        }
+
+        GetTree().CreateTimer(freezeTimeDuration).Timeout += () =>
+        {
+            isFreezeTimeActive = false;
+        };
+    }
+
 
     private void HandleGravity(ref Vector2 velocity, float delta)
     {
@@ -742,6 +907,9 @@ public partial class Player_controller : CharacterBody2D
             {
                 gravityMult = hoverGravityMultiplier;
             }
+
+            if (windUpward)
+                gravityMult *= windGravityMultiplier;
 
             velocity += GetGravity() * GravityScale * gravityMult * delta;
         }
@@ -782,7 +950,6 @@ public partial class Player_controller : CharacterBody2D
         isFlying = true;
         flyTimer = flyTimeDuration;
 
-        GD.Print($"[FLY] ✅ Superman uçuşu başladı! Süre: {flyTimeDuration}sn");
     }
 
     private void StopFlying()
@@ -792,7 +959,6 @@ public partial class Player_controller : CharacterBody2D
         isFlying = false;
         flyCooldownTimer = flyTimeCooldown;
 
-        GD.Print($"[FLY] Uçuş bitti! Cooldown: {flyTimeCooldown}sn");
     }
 
     // ========================================
@@ -801,78 +967,54 @@ public partial class Player_controller : CharacterBody2D
     {
         if (swingCooldownTimer > 0)
         {
-            GD.Print($"[SWING] ⏱️ Cooldown: {swingCooldownTimer:F1}sn");
             return;
         }
 
-        var spaceState = GetWorld2D().DirectSpaceState;
+        // ✅ MOUSE POZİSYONU AL
+        Vector2 mousePos = GetGlobalMousePosition();
+        Vector2 playerPos = GlobalPosition;
 
-        // ✅ DAHA FAZLA YÖN - 10 farklı açı
-        Vector2[] directions = new Vector2[]
+        // ✅ Mesafe kontrolü (GEVŞETİLDİ!)
+        float distance = playerPos.DistanceTo(mousePos);
+
+        if (distance < 30)
         {
-    new Vector2(0, -400),       // Tam yukarı
-    new Vector2(0, -300),
-    new Vector2(0, -200),
-    new Vector2(-350, -300),    // Sol üst
-    new Vector2(350, -300),     // Sağ üst
-    new Vector2(-400, -200),
-    new Vector2(400, -200),
-    new Vector2(-300, -150),
-    new Vector2(300, -150),
-    new Vector2(-250, -100),
-    new Vector2(250, -100),
-    new Vector2(-400, 0),       // ✅ YENİ: Yanlara
-    new Vector2(400, 0),
-    new Vector2(-300, 100),     // ✅ YENİ: Aşağıya
-    new Vector2(300, 100),
-        };
-
-        Vector2? bestAnchor = null;
-        float bestScore = float.MinValue;
-        int hitCount = 0;
-
-        foreach (var dir in directions)
-        {
-            var query = PhysicsRayQueryParameters2D.Create(GlobalPosition, GlobalPosition + dir);
-            query.CollisionMask = 1;
-            query.CollideWithAreas = false;
-            query.CollideWithBodies = true;
-
-            var result = spaceState.IntersectRay(query);
-
-            if (result.Count > 0)
-            {
-                hitCount++;
-                Vector2 hitPoint = (Vector2)result["position"];
-                float distance = GlobalPosition.DistanceTo(hitPoint);
-
-                // ✅ MESAFE GEVŞETİLDİ: 50-400px (önceden 80-280)
-                if (distance >= 30 && distance <= 1000)  // ⚡ 30-1000px
-                {
-                    float heightBonus = GlobalPosition.Y - hitPoint.Y;
-
-                    float directionBonus = facingRight ? hitPoint.X - GlobalPosition.X : GlobalPosition.X - hitPoint.X;
-                    float score = heightBonus * 1.5f + directionBonus * 0.3f - distance * 0.05f;
-
-                    if (score > bestScore)
-                    {
-                        bestScore = score;
-                        bestAnchor = hitPoint;
-                        GD.Print($"[SWING DEBUG] ✅ Potansiyel: {hitPoint}, mesafe: {distance:F0}px, yükseklik: {heightBonus:F0}px, skor: {score:F1}");
-                    }
-                }
-            }
+            return;
         }
 
-        GD.Print($"[SWING DEBUG] Toplam {hitCount} raycast çarpması bulundu");
-
-        if (bestAnchor.HasValue)
+        if (distance > 1500)  // ⚡ 1000 → 1500 (daha uzun menzil!)
         {
-            StartSwing(bestAnchor.Value);
+            return;
+        }
+
+        // ✅ CRITICAL FIX: MOUSE YÖNÜNE RAYCAST AT (PLAYER EXCLUDE!)
+        var spaceState = GetWorld2D().DirectSpaceState;
+        var query = PhysicsRayQueryParameters2D.Create(playerPos, mousePos);
+        query.CollisionMask = 1;  // Layer 1 (platforms)
+
+        // ✅ CRITICAL FIX: Player'ı exclude et! (Kendini bulmasın!)
+        query.Exclude = new Godot.Collections.Array<Rid> { GetRid() };
+
+        query.CollideWithAreas = false;
+        query.CollideWithBodies = true;
+
+        var result = spaceState.IntersectRay(query);
+
+        if (result.Count > 0)
+        {
+            Vector2 hitPoint = (Vector2)result["position"];
+            float hitDistance = playerPos.DistanceTo(hitPoint);
+
+            // ✅ SAFETY: Hit distance kontrolü!
+            if (hitDistance < 30)
+            {
+                return;
+            }
+
+            StartSwing(hitPoint);
         }
         else
         {
-            GD.Print("[SWING] ❌ Tutunacak platform bulunamadı! (Yukarıda 50-400px arası platform olmalı)");
         }
     }
 
@@ -881,19 +1023,50 @@ public partial class Player_controller : CharacterBody2D
         isSwinging = true;
         swingAnchorPoint = anchorPoint;
         swingRadius = GlobalPosition.DistanceTo(anchorPoint);
+
+        // ✅ CRITICAL FIX: Minimum radius kontrolü (NaN önleme!)
+        if (swingRadius < 20)
+        {
+            isSwinging = false;
+            return;
+        }
+
         swingTimer = swingMaxDuration;
 
+        // ✅ Başlangıç açısını hesapla
         Vector2 diff = GlobalPosition - anchorPoint;
+
+        // ✅ CRITICAL FIX: Sıfır vektör kontrolü!
+        if (diff.LengthSquared() < 1)
+        {
+            isSwinging = false;
+            return;
+        }
+
         swingAngle = Mathf.Atan2(diff.X, diff.Y);
 
-        float tangentialVelocity = facingRight ? 7.0f : -7.0f;
-        if (Mathf.Abs(Velocity.X) > 50)
-        {
-            tangentialVelocity = Velocity.X / swingRadius * 1.0f;
-        }
-        swingAngularVelocity = tangentialVelocity;
+        // ✅ CRITICAL FIX: Mevcut hızı swing'e aktar!
+        float currentSpeed = Velocity.X;
 
-        // ✅ FIX: Web görselini güncelle (TopLevel = true olduğu için global pozisyon)
+        if (Mathf.Abs(currentSpeed) > 40)
+        {
+            // ✅ Koşarken swing'e geçiş → momentum KORU!
+            swingAngularVelocity = currentSpeed / swingRadius;
+
+            // ✅ SAFETY: NaN kontrolü!
+            if (float.IsNaN(swingAngularVelocity) || float.IsInfinity(swingAngularVelocity))
+            {
+                swingAngularVelocity = (facingRight ? 1 : -1) * 5.0f;
+            }
+
+        }
+        else
+        {
+            // ✅ Duruyorken swing → hafif başlangıç ver
+            swingAngularVelocity = (facingRight ? 1 : -1) * 5.0f;
+        }
+
+        // ✅ Web görselini güncelle
         if (webLine != null)
         {
             webLine.ClearPoints();
@@ -908,35 +1081,94 @@ public partial class Player_controller : CharacterBody2D
             webAnchorSprite.Visible = true;
         }
 
-        GD.Print($"[SWING] ✅ Swing başladı! Anchor: {anchorPoint}, Radius: {swingRadius:F0}");
     }
 
     private void UpdateSwing(float delta)
     {
+        // ✅ SAFETY: delta kontrolü!
+        if (delta <= 0.001f)
+        {
+            return;
+        }
+
         swingTimer -= delta;
 
+        // ✅ SAFETY: Radius kontrolü!
+        if (swingRadius < 50)
+        {
+            EndSwing();
+            return;
+        }
+
+        // ✅ FİZİK HESAPLARI
         float gravity = swingGravity;
         float pendulumAcceleration = -gravity / swingRadius * Mathf.Sin(swingAngle);
+
+        // ✅ SAFETY: NaN kontrolü!
+        if (float.IsNaN(pendulumAcceleration) || float.IsInfinity(pendulumAcceleration))
+        {
+            EndSwing();
+            return;
+        }
+
         swingAngularVelocity += pendulumAcceleration * delta;
+
+        // ✅ PLAYER INPUT İLE KONTROL! (A/D tuşları)
+        float inputForce = 0;
+        if (Input.IsActionPressed("move_right"))
+        {
+            inputForce = 15.0f;  // Sağa boost
+        }
+        else if (Input.IsActionPressed("move_left"))
+        {
+            inputForce = -15.0f;  // Sola boost
+        }
+
+        swingAngularVelocity += inputForce * delta;
+
+        // ✅ Damping (sürtünme)
         swingAngularVelocity *= swingDamping;
+
+        // ✅ SAFETY: Angular velocity limit!
+        swingAngularVelocity = Mathf.Clamp(swingAngularVelocity, -50, 50);
+
+        // ✅ Açıyı güncelle
         swingAngle += swingAngularVelocity * delta;
 
+        // ✅ CRITICAL FIX: VELOCITY İLE HAREKET! (GlobalPosition değil!)
         float newX = swingAnchorPoint.X + Mathf.Sin(swingAngle) * swingRadius;
         float newY = swingAnchorPoint.Y + Mathf.Cos(swingAngle) * swingRadius;
-        GlobalPosition = new Vector2(newX, newY);
+        Vector2 targetPos = new Vector2(newX, newY);
 
+        // ✅ Velocity hesapla (target'a doğru hareket)
+        Vector2 direction = (targetPos - GlobalPosition).Normalized();
+
+        // ✅ SAFETY: Direction NaN kontrolü!
+        if (float.IsNaN(direction.X) || float.IsNaN(direction.Y))
+        {
+            EndSwing();
+            return;
+        }
+
+        float distance = GlobalPosition.DistanceTo(targetPos);
+        float speed = distance / delta;
+        speed = Mathf.Clamp(speed, 0, 1200);  // ✅ Min 0, Max 1200
+
+        Velocity = direction * speed;
+
+        // ✅ Yönü güncelle
         facingRight = swingAngularVelocity > 0;
         if (animatedSprite != null)
             animatedSprite.FlipH = !facingRight;
 
-        // ✅ FIX: Web çizgisini güncelle (global pozisyon)
+        // ✅ Web çizgisini güncelle
         if (webLine != null && webLine.Visible)
         {
             webLine.SetPointPosition(0, GlobalPosition);
             webLine.SetPointPosition(1, swingAnchorPoint);
         }
 
-        // Bitirme koşulları
+        // ✅ BİTİRME KOŞULLARI
         if (Input.IsActionJustPressed("jump"))
         {
             EndSwingWithLaunch();
@@ -972,26 +1204,58 @@ public partial class Player_controller : CharacterBody2D
     {
         isSwinging = false;
         swingCooldownTimer = swingCooldown;
+
+        // ✅ FIX: Velocity'yi sıfırla (momentum yok)
         Velocity = Vector2.Zero;
 
         if (webLine != null) webLine.Visible = false;
         if (webAnchorSprite != null) webAnchorSprite.Visible = false;
 
-        GD.Print("[SWING] Swing bitti!");
     }
 
     private void EndSwingWithLaunch()
     {
+        // ✅ SAFETY: NaN kontrolü!
+        if (float.IsNaN(swingAngularVelocity) || float.IsInfinity(swingAngularVelocity))
+        {
+            Velocity = new Vector2((facingRight ? 1 : -1) * 500, JumpVelocity * 0.8f);
+
+            isSwinging = false;
+            swingCooldownTimer = swingCooldown;
+
+            if (webLine != null) webLine.Visible = false;
+            if (webAnchorSprite != null) webAnchorSprite.Visible = false;
+
+            return;
+        }
+
+        // ✅ MOMENTUM HESAPLA (swing hızından fırlatma)
         float tangentialSpeed = swingAngularVelocity * swingRadius;
+
+        // ✅ SAFETY: Tangential speed limit!
+        tangentialSpeed = Mathf.Clamp(tangentialSpeed, -2000, 2000);
+
         float launchAngle = swingAngle + Mathf.Pi / 2 * Mathf.Sign(swingAngularVelocity);
+
+        // ✅ Fırlatma hızları
         float launchSpeedX = tangentialSpeed * Mathf.Cos(launchAngle) * 3.5f;
         float launchSpeedY = Mathf.Min(tangentialSpeed * Mathf.Sin(launchAngle) * 2.0f, JumpVelocity * 1.0f);
 
+        // ✅ Minimum hız garantisi
         if (Mathf.Abs(launchSpeedX) < 300)
             launchSpeedX = (facingRight ? 1 : -1) * 500;
+
         if (launchSpeedY > -200)
             launchSpeedY = JumpVelocity * 0.8f;
 
+        // ✅ SAFETY: Final NaN check!
+        if (float.IsNaN(launchSpeedX) || float.IsNaN(launchSpeedY))
+        {
+            launchSpeedX = (facingRight ? 1 : -1) * 500;
+            launchSpeedY = JumpVelocity * 0.8f;
+        }
+
+        // ✅ CRITICAL FIX: Velocity'ye yaz, GlobalPosition'a DEĞİL!
         Velocity = new Vector2(launchSpeedX, launchSpeedY);
 
         isSwinging = false;
@@ -1000,7 +1264,6 @@ public partial class Player_controller : CharacterBody2D
         if (webLine != null) webLine.Visible = false;
         if (webAnchorSprite != null) webAnchorSprite.Visible = false;
 
-        GD.Print($"[SWING] ✅ Fırlatıldı! Velocity: {Velocity}");
     }
 
     // ========================================
@@ -1009,74 +1272,82 @@ public partial class Player_controller : CharacterBody2D
     {
         if (grappleCooldownTimer > 0)
         {
-            GD.Print($"[GRAPPLE] ⏱️ Cooldown: {grappleCooldownTimer:F1}sn");
             return;
         }
 
-        var spaceState = GetWorld2D().DirectSpaceState;
+        // ✅ MOUSE POZİSYONU AL
+        Vector2 mousePos = GetGlobalMousePosition();
+        Vector2 playerPos = GlobalPosition;
 
-        // ✅ DAHA FAZLA AÇI - 13 farklı açı
-        float[] angles = { 90, 85, 95, 80, 100, 75, 105, 70, 110, 65, 115, 60, 120, 55, 125, 50, 130 };
-        float maxDistance = 400f;  // ✅ 350'den 400'e çıkarıldı
-
-        Vector2? bestTarget = null;
-        float bestScore = float.MinValue;
-        int hitCount = 0;
-
-        foreach (float angleDeg in angles)
+        // ✅ KONTROL: Mouse player'ın YUKARISINDA mi?
+        if (mousePos.Y >= playerPos.Y)
         {
-            float angleRad = Mathf.DegToRad(angleDeg);
-            Vector2 direction = new Vector2(Mathf.Cos(angleRad), -Mathf.Sin(angleRad));
+            return;
+        }
 
-            var query = PhysicsRayQueryParameters2D.Create(
-                GlobalPosition,
-                GlobalPosition + direction * maxDistance
-            );
-            query.CollisionMask = 1;
-            query.CollideWithAreas = false;
-            query.CollideWithBodies = true;
+        // ✅ Mesafe kontrolü
+        float distance = playerPos.DistanceTo(mousePos);
 
-            var result = spaceState.IntersectRay(query);
+        if (distance < 30)
+        {
+            return;
+        }
 
-            if (result.Count > 0)
+        if (distance > 800)
+        {
+            return;
+        }
+
+        // ✅ OPSİYON 1: RAYCAST2D NODE KULLAN (Eğer var ise)
+        if (grappleRayCast != null)
+        {
+            // ✅ RayCast2D'yi mouse yönüne ayarla
+            Vector2 localMousePos = ToLocal(mousePos);
+            grappleRayCast.TargetPosition = localMousePos;
+            grappleRayCast.Enabled = true;
+            grappleRayCast.ForceRaycastUpdate();  // ✅ Hemen güncelle!
+
+            if (grappleRayCast.IsColliding())
             {
-                hitCount++;
-                Vector2 hitPoint = (Vector2)result["position"];
-                float distance = GlobalPosition.DistanceTo(hitPoint);
-                float heightDiff = GlobalPosition.Y - hitPoint.Y;
+                Vector2 hitPoint = grappleRayCast.GetCollisionPoint();
+                float hitDistance = playerPos.DistanceTo(hitPoint);
 
-                // ✅ YÜKSEKLIK GEVŞETİLDİ: 20px+ (önceden 50px+)
-                if (distance > 20 && distance < 1000)    // ⚡ 20-1000px
-                {
-                    float dirBonus = facingRight ? (hitPoint.X - GlobalPosition.X) : (GlobalPosition.X - hitPoint.X);
-                    float score = heightDiff * 2 + dirBonus * 0.5f - distance * 0.05f;
-
-                    if (score > bestScore)
-                    {
-                        bestScore = score;
-                        bestTarget = hitPoint;
-                        GD.Print($"[GRAPPLE DEBUG] ✅ Potansiyel nokta: {hitPoint}, mesafe: {distance:F0}px, yükseklik: {heightDiff:F0}px, skor: {score:F1}");
-                    }
-                }
+                grappleRayCast.Enabled = false;  // ✅ Kapat
+                StartGrapple(hitPoint);
+                return;
+            }
+            else
+            {
+                grappleRayCast.Enabled = false;
+                return;
             }
         }
 
-        GD.Print($"[GRAPPLE DEBUG] Toplam {hitCount} raycast çarpması bulundu");
+        // ✅ OPSİYON 2: FALLBACK - Manuel Raycast (RayCast2D yoksa)
+        var spaceState = GetWorld2D().DirectSpaceState;
+        var query = PhysicsRayQueryParameters2D.Create(playerPos, mousePos);
+        query.CollisionMask = 1;
+        query.CollideWithAreas = false;
+        query.CollideWithBodies = true;
 
-        if (bestTarget.HasValue)
+        var result = spaceState.IntersectRay(query);
+
+        if (result.Count > 0)
         {
-            StartGrapple(bestTarget.Value);
+            Vector2 hitPoint = (Vector2)result["position"];
+            float hitDistance = playerPos.DistanceTo(hitPoint);
+
+            StartGrapple(hitPoint);
         }
         else
         {
-            GD.Print("[GRAPPLE] ❌ Tutunacak platform bulunamadı! (Yukarıda 40-400px arası + 20px+ yüksek platform olmalı)");
         }
     }
 
     private void StartGrapple(Vector2 targetPoint)
     {
         isGrappling = true;
-        grappleTargetPoint = targetPoint + new Vector2(0, -20);
+        grappleTargetPoint = targetPoint + new Vector2(0, -40);
 
         // ✅ FIX: Hook görselini güncelle (TopLevel = true)
         if (hookLine != null)
@@ -1093,7 +1364,6 @@ public partial class Player_controller : CharacterBody2D
             hookSprite.Visible = true;
         }
 
-        GD.Print($"[GRAPPLE] ✅ Grapple başladı! Target: {targetPoint}");
     }
 
     private void UpdateGrapple(float delta)
@@ -1101,11 +1371,12 @@ public partial class Player_controller : CharacterBody2D
         Vector2 direction = (grappleTargetPoint - GlobalPosition).Normalized();
         float distance = GlobalPosition.DistanceTo(grappleTargetPoint);
 
-        if (distance > 15)
+        if (distance > 20)
         {
-            GlobalPosition += direction * grappleSpeed * delta;
+            // ✅ CRITICAL FIX: Daha hızlı çekilme + Yerçekimi iptal!
+            Velocity = direction * grappleSpeed * 1.5f;  // 1.5x daha hızlı!
 
-            // ✅ FIX: Hook çizgisini güncelle (global pozisyon)
+            // ✅ Hook çizgisini güncelle
             if (hookLine != null && hookLine.Visible)
             {
                 hookLine.SetPointPosition(0, GlobalPosition);
@@ -1122,6 +1393,7 @@ public partial class Player_controller : CharacterBody2D
             return;
         }
 
+        // İptal tuşları
         if (Input.IsActionJustPressed("special_ability") ||
             Input.IsActionJustPressed("interaction") ||
             Input.IsActionJustPressed("jump"))
@@ -1134,21 +1406,34 @@ public partial class Player_controller : CharacterBody2D
     {
         isGrappling = false;
         grappleCooldownTimer = grappleCooldown;
-        Velocity = Vector2.Zero;
 
         if (hookLine != null) hookLine.Visible = false;
         if (hookSprite != null) hookSprite.Visible = false;
 
         if (reachedTarget)
         {
-            GD.Print("[GRAPPLE] ✅ Hedefe ulaşıldı!");
+            // ✅ DİNAMİK BOOST: Mesafeye göre ayarla!
+            float upwardBoost = -150;  // Varsayılan
+
+            // Eğer çok yukarıdaysa daha fazla boost ver
+            float heightDiff = GlobalPosition.Y - grappleTargetPoint.Y;
+            if (heightDiff > 300)
+            {
+                upwardBoost = -250;  // Yüksek platform için güçlü boost
+            }
+            else if (heightDiff < 100)
+            {
+                upwardBoost = -100;  // Alçak platform için hafif boost
+            }
+
+            Velocity = new Vector2(Velocity.X * 0.3f, upwardBoost);
+
         }
         else
         {
-            GD.Print("[GRAPPLE] İptal edildi!");
+            Velocity = Vector2.Zero;
         }
     }
-
     private void HandleWallJump(ref Vector2 velocity)
     {
         if (!canWallJump) return;
@@ -1160,7 +1445,6 @@ public partial class Player_controller : CharacterBody2D
             velocity.Y = jumpForce;
             velocity.X = facingRight ? -Speed : Speed;
             wallJumpsRemaining--;
-            GD.Print($"[WALL JUMP] Kalan: {wallJumpsRemaining}");
         }
     }
 
@@ -1168,7 +1452,6 @@ public partial class Player_controller : CharacterBody2D
     {
         if (teleportCooldownTimer > 0)
         {
-            GD.Print($"[TELEPORT] ⏱️ Cooldown: {teleportCooldownTimer:F1}sn");
             return;
         }
         Vector2 direction = facingRight ? Vector2.Right : Vector2.Left;
@@ -1183,14 +1466,12 @@ public partial class Player_controller : CharacterBody2D
 
             if (result.Count == 0)
             {
-                GD.Print("[TELEPORT] Platform yok, iptal!");
                 return;
             }
         }
 
         GlobalPosition = targetPos;
         teleportCooldownTimer = teleportCooldown;
-        GD.Print("[TELEPORT] Işınlandı!");
     }
 
     private void ThrowProjectile()
@@ -1215,7 +1496,6 @@ public partial class Player_controller : CharacterBody2D
 
         GetTree().CurrentScene.AddChild(projectile);
         projectileCooldownTimer = projectileCooldown;
-        GD.Print("[PROJECTILE] Atıldı!");
     }
 
     private void PlacePlant()
@@ -1247,66 +1527,14 @@ public partial class Player_controller : CharacterBody2D
         activePlants.Add(plant);
         plant.TreeExited += () => activePlants.Remove(plant);
 
-        GD.Print($"[PLANT] Yerleştirildi! Aktif: {activePlants.Count}");
-    }
-
-    private void ActivateFrozeTime()
-    {
-        isFrozeTimeActive = true;
-        frozeTimeCooldownTimer = frozeTimeCooldown;
-
-        var enemies = GetTree().GetNodesInGroup("enemy");
-        foreach (var enemy in enemies)
-        {
-            if (enemy.HasMethod("ApplySlow"))
-            {
-                enemy.Call("ApplySlow", frozeTimeSlowPercent, frozeTimeDuration);
-            }
-        }
-
-        GD.Print($"[FROZE TIME] {enemies.Count} düşman yavaşlatıldı!");
-
-        GetTree().CreateTimer(frozeTimeDuration).Timeout += () =>
-        {
-            isFrozeTimeActive = false;
-            GD.Print("[FROZE TIME] Bitti!");
-        };
-    }
-
-    private void DroneCollect()
-    {
-        var points = GetTree().GetNodesInGroup("points");
-        int collected = 0;
-
-        foreach (var point in points)
-        {
-            if (point is Node2D pointNode)
-            {
-                float distance = GlobalPosition.DistanceTo(pointNode.GlobalPosition);
-                if (distance <= droneCollectRadius)
-                {
-                    if (pointNode.HasMethod("CollectByDrone"))
-                    {
-                        pointNode.Call("CollectByDrone", this);
-                    }
-                    collected++;
-                }
-            }
-        }
-
-        GD.Print($"[DRONE] {collected} çöp toplandı!");
     }
 
     public void SetCostumeAndEquip(int slotIndex, CostumeResource costume)
     {
         if (slotIndex < 0 || slotIndex >= CostumeSlots.Length || costume == null)
         {
-            GD.PrintErr($"[COSTUME] Geçersiz parametre: slot={slotIndex}, costume={costume}");
             return;
         }
-
-        GD.Print($"[COSTUME] === SetCostumeAndEquip BAŞLADI ===");
-        GD.Print($"[COSTUME] Slot: {slotIndex}, Yeni Kostüm: {costume.CostumeName}");
 
         if (currentCostumeIndex >= 0 && currentCostumeIndex < CostumeSlots.Length)
         {
@@ -1335,7 +1563,6 @@ public partial class Player_controller : CharacterBody2D
 
         StopAllAbilities();
 
-        GD.Print($"[COSTUME] ✅ {costume.CostumeName} giyildi! HP: {currentHealth}/{MaxHealth}");
     }
     private void StopAllAbilities()
     {
@@ -1344,6 +1571,11 @@ public partial class Player_controller : CharacterBody2D
         {
             isFlying = false;
             flyCooldownTimer = flyTimeCooldown;
+        }
+
+        if (hasDroneSupport)
+        {
+            ClearAllDrones();
         }
 
         // Swinging
@@ -1388,7 +1620,6 @@ public partial class Player_controller : CharacterBody2D
         }
     }
 
-
     public void EquipCostume(int slotIndex)
     {
         if (slotIndex < 0 || slotIndex >= CostumeSlots.Length)
@@ -1399,7 +1630,6 @@ public partial class Player_controller : CharacterBody2D
 
         if (slotIndex == currentCostumeIndex)
         {
-            GD.Print($"[COSTUME] Zaten bu kostüm giyili!");
             return;
         }
 
@@ -1415,10 +1645,9 @@ public partial class Player_controller : CharacterBody2D
         ApplyCostume();
         UpdateCostumeSlotUI();
 
-        GD.Print($"[COSTUME] {CurrentCostume.CostumeName} giyildi! (Slot {slotIndex + 1})");
     }
 
-    private void ApplyCostume()
+    public void ApplyCostume()
     {
         if (CurrentCostume == null) return;
 
@@ -1462,7 +1691,8 @@ public partial class Player_controller : CharacterBody2D
     {
         if (jumpBufferTimer > 0 && (IsOnFloor() || coyoteTimer > 0))
         {
-            velocity.Y = JumpVelocity * jumpEfficiency;
+            float jumpMult = windUpward ? windJumpBoost : 1.0f;
+            velocity.Y = JumpVelocity * jumpEfficiency * jumpMult;
             jumpBufferTimer = 0;
             jumpsRemaining = 0;
         }
@@ -1489,7 +1719,6 @@ public partial class Player_controller : CharacterBody2D
         attackArea.Monitoring = false;
         attackArea.BodyEntered += OnAttackHitEnemy;
 
-        GD.Print("[ATTACK] ✅ Attack Area oluşturuldu! Mask: " + attackArea.CollisionMask);
     }
     private void OnAttackHitEnemy(Node2D body)
     {
@@ -1497,11 +1726,9 @@ public partial class Player_controller : CharacterBody2D
         {
             int damage = (int)(1 * damageMultiplier);
             body.Call("TakeDamage", damage);
-            GD.Print($"[ATTACK] ✅ {body.Name} düşmana {damage} hasar verildi!");
         }
         else
         {
-            GD.Print($"[ATTACK] ❌ {body.Name} enemy değil veya TakeDamage yok!");
         }
     }
 
@@ -1625,16 +1852,13 @@ public partial class Player_controller : CharacterBody2D
                     if (!isSwinging && !isGrappling && !isFlying)
                     {
                         attackArea.CallDeferred("set_monitoring", true);
-                        GD.Print($"[ATTACK] ⚔️ Monitoring AÇIK! Frame: {frame}, Range: {aquamanAttackRange}x");
 
                         await ToSignal(GetTree().CreateTimer(0.2), SceneTreeTimer.SignalName.Timeout);
 
                         attackArea.CallDeferred("set_monitoring", false);
-                        GD.Print("[ATTACK] Monitoring KAPALI!");
                     }
                     else
                     {
-                        GD.Print("[ATTACK] ❌ Yetenek aktif, attack iptal!");
                     }
                 }
 
@@ -1642,8 +1866,6 @@ public partial class Player_controller : CharacterBody2D
             }
         }
     }
-
-
 
     public void TakeDamage(int damage = 1)
     {
@@ -1694,53 +1916,60 @@ public partial class Player_controller : CharacterBody2D
     public void AddMetal(int value)
     {
         metalCount += value;
-        GD.Print($"[PLAYER] 🔩 Metal +{value}, Toplam çöp: {TotalPoints}");
         if (trashCountLabel != null)
-            trashCountLabel.Text = $"Çöp: {TotalPoints}";
+            trashCountLabel.Text = string.Format(Tr("HUD_TRASH_FORMAT"), TotalPoints);
     }
 
     public void AddGlass(int value)
     {
         glassCount += value;
-        GD.Print($"[PLAYER] 🫙 Cam +{value}, Toplam çöp: {TotalPoints}");
         if (trashCountLabel != null)
-            trashCountLabel.Text = $"Çöp: {TotalPoints}";
+            trashCountLabel.Text = string.Format(Tr("HUD_TRASH_FORMAT"), TotalPoints);
     }
 
     public void AddPlastic(int value)
     {
         plasticCount += value;
-        GD.Print($"[PLAYER] 🧴 Plastik +{value}, Toplam çöp: {TotalPoints}");
         if (trashCountLabel != null)
-            trashCountLabel.Text = $"Çöp: {TotalPoints}";
+            trashCountLabel.Text = string.Format(Tr("HUD_TRASH_FORMAT"), TotalPoints);
     }
 
     public void AddFood(int value)
     {
         foodCount += value;
-        GD.Print($"[PLAYER] 🍎 Food +{value}, Toplam çöp: {TotalPoints}");
         if (trashCountLabel != null)
-            trashCountLabel.Text = $"Çöp: {TotalPoints}";
+            trashCountLabel.Text = string.Format(Tr("HUD_TRASH_FORMAT"), TotalPoints);
     }
 
     public void AddWood(int value)
     {
         woodCount += value;
-        GD.Print($"[PLAYER] 📄 Wood +{value}, Toplam çöp: {TotalPoints}");
         if (trashCountLabel != null)
-            trashCountLabel.Text = $"Çöp: {TotalPoints}";
+            trashCountLabel.Text = string.Format(Tr("HUD_TRASH_FORMAT"), TotalPoints);
     }
 
     public int[] GetAllPoints()
     {
-        return new int[] { metalCount, glassCount, plasticCount, foodCount, woodCount };
+        return new int[] { plasticCount, metalCount, glassCount, foodCount, woodCount };
     }
 
-    public void ResetPoints()
+    public void RestorePoints(int[] trashArray)
     {
-        metalCount = glassCount = plasticCount = foodCount = woodCount = 0;
+        if (trashArray.Length != 5)
+        {
+            return;
+        }
+
+        // ✅ GetAllPoints() sıralaması: [plastic, metal, glass, food, wood]
+        plasticCount = trashArray[0];
+        metalCount = trashArray[1];
+        glassCount = trashArray[2];
+        foodCount = trashArray[3];
+        woodCount = trashArray[4];
+
+        // ✅ UI'ı güncelle
         if (trashCountLabel != null)
-            trashCountLabel.Text = $"Çöp: 0";
+            trashCountLabel.Text = string.Format(Tr("HUD_TRASH_FORMAT"), TotalPoints);
     }
 
     private void HandleMovement(ref Vector2 velocity, float delta)
@@ -1769,6 +1998,59 @@ public partial class Player_controller : CharacterBody2D
 
             velocity.X = Mathf.MoveToward(velocity.X, 0, friction * delta);
         }
+        if (windActive)
+        {
+            bool movingAgainstWind = (windDirection > 0 && inputDirection.X < 0) ||
+                                     (windDirection < 0 && inputDirection.X > 0);
+
+            bool standing = Mathf.Abs(inputDirection.X) < 0.1f;
+
+            bool movingWithWind = (windDirection > 0 && inputDirection.X > 0) ||
+                                    (windDirection < 0 && inputDirection.X < 0);
+
+            if (movingAgainstWind)
+            {
+                // Rüzgara karşı gidince yavaşla
+                velocity.X *= (1f - windSpeedReduction);
+            }
+            else if (movingWithWind)
+            {
+                // Rüzgar yönünde max hıza bonus ekle, tek seferlik cap ile sınırla
+                float boostedMax = Speed * speedMultiplier * (1f + windSpeedBoost);
+                float targetSpeed = windDirection * boostedMax;
+                velocity.X = Mathf.MoveToward(velocity.X, targetSpeed, Acceleration * delta);
+            }
+            else if (standing)
+            {
+                // Duruyorken rüzgar yönüne doğru yavaşça it
+                velocity.X += windDirection * windPushForce * delta;
+            }
+        }
+    }
+    public void ApplyWind(int direction, float speedReduction, float pushForce, float speedBoost = 0.3f)
+    {
+        windActive = true;
+        windDirection = direction;
+        windSpeedReduction = speedReduction;
+        windPushForce = pushForce;
+        windSpeedBoost = speedBoost;
+    }
+
+    public void SetUpwardWind(float gravityMult, float jumpBoost)
+    {
+        windUpward = true;
+        windGravityMultiplier = gravityMult;
+        windJumpBoost = jumpBoost;
+    }
+
+    public void RemoveWind()
+    {
+        windActive = false;
+        windDirection = 0;
+        windUpward = false;
+        windGravityMultiplier = 0.5f;
+        windJumpBoost = 1.3f;
+        windSpeedBoost = 0.3f;
     }
 
     private void UpdateAnimations()
@@ -1856,12 +2138,10 @@ public partial class Player_controller : CharacterBody2D
     // ========================================
     private void HandleSpecialAbilityOrInteraction()
     {
-        GD.Print($"[E TUŞU] isNearInteractable={isNearInteractable}, currentInteractable={currentInteractable?.Name ?? "NULL"}");
 
         // ✅ ÖNCELİK 1: NPC/Building etkileşimi
         if (isNearInteractable && currentInteractable != null)
         {
-            GD.Print("[E TUŞU] Etkileşim öncelikli!");
             TryInteract();
             return;
         }
@@ -1892,46 +2172,43 @@ public partial class Player_controller : CharacterBody2D
     {
         if (isAttacking) return;
 
-        // ✅ AQUAMAN - SU BALONU TUZAĞI (E TUŞU)
-        if (CurrentCostume != null && CurrentCostume.CostumeName == "aquaBoy")
+        // ✅ AQUAMAN - BUBBLE WAVE (E TUŞU) - ÖNCE KONTROL ET!
+        if (canUseBubbleTrap && aquamanStunCooldownTimer <= 0)
         {
-            if (canFrozeTime && aquamanStunCooldownTimer <= 0)
-            {
-                ActivateAquamanBubbleTrap();
-                return;
-            }
-            else if (aquamanStunCooldownTimer > 0)
-            {
-                GD.Print($"[AQUAMAN] ⏱️ Su balonu cooldown: {aquamanStunCooldownTimer:F1}sn");
-                return;
-            }
+            ActivateAquamanBubbleTrap();
+            return;
+        }
+        else if (canUseBubbleTrap && aquamanStunCooldownTimer > 0)
+        {
+            return;
         }
 
+        // Swing
         if (canSwing)
         {
             TryStartSwing();
             return;
         }
 
+        // Grapple
         if (canGrapple)
         {
             TryStartGrapple();
             return;
         }
 
+        // Superman Fly
         if (canFly && flyCooldownTimer <= 0)
         {
             StartFlying();
             return;
         }
 
-        if (canFrozeTime && frozeTimeCooldownTimer <= 0)
+        if (canFreezeTime && freezeTimeCooldownTimer <= 0)
         {
-            ActivateFrozeTime();
+            ActivateFreezeTime();
             return;
         }
-
-        GD.Print("[ABILITY] Kullanılabilir yetenek yok!");
     }
     // Satır ~1700 civarında, diğer metodların sonuna:
     private void HandleRightClick()
@@ -1940,7 +2217,6 @@ public partial class Player_controller : CharacterBody2D
         if (canThrowProjectile && projectileCooldownTimer <= 0)
         {
             ThrowProjectile();
-            GD.Print("[RIGHT CLICK] Spiderman ağ attı!");
             return;
         }
 
@@ -1948,7 +2224,6 @@ public partial class Player_controller : CharacterBody2D
         if (canPlantProjectile)
         {
             PlacePlant();
-            GD.Print("[RIGHT CLICK] Batman batarang yerleştirdi!");
             return;
         }
 
@@ -1956,19 +2231,16 @@ public partial class Player_controller : CharacterBody2D
         if (canTeleport && teleportCooldownTimer <= 0)
         {
             PerformTeleport();
-            GD.Print("[RIGHT CLICK] Flash ışınlandı!");
             return;
         }
 
         // ===== FLASH - FROZE TIME (alternatif) =====
-        if (canFrozeTime && frozeTimeCooldownTimer <= 0)
+        if (canFreezeTime && freezeTimeCooldownTimer <= 0)
         {
-            ActivateFrozeTime();
-            GD.Print("[RIGHT CLICK] Flash FrozeTime kullandı!");
+            ActivateFreezeTime();
             return;
         }
 
-        GD.Print("[RIGHT CLICK] Bu kostümde sağ tık özelliği yok!");
     }
     private void HandleClimbing(ref Vector2 velocity, float delta)
     {
@@ -1981,7 +2253,6 @@ public partial class Player_controller : CharacterBody2D
         if (Input.IsActionPressed("climb"))  // W tuşu
         {
             velocity.Y = -climbSpeed;
-            GD.Print("[CLIMB] Yukarı tırmanıyor...");
         }
         // ✅ S tuşu ile aşağı in
         else if (Input.IsActionPressed("ui_down"))  // S tuşu
@@ -2007,10 +2278,8 @@ public partial class Player_controller : CharacterBody2D
             velocity.Y = JumpVelocity * 0.8f;
             velocity.X = facingRight ? -Speed : Speed;  // Ters yöne zıpla
             isClimbing = false;
-            GD.Print("[CLIMB] Duvardan atladı!");
         }
     }
-
 
     private void PlayAnimation(string animationName)
     {
@@ -2041,7 +2310,6 @@ public partial class Player_controller : CharacterBody2D
         }
 
         UpdateHealthUI();
-        GD.Print($"[HEAL] +{amount} can! Güncel: {currentHealth}/{MaxHealth}");
     }
 
     public void HealCostumeSlot(int slotIndex)
@@ -2061,7 +2329,6 @@ public partial class Player_controller : CharacterBody2D
             UpdateHealthUI();
         }
 
-        GD.Print($"[HEAL SLOT] Slot {slotIndex} canı full yapıldı: {maxHealth}");
     }
 
     public void DestroyCostumeSlot(int slotIndex)
@@ -2071,8 +2338,6 @@ public partial class Player_controller : CharacterBody2D
 
         if (CostumeSlots[slotIndex] == null)
             return;
-
-        GD.Print($"[COSTUME] Slot {slotIndex} yok edildi: {CostumeSlots[slotIndex].CostumeName}");
 
         if (slotIndex == currentCostumeIndex)
         {
@@ -2099,33 +2364,25 @@ public partial class Player_controller : CharacterBody2D
     // ========================================
     private void ActivateAquamanBubbleTrap()
     {
-        aquamanStunCooldownTimer = aquamanStunCooldown;
-
-        var enemies = GetTree().GetNodesInGroup("enemy");
-        int trappedCount = 0;
-
-        foreach (var enemy in enemies)
+        if (bubbleScene == null)
         {
-            if (enemy is Node2D enemyNode)
-            {
-                float distance = GlobalPosition.DistanceTo(enemyNode.GlobalPosition);
-
-                if (distance <= aquamanStunRadius)
-                {
-                    // Düşmanı stun et
-                    if (enemy.HasMethod("ApplySlow"))
-                    {
-                        enemy.Call("ApplySlow", 1.0f, frozeTimeDuration); // 1.0 = tamamen durdur
-                        trappedCount++;
-                    }
-
-                    // Görsel efekt (isteğe bağlı - su baloncuğu sprite'ı eklenebilir)
-                    GD.Print($"[AQUAMAN] 💧 {enemyNode.Name} su baloncuğunda!");
-                }
-            }
+            return;
         }
 
-        GD.Print($"[AQUAMAN] ✅ {trappedCount} düşman tuzaklandı! Cooldown: {aquamanStunCooldown}sn");
+        aquamanStunCooldownTimer = aquamanStunCooldown;
+
+        // ✅ TEK bubble wave spawn et
+        var bubble = bubbleScene.Instantiate<BubbleProjectile>();
+        bubble.GlobalPosition = GlobalPosition + new Vector2(facingRight ? 40 : -40, 0);
+
+        // Setup çağır (yön + süre)
+        if (bubble.HasMethod("Setup"))
+        {
+            bubble.Call("Setup", facingRight ? 1 : -1, aquamanStunDuration);
+        }
+
+        GetTree().CurrentScene.AddChild(bubble);
+
     }
     // Geçici kostüm
     private CostumeResource originalCostume;
@@ -2145,8 +2402,6 @@ public partial class Player_controller : CharacterBody2D
             EquipCostume(slot);
             hasTemporaryCostume = true;
 
-            GD.Print($"[COSTUME] Geçici kostüm eklendi: {costume.CostumeName}");
-
             if (duration > 0)
             {
                 GetTree().CreateTimer(duration).Timeout += RemoveTemporaryCostume;
@@ -2159,8 +2414,6 @@ public partial class Player_controller : CharacterBody2D
     private void RemoveTemporaryCostume()
     {
         if (!hasTemporaryCostume) return;
-
-        GD.Print("[COSTUME] Geçici kostüm süresi doldu!");
 
         hasTemporaryCostume = false;
         StopAllAbilities();
@@ -2194,6 +2447,61 @@ public partial class Player_controller : CharacterBody2D
         return currentCostumeIndex;
     }
 
+    // ========================================
+    // TÜM KOSTÜMLERİN CANI - SECRET LEVEL SAVE/LOAD
+    // ========================================
+    // Sadece aktif kostümün canını değil, 3 slotun TAMAMININ canını
+    // tek pakette taşır. Secret level'e geçerken/dönerken bunu kullan.
+    public Godot.Collections.Dictionary GetCostumeHealthSaveData()
+    {
+        // Aktif kostümün güncel canını önce dictionary'ye yansıt
+        if (currentCostumeIndex >= 0 && currentCostumeIndex < CostumeSlots.Length)
+        {
+            costumeHealthStates[currentCostumeIndex] = currentHealth;
+        }
+
+        var data = new Godot.Collections.Dictionary();
+        data["ActiveSlot"] = currentCostumeIndex;
+
+        for (int i = 0; i < CostumeSlots.Length; i++)
+        {
+            if (CostumeSlots[i] == null) continue;
+
+            int health = costumeHealthStates.ContainsKey(i) ? costumeHealthStates[i] : CostumeSlots[i].MaxHealth;
+            data[$"Slot{i}Health"] = health;
+            data[$"Slot{i}MaxHealth"] = CostumeSlots[i].MaxHealth;
+        }
+
+        return data;
+    }
+
+    public void RestoreCostumeHealthSaveData(Godot.Collections.Dictionary data)
+    {
+        if (data == null) return;
+
+        // Önce TÜM slotların canını yükle (henüz hiçbiri giyilmeden!)
+        for (int i = 0; i < CostumeSlots.Length; i++)
+        {
+            string key = $"Slot{i}Health";
+            if (CostumeSlots[i] != null && data.ContainsKey(key))
+            {
+                costumeHealthStates[i] = (int)data[key];
+            }
+        }
+
+        // Sonra hangi kostüm aktifse onu giy - can zaten doğru şekilde hazır bekliyor
+        if (data.ContainsKey("ActiveSlot"))
+        {
+            int activeSlot = (int)data["ActiveSlot"];
+            if (activeSlot >= 0 && activeSlot < CostumeSlots.Length && CostumeSlots[activeSlot] != null)
+            {
+                RestoreCostume(activeSlot);
+            }
+        }
+
+        UpdateHealthUI();
+    }
+
     public void UpdateTeacherScore(int points)
     {
         var level = GetTree().CurrentScene;
@@ -2216,10 +2524,10 @@ public partial class Player_controller : CharacterBody2D
         }
 
         if (currentScoreLabel != null)
-            currentScoreLabel.Text = $"Skor: {currentScore}";
+            currentScoreLabel.Text = string.Format(Tr("HUD_SCORE_FORMAT"), currentScore);
 
         if (requiredScoreLabel != null)
-            requiredScoreLabel.Text = $"Hedef: {requiredScore}";
+            requiredScoreLabel.Text = string.Format(Tr("HUD_TARGET_FORMAT"), requiredScore);
     }
 
     public void UpdateMinigameScore(int minigamePoints)
@@ -2244,10 +2552,10 @@ public partial class Player_controller : CharacterBody2D
         }
 
         if (currentScoreLabel != null)
-            currentScoreLabel.Text = $"Skor: {currentScore}";
+            currentScoreLabel.Text = string.Format(Tr("HUD_SCORE_FORMAT"), currentScore);
 
         if (requiredScoreLabel != null)
-            requiredScoreLabel.Text = $"Hedef: {requiredScore}";
+            requiredScoreLabel.Text = string.Format(Tr("HUD_TARGET_FORMAT"), requiredScore);
     }
 
     // ===== GETTER'LAR =====
@@ -2263,21 +2571,30 @@ public partial class Player_controller : CharacterBody2D
     {
         if (costumeIndex < 0 || costumeIndex >= CostumeSlots.Length)
         {
-            GD.PrintErr($"[PLAYER] ❌ Geçersiz kostüm index: {costumeIndex}");
             return;
         }
 
         if (CostumeSlots[costumeIndex] == null)
         {
-            GD.PrintErr($"[PLAYER] ❌ Slot {costumeIndex} boş!");
             return;
         }
 
-        GD.Print($"[PLAYER] 🔄 Kostüm geri yükleniyor: Slot {costumeIndex} - {CostumeSlots[costumeIndex].CostumeName}");
+        // ✅ CRITICAL FIX: Mevcut index'i resetle, zorla restore yap!
+        int previousIndex = currentCostumeIndex;
 
-        // ✅ Mevcut EquipCostume metodunu kullan
-        EquipCostume(costumeIndex);
+        // ✅ YENİ: Her zaman restore et, kontrol YOK!
+        StopAllAbilities();
 
-        GD.Print($"[PLAYER] ✅ Kostüm aktif: {CurrentCostume?.CostumeName ?? "NULL"}");
+        if (currentCostumeIndex >= 0)
+        {
+            costumeHealthStates[currentCostumeIndex] = currentHealth;
+        }
+
+        currentCostumeIndex = costumeIndex;
+        CurrentCostume = CostumeSlots[costumeIndex];
+
+        ApplyCostume();
+        UpdateCostumeSlotUI();
+
     }
 }

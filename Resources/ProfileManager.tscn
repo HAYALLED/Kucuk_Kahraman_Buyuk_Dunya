@@ -56,7 +56,7 @@ theme_override_constants/separation = 20
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Aktif Profil:"
+text = "PROFILE_ACTIVE_LABEL"
 horizontal_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="Profil/VBoxContainer"]
@@ -68,7 +68,7 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.7655716, 0.736287, 1)
 theme_override_font_sizes/font_size = 28
-text = "Aktif: Misafir"
+text = "PROFILE_ACTIVE_GUEST_SHORT"
 horizontal_alignment = 1
 
 [node name="HSeparator2" type="HSeparator" parent="Profil/VBoxContainer"]
@@ -79,7 +79,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "GİRİŞ YAP"
+text = "PROFILE_LOGIN_BUTTON"
 
 [node name="UsernameInput" type="LineEdit" parent="Profil/VBoxContainer"]
 custom_minimum_size = Vector2(450, 45)
@@ -105,13 +105,13 @@ alignment = 1
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "GİRİŞ YAP"
+text = "PROFILE_LOGIN_BUTTON"
 
 [node name="RegisterButton" type="Button" parent="Profil/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "KAYIT OL"
+text = "PROFILE_REGISTER_BUTTON"
 
 [node name="HSeparator3" type="HSeparator" parent="Profil/VBoxContainer"]
 custom_minimum_size = Vector2(0, 10)
@@ -122,7 +122,7 @@ custom_minimum_size = Vector2(250, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 disabled = true
-text = "PROFİLDEN ÇIKIŞ:"
+text = "PROFILE_LOGOUT_LABEL"
 
 [node name="MathquestionsRemove" type="MarginContainer" parent="."]
 custom_minimum_size = Vector2(400, 30)
@@ -138,7 +138,7 @@ layout_mode = 2
 [node name="Label" type="Label" parent="MathquestionsRemove/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
-text = "SORU ÇIKAR"
+text = "PROFILE_REMOVE_QUESTION"
 
 [node name="HSeparator" type="HSeparator" parent="MathquestionsRemove/VBoxContainer"]
 custom_minimum_size = Vector2(20, 30)
@@ -164,7 +164,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(200, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "SİL"
+text = "PROFILE_DELETE"
 
 [node name="MathquestionsAdd" type="MarginContainer" parent="."]
 custom_minimum_size = Vector2(400, 30)
@@ -180,7 +180,7 @@ layout_mode = 2
 [node name="Label" type="Label" parent="MathquestionsAdd/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
-text = "SORU EKLE"
+text = "PROFILE_ADD_QUESTION"
 
 [node name="HSeparator" type="HSeparator" parent="MathquestionsAdd/VBoxContainer"]
 custom_minimum_size = Vector2(20, 30)
@@ -197,7 +197,7 @@ theme_override_font_sizes/font_size = 22
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "MATEMATİK SORU SU GİRİNİZ"
+text = "PROFILE_MATH_QUESTION_PLACEHOLDER"
 
 [node name="HSeparator2" type="HSeparator" parent="MathquestionsAdd/VBoxContainer"]
 custom_minimum_size = Vector2(0, 30)
@@ -207,7 +207,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(200, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "EKLE"
+text = "PROFILE_ADD_BUTTON"
 
 [node name="BringDeletedQuestion" type="Button" parent="."]
 custom_minimum_size = Vector2(400, 40)
@@ -217,4 +217,4 @@ offset_top = 537.0
 offset_right = 811.0
 offset_bottom = 577.0
 theme_override_font_sizes/font_size = 22
-text = "SORULARI GERİ GETİR"
+text = "PROFILE_RESTORE_QUESTIONS"

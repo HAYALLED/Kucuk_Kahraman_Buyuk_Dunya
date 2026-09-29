@@ -81,12 +81,8 @@ public partial class KillZone : Area2D
         var root = GetTree().Root;
 
         // Costume & health
-        if (root.HasMeta("SavedCostume"))
-            root.RemoveMeta("SavedCostume");
-        if (root.HasMeta("SavedHealth"))
-            root.RemoveMeta("SavedHealth");
-        if (root.HasMeta("SavedMaxHealth"))
-            root.RemoveMeta("SavedMaxHealth");
+        if (root.HasMeta("SavedCostumeHealthData"))
+            root.RemoveMeta("SavedCostumeHealthData");
 
         // Trash
         if (root.HasMeta("SavedTrash_Metal"))

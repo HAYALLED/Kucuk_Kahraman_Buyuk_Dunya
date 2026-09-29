@@ -1,8 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://b10el6tsdhxli"]
+[gd_scene format=3 uid="uid://b10el6tsdhxli"]
 
-[ext_resource type="Texture2D" uid="uid://clghkd5nk2kkm" path="res://Sprites/math_background.png" id="1_0bdxr"]
 [ext_resource type="Script" uid="uid://bqqvfshajsmbb" path="res://Scripts/MathMinigame.cs" id="1_210xx"]
 [ext_resource type="Texture2D" uid="uid://dk13rb7ef1tp2" path="res://Sprites/bomb_sprite-rope.png" id="2_7pm4c"]
+[ext_resource type="Texture2D" uid="uid://clghkd5nk2kkm" path="res://Sprites/math_background.png" id="2_210xx"]
 
 [sub_resource type="Theme" id="Theme_210xx"]
 
@@ -13,75 +13,93 @@ expand_margin_bottom = 100.0
 
 [sub_resource type="LabelSettings" id="LabelSettings_7pm4c"]
 font_size = 32
-font_color = Color(0, 0, 0, 1)
 
-[node name="Math_minigame" type="CanvasLayer"]
+[node name="Math_minigame" type="CanvasLayer" unique_id=520245715]
 script = ExtResource("1_210xx")
-QuestionCount = 3
 
-[node name="Control" type="Control" parent="."]
+[node name="Control" type="Control" parent="." unique_id=646504137]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="TextureRect" type="TextureRect" parent="Control"]
-layout_mode = 0
-offset_right = 640.0
-offset_bottom = 300.0
-texture = ExtResource("1_0bdxr")
-expand_mode = 2
+[node name="PanelBackground" type="NinePatchRect" parent="Control" unique_id=1579003539]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_210xx")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
 
-[node name="CorrectLabel" type="Label" parent="Control"]
-layout_mode = 0
-offset_left = 510.0
-offset_top = 2.0
-offset_right = 639.0
-offset_bottom = 25.0
+[node name="MainLayout" type="MarginContainer" parent="Control" unique_id=1476593833]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="Control/MainLayout" unique_id=1123402482]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StatsRow" type="HBoxContainer" parent="Control/MainLayout/VBox" unique_id=439566216]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="CorrectLabel" type="Label" parent="Control/MainLayout/VBox/StatsRow" unique_id=2129888799]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.28235295, 0.8392157, 0.16862746, 1)
-text = "DOĞRU = BLANK"
+text = "MATH_CORRECT_FORMAT"
+horizontal_alignment = 1
 
-[node name="WrongLabel" type="Label" parent="Control"]
-layout_mode = 0
-offset_left = 511.0
-offset_top = 26.0
-offset_right = 636.0
-offset_bottom = 49.0
+[node name="WrongLabel" type="Label" parent="Control/MainLayout/VBox/StatsRow" unique_id=476848953]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.24705882, 0.18431373, 1)
-text = "YANLIŞ = BLANK"
+text = "MATH_WRONG_FORMAT"
+horizontal_alignment = 1
 
-[node name="FuseBar" type="ProgressBar" parent="Control"]
+[node name="FuseBar" type="ProgressBar" parent="Control/MainLayout/VBox" unique_id=48065969]
 modulate = Color(1, 0.3647059, 0.22745098, 0.7176471)
-layout_mode = 0
-offset_top = -1.0
-offset_right = 505.0
-offset_bottom = 29.0
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
 theme = SubResource("Theme_210xx")
 theme_override_colors/font_color = Color(0.9490196, 0.3019608, 0.9490196, 1)
 theme_override_styles/fill = SubResource("StyleBoxTexture_nwedm")
 value = 100.0
 
-[node name="LineEdit" type="LineEdit" parent="Control"]
-layout_mode = 0
-offset_left = 436.0
-offset_top = 267.0
-offset_right = 639.5625
-offset_bottom = 301.0
-text = "cevabınızı buraya giriniz"
+[node name="QuestionArea" type="CenterContainer" parent="Control/MainLayout/VBox" unique_id=190882541]
+layout_mode = 2
+size_flags_vertical = 3
 
-[node name="Button" type="Button" parent="Control"]
-layout_mode = 0
-offset_left = 521.0
-offset_top = 234.0
-offset_right = 639.0
-offset_bottom = 265.0
-text = "gönder"
-
-[node name="soru" type="Label" parent="Control"]
-layout_mode = 0
-offset_left = 124.0
-offset_top = 127.0
-offset_right = 212.0
-offset_bottom = 172.0
-text = "soru="
+[node name="soru" type="Label" parent="Control/MainLayout/VBox/QuestionArea" unique_id=1200606295]
+layout_mode = 2
+text = "MATH_QUESTION_PREFIX"
 label_settings = SubResource("LabelSettings_7pm4c")
+horizontal_alignment = 1
+
+[node name="AnswerRow" type="HBoxContainer" parent="Control/MainLayout/VBox" unique_id=918067662]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LineEdit" type="LineEdit" parent="Control/MainLayout/VBox/AnswerRow" unique_id=1907178593]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MATH_ANSWER_PLACEHOLDER"
+
+[node name="Button" type="Button" parent="Control/MainLayout/VBox/AnswerRow" unique_id=1305290766]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "MATH_SUBMIT"

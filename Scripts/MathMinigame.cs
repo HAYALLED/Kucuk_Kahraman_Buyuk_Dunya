@@ -43,16 +43,18 @@ public partial class MathMinigame : CanvasLayer
 
     public override void _Ready()
     {
+        CreateFullscreenBackground();
+
         GD.Print($"[MATH] MathMinigame başlatılıyor... Tür: {GameType}, Soru: {QuestionCount}");
 
         var control = GetNode<Control>("Control");
 
-        soruLabel = control.GetNodeOrNull<Label>("soru");
-        answerInput = control.GetNodeOrNull<LineEdit>("LineEdit");
-        submitButton = control.GetNodeOrNull<Button>("Button");
-        correctLabel = control.GetNodeOrNull<Label>("CorrectLabel");
-        wrongLabel = control.GetNodeOrNull<Label>("WrongLabel");
-        fuseBar = control.GetNodeOrNull<ProgressBar>("FuseBar");
+        soruLabel = control.GetNodeOrNull<Label>("MainLayout/VBox/QuestionArea/soru");
+        answerInput = control.GetNodeOrNull<LineEdit>("MainLayout/VBox/AnswerRow/LineEdit");
+        submitButton = control.GetNodeOrNull<Button>("MainLayout/VBox/AnswerRow/Button");
+        correctLabel = control.GetNodeOrNull<Label>("MainLayout/VBox/StatsRow/CorrectLabel");
+        wrongLabel = control.GetNodeOrNull<Label>("MainLayout/VBox/StatsRow/WrongLabel");
+        fuseBar = control.GetNodeOrNull<ProgressBar>("MainLayout/VBox/FuseBar");
 
         if (submitButton != null)
             submitButton.Pressed += OnSubmitPressed;
@@ -79,7 +81,35 @@ public partial class MathMinigame : CanvasLayer
             EndGame(false);
         }
     }
+    private void CreateFullscreenBackground()
+    {
+        // 1️⃣ Koyu arka plan
+        var overlay = new ColorRect();
+        overlay.Name = "FullscreenOverlay";
+        overlay.Color = new Color(0, 0, 0, 0.85f);
+        overlay.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        overlay.MouseFilter = Control.MouseFilterEnum.Stop;
+        overlay.ZIndex = -1;
 
+        AddChild(overlay);
+        MoveChild(overlay, 0);
+
+        // 2️⃣ Control'ü tam ekran yap (kenarlardan padding bırak)
+        var control = GetNodeOrNull<Control>("Control");
+        if (control != null)
+        {
+            // Tam ekrana yay
+            control.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+
+            // Kenarlardan 16px boşluk
+            control.OffsetLeft = 16;
+            control.OffsetRight = -16;
+            control.OffsetTop = 16;
+            control.OffsetBottom = -16;
+
+            GD.Print("[MATH] ✅ Tam ekran!");
+        }
+    }
     public override void _Input(InputEvent @event)
     {
         if (@event.IsActionPressed("ui_cancel"))
@@ -90,18 +120,31 @@ public partial class MathMinigame : CanvasLayer
 
     private void StartGame()
     {
+        // ✅ UserID'yi al!
+        int userId = UserProfile.Instance.CurrentUserID;
+
+        GD.Print($"[MATH] 🎮 Oyun başlatılıyor... UserID: {userId}, Difficulty: {Difficulty}");
+
         string difficultyFilter = string.IsNullOrEmpty(Difficulty) ? null : Difficulty;
-        questions = Database.GetMathQuestions(difficultyFilter, QuestionCount);
+
+        // ✅ userId parametresini gönder!
+        questions = Database.GetMathQuestions(difficultyFilter, QuestionCount, userId);
+
+        GD.Print($"[MATH] 📚 {questions.Count} soru yüklendi (userId={userId} için filtrelenmiş)");
 
         if (questions.Count == 0)
         {
+            GD.Print("[MATH] ⚠️ Soru bulunamadı, örnek sorular ekleniyor...");
             Database.InsertSampleMathQuestions();
-            questions = Database.GetMathQuestions(difficultyFilter, QuestionCount);
+
+            // ✅ Burada da userId gönder!
+            questions = Database.GetMathQuestions(difficultyFilter, QuestionCount, userId);
 
             if (questions.Count == 0)
             {
                 if (soruLabel != null)
-                    soruLabel.Text = "Soru bulunamadı!";
+                    soruLabel.Text = Tr("MATH_QUESTION_NOT_FOUND");
+                GD.PrintErr("[MATH] ❌ Hiç soru yüklenemedi!");
                 return;
             }
         }
@@ -175,9 +218,9 @@ public partial class MathMinigame : CanvasLayer
     private void UpdateScoreLabels()
     {
         if (correctLabel != null)
-            correctLabel.Text = $"DOĞRU: {correctCount}";
+            correctLabel.Text = string.Format(Tr("MATH_CORRECT_FORMAT"), correctCount);
         if (wrongLabel != null)
-            wrongLabel.Text = $"YANLIŞ: {wrongCount}";
+            wrongLabel.Text = string.Format(Tr("MATH_WRONG_FORMAT"), wrongCount);
     }
 
     private void EndGame(bool completed)
@@ -195,7 +238,7 @@ public partial class MathMinigame : CanvasLayer
 
         if (submitButton != null)
         {
-            submitButton.Text = "Kapat";
+            submitButton.Text = Tr("MATH_CLOSE_BUTTON");
             submitButton.Pressed -= OnSubmitPressed;
             submitButton.Pressed += CloseMinigame;
         }
@@ -214,28 +257,28 @@ public partial class MathMinigame : CanvasLayer
         {
             case MinigameType.Teacher:
                 int points = (correctCount * 10) - (wrongCount * 5);
-                return $"Sonuç!\n{correctCount}/{questions.Count} Doğru\n{(points >= 0 ? "+" : "")}{points} Puan";
+                return string.Format(Tr("MATH_RESULT_FORMAT").Replace("\\n", "\n"), correctCount, questions.Count, points >= 0 ? "+" : "", points);
 
             case MinigameType.Tailor:
                 if (wrongCount >= 2)
-                    return "Başarısız!\nKostüm kayboldu...";
+                    return Tr("MATH_FAIL_COSTUME").Replace("\\n", "\n");
                 else if (correctCount >= 2)
-                    return "Mükemmel!\nKostüm yenilendi!";
+                    return Tr("MATH_PERFECT_COSTUME").Replace("\\n", "\n");
                 else
-                    return "Eh işte...\nHiçbir şey olmadı.";
+                    return Tr("MATH_NOTHING_HAPPENED").Replace("\\n", "\n");
 
             case MinigameType.SpecialEvent:
                 if (correctCount == 3)
-                    return "MUHTEŞEM!\nKostüm level boyunca senin!";
+                    return Tr("MATH_AMAZING_COSTUME").Replace("\\n", "\n");
                 else if (correctCount == 2)
-                    return "İyi!\n80 saniye kostüm!";
+                    return Tr("MATH_GOOD_COSTUME_TIME").Replace("\\n", "\n");
                 else if (correctCount == 1)
-                    return "Yetersiz...\nHiçbir şey olmadı.";
+                    return Tr("MATH_INSUFFICIENT").Replace("\\n", "\n");
                 else
-                    return "FELAKET!\nHasar aldın!";
+                    return Tr("MATH_DISASTER_DAMAGE").Replace("\\n", "\n");
 
             default:
-                return $"{correctCount}/{questions.Count} Doğru";
+                return string.Format(Tr("MATH_RESULT_SIMPLE_FORMAT"), correctCount, questions.Count);
         }
     }
 

@@ -131,44 +131,22 @@ public partial class Level2 : Node2D
         try
         {
 
-            // ✅ Can
-            if (root.HasMeta("SavedHealth"))
+            // ✅ Tüm kostümlerin canı + aktif kostüm - TEK PAKET
+            if (root.HasMeta("SavedCostumeHealthData"))
             {
-                int health = (int)root.GetMeta("SavedHealth");
-                int maxHealth = (int)root.GetMeta("SavedMaxHealth");
-
-                player.MaxHealth = maxHealth;
-
-                int currentHealth = player.GetCurrentHealth();
-                int diff = health - currentHealth;
-
-                if (diff > 0)
-                    player.Heal(diff);
-                else if (diff < 0)
-                    player.TakeDamage(-diff);
-
-                player.UpdateHealthUI();
-
-                GD.Print($"[LEVEL] 🔄 Can geri yüklendi: {health}/{maxHealth}");
-
-                root.RemoveMeta("SavedHealth");
-                root.RemoveMeta("SavedMaxHealth");
-            }
-            // ✅ Kostüm - Callable ile
-            if (root.HasMeta("SavedCostume"))
-            {
-                int costumeIndex = (int)root.GetMeta("SavedCostume");
+                var data = (Godot.Collections.Dictionary)root.GetMeta("SavedCostumeHealthData");
 
                 Callable.From(() =>
                 {
                     if (player != null && IsInstanceValid(player))
                     {
-                        player.Call("RestoreCostume", costumeIndex);
-                        GD.Print($"[LEVEL] 🔄 Kostüm geri yüklendi: {costumeIndex}");
+                        player.RestoreCostumeHealthSaveData(data);
+                        player.UpdateHealthUI();
+                        GD.Print("[LEVEL] 🔄 Tüm kostümlerin canı geri yüklendi!");
                     }
                 }).CallDeferred();
 
-                root.RemoveMeta("SavedCostume");
+                root.RemoveMeta("SavedCostumeHealthData");
             }
 
             // ✅ UI
@@ -260,7 +238,7 @@ public partial class Level2 : Node2D
 
         if (currentLevelScore >= MinimumScore)
         {
-            ShowMessage($"Harika! {MinimumScore} puana ulaştınız!", Colors.Green);
+            ShowMessage(string.Format(Tr("LEVEL_MILESTONE_FORMAT"), MinimumScore), Colors.Green);
             // ✅ YENİ: LevelPassed() çağır!
             GetTree().CreateTimer(3.0).Timeout += LevelPassed;
         }
@@ -273,14 +251,14 @@ public partial class Level2 : Node2D
 
         if (currentLevelScore >= MinimumScore)
         {
-            ShowMessage($"Tebrikler! {currentLevelScore} puan topladın!\n(Hedef: {MinimumScore})", Colors.Green);
+            ShowMessage(string.Format(Tr("LEVEL_COLLECTED_FORMAT").Replace("\\n", "\n"), currentLevelScore, MinimumScore), Colors.Green);
             // ✅ YENİ: LevelPassed() çağır!
             GetTree().CreateTimer(3.0).Timeout += LevelPassed;
         }
         else
         {
             int missing = MinimumScore - currentLevelScore;
-            ShowMessage($"Toplam Puan: {currentLevelScore}/{MinimumScore}\nEksik: {missing} puan!", Colors.Yellow);
+            ShowMessage(string.Format(Tr("LEVEL_TOTAL_MISSING_FORMAT").Replace("\\n", "\n"), currentLevelScore, MinimumScore, missing), Colors.Yellow);
         }
     }
 
@@ -307,7 +285,7 @@ public partial class Level2 : Node2D
         SaveGame.Instance.MarkLevelCompleted("level_2");
         currentLevelScore = 0;
 
-        ShowMessage($"TEBRİKLER! Level 2 geçildi!", Colors.Green);
+        ShowMessage(Tr("LEVEL2_COMPLETE"), Colors.Green);
         GD.Print($"[LEVEL] ✅ LEVEL 2 GEÇİLDİ VE KAYDEDİLDİ!");
 
         GetTree().CreateTimer(3.0).Timeout += () =>
@@ -348,7 +326,7 @@ public partial class Level2 : Node2D
     private void LevelFailed()
     {
         int remaining = MinimumScore - currentLevelScore;
-        ShowMessage($"Yetersiz! Daha {remaining} puan gerekli.", Colors.Orange);
+        ShowMessage(string.Format(Tr("LEVEL_INSUFFICIENT_FORMAT"), remaining), Colors.Orange);
         GD.Print($"[LEVEL] ⚠️ Yetersiz! {currentLevelScore}/{MinimumScore}");
     }
 

@@ -8,7 +8,7 @@ public partial class AquamanEvent : Area2D
     [ExportGroup("Minigame Ayarları")]
     [Export] public int QuestionCount = 3;
     [Export] public float TimeLimit = 45f;
-    [Export] public string Difficulty = "Orta";
+    [Export] public string Difficulty = "Orta"; // ✅ Inspector'da default "Orta"
 
     [ExportGroup("Ödül Kostümü")]
     [Export] public CostumeResource RewardCostume;
@@ -24,6 +24,10 @@ public partial class AquamanEvent : Area2D
 
     public override void _Ready()
     {
+        // ✅ HER ZAMAN UserProfile'dan zorluğu al!
+        Difficulty = UserProfile.Instance.Difficulty;
+        GD.Print($"[AQUAMAN EVENT] 🌊 Zorluk: {Difficulty}");
+
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
 
@@ -76,7 +80,7 @@ public partial class AquamanEvent : Area2D
         var minigame = MathMinigameScene.Instantiate<MathMinigame>();
         minigame.QuestionCount = QuestionCount;
         minigame.TimeLimit = TimeLimit;
-        minigame.Difficulty = Difficulty;
+        minigame.Difficulty = Difficulty; // ✅ UserProfile'dan gelen!
         minigame.GameType = MathMinigame.MinigameType.SpecialEvent;
         minigame.RewardCostume = RewardCostume;
 
@@ -86,7 +90,7 @@ public partial class AquamanEvent : Area2D
         GetTree().Paused = true;
         minigame.ProcessMode = ProcessModeEnum.Always;
 
-        GD.Print("[AQUAMAN EVENT] Minigame başladı!");
+        GD.Print($"[AQUAMAN EVENT] 🌊 Minigame başladı - Zorluk: {Difficulty}!");
     }
 
     private void OnMinigameResult(int correct, int wrong, int total)
@@ -95,36 +99,26 @@ public partial class AquamanEvent : Area2D
 
         GD.Print($"[AQUAMAN EVENT] Sonuç: {correct} doğru, {wrong} yanlış");
 
-        // 3 doğru = Level boyunca kostüm
         if (correct == 3 && wrong == 0)
         {
             GiveTemporaryCostume(-1);
             GD.Print("[AQUAMAN EVENT] ✅ MÜKEMMEL! Level boyunca Aquaman kostümü!");
         }
-        // 2 doğru 1 yanlış = 80 saniye kostüm
         else if (correct == 2 && wrong == 1)
         {
             GiveTemporaryCostume(80f);
             GD.Print("[AQUAMAN EVENT] ✅ İYİ! 80 saniye Aquaman kostümü!");
         }
-        // 1 doğru 2 yanlış = Hiçbir şey
         else if (correct == 1 && wrong == 2)
         {
             GD.Print("[AQUAMAN EVENT] ⚠️ Yetersiz... Hiçbir şey olmadı.");
         }
-        // 0 doğru 3 yanlış = Hasar + Knockback
         else if (correct == 0 && wrong == 3)
         {
             ApplyPunishment();
             GD.Print("[AQUAMAN EVENT] ❌ FELAKET! Hasar ve knockback!");
         }
-        // Diğer durumlar
-        else
-        {
-            GD.Print($"[AQUAMAN EVENT] Diğer durum: {correct}/{total}");
-        }
 
-        // Event'i kapat
         QueueFree();
     }
 
@@ -145,13 +139,11 @@ public partial class AquamanEvent : Area2D
 
     private void ApplyPunishment()
     {
-        // Hasar ver
         if (player.HasMethod("TakeDamage"))
         {
             player.Call("TakeDamage", FailDamage);
         }
 
-        // Knockback
         if (player is CharacterBody2D playerBody)
         {
             Vector2 knockDir = (player.GlobalPosition - GlobalPosition).Normalized();

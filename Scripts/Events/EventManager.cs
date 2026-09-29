@@ -105,7 +105,7 @@ public partial class EventManager : Node
     {
         if (notificationLabel == null) return;
 
-        notificationLabel.Text = $"⚠ {eventName} etkinliği tetiklendi!";
+        notificationLabel.Text = string.Format(Tr("EVENT_TRIGGERED_FORMAT"), eventName);
         notificationLabel.Modulate = new Color(1f, 1f, 1f, 1f);
         notificationLabel.Visible = true;
 

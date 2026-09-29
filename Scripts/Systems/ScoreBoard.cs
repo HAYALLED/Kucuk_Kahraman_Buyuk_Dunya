@@ -53,7 +53,7 @@ public partial class ScoreBoard : Control
         if (scoreboard.Count == 0)
         {
             var emptyLabel = new Label();
-            emptyLabel.Text = "❌ Henüz kayıtlı skor yok!";
+            emptyLabel.Text = Tr("SCORE_EMPTY");
             emptyLabel.AddThemeColorOverride("font_color", Colors.Gray);
             emptyLabel.AddThemeFontSizeOverride("font_size", 20);
             scoreList.AddChild(emptyLabel);

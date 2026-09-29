@@ -118,6 +118,7 @@ layer_0/tile_data = PackedInt32Array(196607, 262145, 6, 262143, 262145, 7, 13107
 tile_set = ExtResource("1_3rwp1")
 
 [node name="InteractionLabel" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = -217.0
 offset_top = -105.0
@@ -126,11 +127,11 @@ offset_bottom = 14.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "WASD / OK TUŞLARI İLE
- HAREKET EDEBİLİRSİN"
+text = "TUTORIAL_LABEL_MOVE"
 horizontal_alignment = 1
 
 [node name="InteractionLabel8" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = -214.0
 offset_top = 52.0
@@ -139,12 +140,11 @@ offset_bottom = 171.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "OYUNUN ANA AMACI HER BÖLÜMDE BULUNAN EN SAĞDAKİ
-GERİ DÖNÜŞÜM KUTUSANA GİTMEK VE ORADA ÇÖPLERİ GERİ
-DÖNÜŞTÜRMEKTİR"
+text = "TUTORIAL_LABEL_MAIN_GOAL"
 horizontal_alignment = 1
 
 [node name="InteractionLabel2" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 43.0
 offset_top = -103.0
@@ -153,11 +153,11 @@ offset_bottom = 16.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "SPACE TUŞUNA BASTIĞINDA
-KARAKTER ZIPLAR"
+text = "TUTORIAL_LABEL_JUMP"
 horizontal_alignment = 1
 
 [node name="InteractionLabel14" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 395.0
 offset_top = -76.0
@@ -166,11 +166,11 @@ offset_bottom = 43.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "1 2 VE 3 TUŞLARI TAŞIDIĞIN
-KOSTUMLERİ GİYMENİ SAĞLAR"
+text = "TUTORIAL_LABEL_COSTUME_KEYS"
 horizontal_alignment = 1
 
 [node name="InteractionLabel3" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 799.0
 offset_top = -54.0
@@ -179,11 +179,11 @@ offset_bottom = 65.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "YARASA ÇOCUK İLE FARENİ
-PLATFORMA GETİR VE E BAS"
+text = "TUTORIAL_LABEL_BAT_THROW"
 horizontal_alignment = 1
 
 [node name="InteractionLabel4" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 934.0
 offset_top = -211.0
@@ -192,12 +192,11 @@ offset_bottom = -55.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "YARASA ÇOCUK İLE FARENİN SAĞ TUŞU İLE
-DÜŞMANLARA HASAR VEREBİLDİĞİN OBJE 
-ATABİLİRSİN"
+text = "TUTORIAL_LABEL_BAT_RIGHTCLICK"
 horizontal_alignment = 1
 
 [node name="InteractionLabel5" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 1367.0
 offset_top = -244.0
@@ -206,11 +205,11 @@ offset_bottom = -88.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "ÖRÜMCEK ÇOCUĞA GEÇ (2 TUŞUNA BAS)
-W İLE DUVARLARA TIRMANABİLİRSİN"
+text = "TUTORIAL_LABEL_SPIDER_SWITCH"
 horizontal_alignment = 1
 
 [node name="InteractionLabel6" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 1838.0
 offset_top = -241.0
@@ -219,12 +218,11 @@ offset_bottom = -85.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "ÖRÜMCEK ÇOCUKTA FARE İLE PLATFORMA TUT VE 
-E TUŞUNA BASTIĞINDA
-OBJELERDE SALLANABİLİRSİN"
+text = "TUTORIAL_LABEL_SPIDER_SWING"
 horizontal_alignment = 1
 
 [node name="InteractionLabel7" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 3127.0
 offset_top = -233.0
@@ -233,10 +231,11 @@ offset_bottom = -77.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "SUPER ÇOCUK İLE E BASTIĞINDA BELLİ BİR SÜRE UÇABİLİRSİN"
+text = "TUTORIAL_LABEL_SUPER_FLY"
 horizontal_alignment = 1
 
 [node name="InteractionLabel13" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 2476.0
 offset_top = -229.0
@@ -245,12 +244,11 @@ offset_bottom = -73.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "ÖRÜMCEK ÇOCUK SAĞ TUŞU HASAR VERMEZ AMA KISA SÜREDE 
-AYNI DUŞMANA VURURSAN DUŞMAN BİR SÜRELİĞİNE
-SERSEMLETİR"
+text = "TUTORIAL_LABEL_SPIDER_STUN"
 horizontal_alignment = 1
 
 [node name="InteractionLabel9" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 4337.0
 offset_top = -255.0
@@ -259,12 +257,11 @@ offset_bottom = -99.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "BUNLAR RASTGELE SANA BİR KOSTUM VERİR
-HER KOSTÜMÜN KENDİSİNE HAS ÖZELLİKLERİ VARDIR.
-AL VE DENE"
+text = "TUTORIAL_LABEL_COSTUME_PICKUP"
 horizontal_alignment = 1
 
 [node name="InteractionLabel10" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 4803.0
 offset_top = -267.0
@@ -273,12 +270,11 @@ offset_bottom = -111.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "KOVA ÇOCUK SAĞ TUŞU YARASA ÇOCUK GİBİ
-DAHA FAZLA HASAR VERİR AMA DAHA YAVAŞ FIRLATMA
-SÜRESİ VARDIR"
+text = "TUTORIAL_LABEL_BUCKET_THROW"
 horizontal_alignment = 1
 
 [node name="InteractionLabel11" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 5515.0
 offset_top = -253.0
@@ -287,13 +283,11 @@ offset_bottom = -97.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "ŞU ANKİ SON KOSTUM
-HIZ ÇOCUK
-BU KOSTUM SAĞ TUŞUNA BASILDIĞINDA SENİ BELLİ
-MESAFE IŞINLAR "
+text = "TUTORIAL_LABEL_SPEED_COSTUME"
 horizontal_alignment = 1
 
 [node name="InteractionLabel12" type="Label" parent="."]
+auto_translate_mode = 2
 custom_minimum_size = Vector2(80, 80)
 offset_left = 6273.0
 offset_top = -259.0
@@ -302,9 +296,7 @@ offset_bottom = -103.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
-text = "TEBRİKLER ŞU ANDA EĞİTİMİN EN SON KISMINA GELDİN
-ŞİMDİ İSE TOPLADIĞIN ÇÖPLERİ GERİ DÖNÜŞTÜR
-"
+text = "TUTORIAL_LABEL_FINAL"
 horizontal_alignment = 1
 
 [node name="Level1BackgroundLevel1" type="Sprite2D" parent="."]

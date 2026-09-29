@@ -41,7 +41,7 @@ theme_override_constants/shadow_offset_x = 4
 theme_override_constants/shadow_offset_y = 3
 theme_override_constants/shadow_outline_size = 3
 theme_override_font_sizes/font_size = 32
-text = "⏸️ OYUN DURAKLADI"
+text = "PAUSE_TITLE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -50,29 +50,29 @@ custom_minimum_size = Vector2(400, 60)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 1, 0.4, 1)
 theme_override_font_sizes/font_size = 28
-text = "▶️ DEVAM ET"
+text = "PAUSE_RESUME"
 
 [node name="RestartButton" type="Button" parent="MenuContainer"]
 custom_minimum_size = Vector2(400, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "🔄 LEVELİ TEKRAR BAŞLAT"
+text = "PAUSE_RESTART"
 
 [node name="MainMenuButton" type="Button" parent="MenuContainer"]
 custom_minimum_size = Vector2(400, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "ANA MENÜ"
+text = "PAUSE_MAIN_MENU"
 
 [node name="SettingsButton" type="Button" parent="MenuContainer"]
 custom_minimum_size = Vector2(400, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "⚙️ AYARLAR"
+text = "PAUSE_SETTINGS"
 
 [node name="QuitButton" type="Button" parent="MenuContainer"]
 custom_minimum_size = Vector2(400, 60)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
 theme_override_font_sizes/font_size = 28
-text = "🚪 OYUNDAN ÇIK"
+text = "PAUSE_QUIT"

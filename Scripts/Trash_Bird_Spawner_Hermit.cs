@@ -1,351 +1,289 @@
 using Godot;
-using System;
+using System.Collections.Generic;
 
 public partial class Trash_Bird_Spawner_Hermit : CharacterBody2D
 {
-    // Temel Ayarlar
     [Export] public float Speed = 50.0f;
     [Export] public float Gravity = 980.0f;
     [Export] public int MaxHealth = 5;
-    [Export] public float SpawnInterval = 2.0f;  // Kaç saniyede bir spawn
-    [Export] public int MaxBirds = 30;            // Maksimum kuş sayısı
-    private PackedScene BirdScene;
+    [Export] public float SpawnInterval = 2.0f;
+    [Export] public int MaxBirds = 30;
+    [Export] public float CoverDistance = 100.0f;
+    [Export] public float UncoverDistance = 200.0f;
+    [Export] public float DefaultBirdSpeed = 80f;
 
-    // Değişkenler
+    [Export] public Path2D AssignedPath;
+
+    private PackedScene birdScene;
     private int currentHealth;
-    private int direction = 1;
     private bool isDead = false;
     private float spawnTimer = 0;
-    private int currentBirdCount = 0;
-    private bool isCovering = false;      // Kapanma durumu
-    private bool isCovered = false;       // Tamamen kapalı mı
-    [Export] public float CoverDistance = 100.0f;  // Bu mesafede kapanır
-    [Export] public float UncoverDistance = 200.0f; // Bu mesafede açılır
-    private Path2D birdPath;  // Değişkenler kısmına ekle
+    private bool isCovering = false;
+    private bool isCovered = false;
     private bool isStunned = false;
     private float stunTimer = 0;
     private float originalSpeed;
-    // Node'lar
+    private bool playerInRange = false;
+    private int direction = 1;
+
     private AnimatedSprite2D animatedSprite;
     private Area2D playerDetector;
     private RayCast2D raycastLeft;
     private RayCast2D raycastRight;
     private Node2D player;
 
-
+    private class BirdEntry
+    {
+        public Node2D Bird;
+        public PathFollow2D Follow;
+        public Path2D CurrentPath;
+        public float Speed;
+        public bool IsRerouting; // ← EKLENDİ
+    }
+    private List<BirdEntry> activeBirds = new();
 
     public override void _Ready()
     {
-        originalSpeed = Speed;  // Orijinal hızı kaydet
-        // Node'ları al
+        originalSpeed = Speed;
         animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         playerDetector = GetNode<Area2D>("player_detector");
         raycastLeft = GetNode<RayCast2D>("RayCast2Dleft");
         raycastRight = GetNode<RayCast2D>("RayCast2Dright");
 
-
         AddToGroup("enemy");
         currentHealth = MaxHealth;
 
-        // Player'ı bul
         var players = GetTree().GetNodesInGroup("player");
-        if (players.Count > 0)
-            player = players[0] as Node2D;
+        if (players.Count > 0) player = players[0] as Node2D;
+
         playerDetector.CollisionMask = 2;
-        // Sinyaller
         playerDetector.BodyEntered += OnPlayerEnterRange;
         playerDetector.BodyExited += OnPlayerExitRange;
-        animatedSprite.Play("idle");
 
-        // Walk animasyonu başlat
+        if (raycastLeft != null) { raycastLeft.Enabled = true; raycastLeft.CollisionMask = 1; }
+        if (raycastRight != null) { raycastRight.Enabled = true; raycastRight.CollisionMask = 1; }
+
         animatedSprite.Play("walk");
-        if (raycastLeft != null)
-        {
-            raycastLeft.Enabled = true;
-            raycastLeft.CollisionMask = 1; // Sadece layer 1
-        }
+        birdScene = GD.Load<PackedScene>("res://Assets/Scenes/Trash_Bird.tscn");
 
-        if (raycastRight != null)
-        {
-            raycastRight.Enabled = true;
-            raycastRight.CollisionMask = 1; // Sadece layer 1
-        }
-
-        BirdScene = GD.Load<PackedScene>("res://Assets/Scenes/Trash_Bird.tscn");
-
-
-
-        // ✅ Path2D'yi bul (Level'de olmalı)
-        birdPath = GetParent().GetNodeOrNull<Path2D>("Path2D_rapid");
-
+        if (AssignedPath == null)
+            GD.PrintErr("[HERMIT SPAWNER] ❌ AssignedPath atanmamış!");
 
         spawnTimer = 2.0f;
     }
-    private bool playerInRange = false;
 
     private void OnPlayerEnterRange(Node2D body)
     {
-        if (body.IsInGroup("player"))
-        {
-            playerInRange = true;
-            player = body;
-        }
+        if (body.IsInGroup("player")) { playerInRange = true; player = body; }
     }
-
     private void OnPlayerExitRange(Node2D body)
     {
-        if (body.IsInGroup("player"))
-        {
-            playerInRange = false;
-        }
+        if (body.IsInGroup("player")) playerInRange = false;
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        // Stun kontrolü
         if (isStunned)
         {
             stunTimer -= (float)delta;
-            if (stunTimer <= 0)
-            {
-                isStunned = false;
-                Speed = originalSpeed;
-            }
-            return;  // Stunlıyken hareket etme
-        }
-
-        if (isDead)
+            if (stunTimer <= 0) { isStunned = false; Speed = originalSpeed; }
             return;
-
-        // Player mesafe kontrolü
-        float distanceToPlayer = float.MaxValue;
-        if (player != null)
-        {
-            distanceToPlayer = GlobalPosition.DistanceTo(player.GlobalPosition);
         }
+        if (isDead) return;
 
-        // Kapanma/Açılma kontrolü
+        float distanceToPlayer = player != null
+            ? GlobalPosition.DistanceTo(player.GlobalPosition) : float.MaxValue;
+
         if (!isCovered && !isCovering && distanceToPlayer <= CoverDistance)
-        {
-            // Player çok yakın - kapan!
-            StartCovering();
-            return;
-        }
+        { StartCovering(); return; }
         else if (isCovered && distanceToPlayer > UncoverDistance)
-        {
-            // Player uzaklaştı - aç!
-            StartUncovering();
-            return;
-        }
+        { StartUncovering(); return; }
 
-        // Kapalıysa hiçbir şey yapma
-        if (isCovering || isCovered)
-            return;
+        if (isCovering || isCovered) return;
 
-        // Spawn timer (sadece açıkken)
         spawnTimer -= (float)delta;
-        if (spawnTimer <= 0 && currentBirdCount < MaxBirds)
-        {
-            SpawnBird();
-            spawnTimer = SpawnInterval;
-        }
+        if (spawnTimer <= 0 && activeBirds.Count < MaxBirds)
+        { SpawnBird(); spawnTimer = SpawnInterval; }
 
-        // Normal hareket
+        AdvanceAndCheckBirds((float)delta);
         Move(delta);
     }
+
+    private void AdvanceAndCheckBirds(float delta)
+    {
+        for (int i = activeBirds.Count - 1; i >= 0; i--)
+        {
+            var entry = activeBirds[i];
+            if (!IsInstanceValid(entry.Bird) || !IsInstanceValid(entry.Follow))
+            { activeBirds.RemoveAt(i); continue; }
+
+            AdvanceFollower(entry, delta);
+            if (IsAtEnd(entry.CurrentPath, entry.Follow))
+                RerouteBird(entry);
+        }
+    }
+
+    private void SpawnBird()
+    {
+        if (AssignedPath == null) return;
+        var follow = CreateFollower(AssignedPath);
+        var bird = birdScene.Instantiate<Node2D>();
+        follow.AddChild(bird);
+
+        float entrySpeed = AssignedPath is BirdRouteManager brmSpd ? brmSpd.BirdSpeed : DefaultBirdSpeed;
+        var entry = new BirdEntry { Bird = bird, Follow = follow, CurrentPath = AssignedPath, Speed = entrySpeed };
+        activeBirds.Add(entry);
+
+        if (AssignedPath is BirdRouteManager brm) brm.FireEnter();
+
+        // ← DEĞİŞTİ
+        bird.TreeExited += () => { if (!entry.IsRerouting) activeBirds.Remove(entry); };
+    }
+
+    private void RerouteBird(BirdEntry entry)
+    {
+        entry.IsRerouting = true; // ← EKLENDİ
+        Path2D prevPath = entry.CurrentPath;
+
+        if (prevPath is BirdRouteManager brmPrev) brmPrev.FireExit();
+
+        Path2D nextPath = prevPath is BirdRouteManager brmNext
+            ? brmNext.GetNextPath(prevPath)
+            : null;
+
+        if (nextPath == null)
+        {
+            bool fwdL = prevPath is BirdRouteManager brmL ? brmL.Forward : true;
+            entry.Follow.Progress = fwdL ? 0f : prevPath.Curve.GetBakedLength();
+            if (prevPath is BirdRouteManager brmRe) brmRe.FireEnter();
+            entry.IsRerouting = false; // ← EKLENDİ
+            return;
+        }
+
+        entry.Speed = nextPath is BirdRouteManager brmNS ? brmNS.BirdSpeed : entry.Speed;
+
+        PathFollow2D oldFollow = entry.Follow;
+        PathFollow2D newFollow = CreateFollower(nextPath);
+
+        if (IsInstanceValid(entry.Bird))
+        {
+            entry.Bird.Reparent(newFollow, false);
+            entry.Bird.Position = Vector2.Zero;
+        }
+        entry.Follow = newFollow;
+        entry.CurrentPath = nextPath;
+
+        if (nextPath is BirdRouteManager brmEnter) brmEnter.FireEnter();
+
+        oldFollow.CallDeferred(Node.MethodName.QueueFree);
+        entry.IsRerouting = false; // ← EKLENDİ
+    }
+
+    private PathFollow2D CreateFollower(Path2D path)
+    {
+        bool forward = path is BirdRouteManager brm ? brm.Forward : true;
+        var follow = new PathFollow2D();
+        follow.Rotates = false;
+        follow.Loop = false;
+        follow.Progress = forward ? 0f : path.Curve.GetBakedLength();
+        path.AddChild(follow);
+        return follow;
+    }
+
+    private void AdvanceFollower(BirdEntry entry, float delta)
+    {
+        bool forward = entry.CurrentPath is BirdRouteManager brm2 ? brm2.Forward : true;
+        entry.Follow.Progress += (forward ? 1 : -1) * entry.Speed * delta;
+    }
+
+    private bool IsAtEnd(Path2D path, PathFollow2D follow)
+    {
+        if (path is BirdRouteManager brm)
+            return brm.Forward
+                ? follow.Progress >= path.Curve.GetBakedLength() - brm.EndThreshold
+                : follow.Progress <= brm.EndThreshold;
+        return follow.Progress >= path.Curve.GetBakedLength() - 10f;
+    }
+
     private async void StartCovering()
     {
         isCovering = true;
         Velocity = Vector2.Zero;
-
-
-        // Covering animasyonu
         animatedSprite.Play("covering");
-
-        // Animasyon bitene kadar bekle
-        float frameCount = animatedSprite.SpriteFrames.GetFrameCount("covering");
+        float fc = animatedSprite.SpriteFrames.GetFrameCount("covering");
         double fps = animatedSprite.SpriteFrames.GetAnimationSpeed("covering");
-        double duration = frameCount / fps;
-
-        await ToSignal(GetTree().CreateTimer(duration), SceneTreeTimer.SignalName.Timeout);
-
-        // Tamamen kapalı duruma geç
-        isCovering = false;
-        isCovered = true;
+        await ToSignal(GetTree().CreateTimer(fc / fps), SceneTreeTimer.SignalName.Timeout);
+        isCovering = false; isCovered = true;
         animatedSprite.Play("cover_idle");
-
     }
 
     private async void StartUncovering()
     {
-        isCovered = false;
-        isCovering = true;  // Açılma sırasında da "covering" flag'i kullan
-
-
-        // Covering animasyonunu tersine oynat (veya ayrı bir animasyon varsa onu kullan)
+        isCovered = false; isCovering = true;
         animatedSprite.Play("covering");
-        animatedSprite.SpeedScale = -1;  // Tersine oynat
+        animatedSprite.SpeedScale = -1;
         animatedSprite.Frame = animatedSprite.SpriteFrames.GetFrameCount("covering") - 1;
-
-        float frameCount = animatedSprite.SpriteFrames.GetFrameCount("covering");
+        float fc = animatedSprite.SpriteFrames.GetFrameCount("covering");
         double fps = animatedSprite.SpriteFrames.GetAnimationSpeed("covering");
-        double duration = frameCount / fps;
-
-        await ToSignal(GetTree().CreateTimer(duration), SceneTreeTimer.SignalName.Timeout);
-
-        // Normale dön
+        await ToSignal(GetTree().CreateTimer(fc / fps), SceneTreeTimer.SignalName.Timeout);
         animatedSprite.SpeedScale = 1;
         isCovering = false;
         animatedSprite.Play("walk");
+    }
 
-    }
-    // Yeni fonksiyonlar ekle
-    public void ApplyStun(float duration)
-    {
-        isStunned = true;
-        stunTimer = duration;
-    }
+    public void ApplyStun(float duration) { isStunned = true; stunTimer = duration; }
 
     public void ApplySlow(float slowPercent, float duration)
     {
         Speed = originalSpeed * (1.0f - slowPercent);
-
-        // Süre sonunda normale dön
         GetTree().CreateTimer(duration).Timeout += () =>
-        {
-            if (!isStunned)  // Stun yoksa normale dön
-            {
-                Speed = originalSpeed;
-            }
-        };
+        { if (!isStunned) Speed = originalSpeed; };
     }
+
     private void Move(double delta)
     {
-        // Kapalıyken hareket etme
-        if (isCovering || isCovered)
-            return;
-
+        if (isCovering || isCovered) return;
         Vector2 velocity = Velocity;
-
-        if (!IsOnFloor())
-            velocity.Y += Gravity * (float)delta;
-        else
-            velocity.Y = 0;
-
+        velocity.Y = IsOnFloor() ? 0 : velocity.Y + Gravity * (float)delta;
         velocity.X = direction * Speed;
-
         animatedSprite.FlipH = direction > 0;
-
         Velocity = velocity;
         MoveAndSlide();
-
         CheckDirection();
     }
 
     private void CheckDirection()
     {
-        if (raycastLeft == null || raycastRight == null)
-            return;
-        // Duvar kontrolü
-        if (IsOnWall())
-        {
-            direction *= -1;
-            return;
-        }
-
-        // Uçurum kontrolü
+        if (raycastLeft == null || raycastRight == null) return;
+        if (IsOnWall()) { direction *= -1; return; }
         if (IsOnFloor())
         {
-            if (direction > 0 && !raycastRight.IsColliding())
-            {
-                direction = -1; // Sola dön
-            }
-            else if (direction < 0 && !raycastLeft.IsColliding())
-            {
-                direction = 1; // Sağa dön
-            }
+            if (direction > 0 && !raycastRight.IsColliding()) direction = -1;
+            else if (direction < 0 && !raycastLeft.IsColliding()) direction = 1;
         }
-    }
-    private void SpawnBird()
-    {
-
-
-        // ✅ PathFollow2D oluştur
-        var pathFollow = new PathFollow2D();
-        pathFollow.Rotates = false;  // Kuş kendi rotasyonunu yönetsin
-        pathFollow.Loop = true;      // Yolun sonunda başa dönsün
-
-        // Path2D'ye ekle
-        birdPath.AddChild(pathFollow);
-
-        // Kuşu oluştur ve PathFollow2D'ye ekle
-        var bird = BirdScene.Instantiate<Node2D>();
-        pathFollow.AddChild(bird);
-
-        currentBirdCount++;
-
-        // Kuş öldüğünde sayıyı azalt
-        bird.TreeExited += () => OnBirdDied();
-
-    }
-
-    private void OnBirdDied()
-    {
-        currentBirdCount--;
     }
 
     public void TakeDamage(int damage = 1)
     {
-        if (isDead)
-            return;
-
-        // ✅ Kapalıyken hasar almaz
-        if (isCovered || isCovering)
-        {
-            return;
-        }
-
+        if (isDead || isCovered || isCovering) return;
         currentHealth -= damage;
-
-        if (currentHealth <= 0)
-        {
-            Die();
-            return;
-        }
+        if (currentHealth <= 0) Die();
     }
+
     private void Die()
     {
-        if (isDead)
-            return;
-
+        if (isDead) return;
         isDead = true;
-
-        // Collision kapat
         var collision = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-        if (collision != null)
-            collision.SetDeferred("disabled", true);
-
+        if (collision != null) collision.SetDeferred("disabled", true);
         if (animatedSprite.SpriteFrames.HasAnimation("death"))
         {
             animatedSprite.Play("death");
-
-            float frameCount = animatedSprite.SpriteFrames.GetFrameCount("death");
+            float fc = animatedSprite.SpriteFrames.GetFrameCount("death");
             double fps = animatedSprite.SpriteFrames.GetAnimationSpeed("death");
-            double duration = frameCount / fps;
-
-            GetTree().CreateTimer(duration).Timeout += () =>
-            {
-                if (IsInstanceValid(this))
-                    QueueFree();
-            };
+            GetTree().CreateTimer(fc / fps).Timeout += () =>
+            { if (IsInstanceValid(this)) QueueFree(); };
         }
-        else
-        {
-            QueueFree();
-        }
-
+        else QueueFree();
     }
-
-
-
 }

@@ -38,6 +38,7 @@ public partial class TrashWizard : CharacterBody2D
     private bool isStunned = false;
     private float stunTimer = 0;
     private float originalSpeed;
+    private int bonusDamage = 0; // TrashKingEvent
 
     // === PLAYER TESPİT ===
     private bool playerInMeleeRange = false;
@@ -323,7 +324,7 @@ public partial class TrashWizard : CharacterBody2D
         GetTree().CurrentScene.AddChild(projectileNode);
 
         // SetupArc çağır (CallDeferred ile)
-        projectileNode.CallDeferred("SetupArc", targetPos, ProjectileDamage);
+        projectileNode.CallDeferred("SetupArc", targetPos, ProjectileDamage + bonusDamage);
     }
 
 
@@ -375,7 +376,7 @@ public partial class TrashWizard : CharacterBody2D
         {
             if (body.HasMethod("TakeDamage"))
             {
-                body.Call("TakeDamage", 1);
+                body.Call("TakeDamage", 1 + bonusDamage);
             }
         }
     }
@@ -447,6 +448,8 @@ public partial class TrashWizard : CharacterBody2D
         }
     }
 
+
+    public void AddBonusDamage(int amount) { bonusDamage = Mathf.Max(0, bonusDamage + amount); }
 
     public void ApplyStun(float duration)
     {

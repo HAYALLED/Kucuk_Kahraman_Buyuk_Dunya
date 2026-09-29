@@ -1,45 +1,43 @@
 using Godot;
-using System;
+using System.Collections.Generic;
 
 public partial class TrashBirfSpawner_secured : CharacterBody2D
 {
-    // Temel Ayarlar
     [Export] public int MaxHealth = 8;
-    [Export] public float SpawnInterval = 5.0f;  // Kaç saniyede bir kuş spawn
-    [Export] public int MaxBirds = 20;            // Maksimum kuş sayısı
+    [Export] public float SpawnInterval = 5.0f;
+    [Export] public int MaxBirds = 20;
+    [Export] public float DefaultBirdSpeed = 80f;
 
-    // Security limit
+    [Export] public Path2D AssignedPath;
+
     [Export] public int MaxSecurityCount = 6;
-    private int currentSecurityCount = 0;
-
-    // ✅ SECURITY SPAWN AYARLARI
-    [Export] public float SecuritySpawnInterval = 60.0f;  // Her 60 saniyede bir
-    [Export] public int SecuritySpawnCount = 2;           // Kaç tane spawn olacak
-    [Export] public float PlayerDetectionRange = 300.0f;  // Player mesafesi
-
-    private PackedScene BirdScene;
+    [Export] public float SecuritySpawnInterval = 60.0f;
+    [Export] public int SecuritySpawnCount = 2;
+    [Export] public float PlayerDetectionRange = 300.0f;
     [Export] public PackedScene TrashMinibossSecurityScene;
 
-    // Değişkenler
+    private PackedScene birdScene;
     private int currentHealth;
-    private int direction = 1;
     private bool isDead = false;
     private float spawnTimer = 0;
-    private int currentBirdCount = 0;
-
-    // ✅ SECURITY SPAWN DEĞİŞKENLERİ
+    private int currentSecurityCount = 0;
     private float securitySpawnTimer = 0;
-    private bool hasSpawnedInitialSecurity = false;  // İlk spawn yapıldı mı?
+    private bool hasSpawnedInitialSecurity = false;
+    private bool playerInRange = false;
 
-    // Node'lar
     private AnimatedSprite2D animatedSprite;
     private Area2D playerDetector;
-    private RayCast2D raycastLeft;
-    private RayCast2D raycastRight;
     private Node2D player;
 
-    [Export] public NodePath PathNodePath;  // Path2D'nin yolu
-    private Path2D birdPath;
+    private class BirdEntry
+    {
+        public Node2D Bird;
+        public PathFollow2D Follow;
+        public Path2D CurrentPath;
+        public float Speed;
+        public bool IsRerouting; // ← EKLENDİ
+    }
+    private List<BirdEntry> activeBirds = new();
 
     public override void _Ready()
     {
@@ -49,220 +47,192 @@ public partial class TrashBirfSpawner_secured : CharacterBody2D
         AddToGroup("enemy");
         currentHealth = MaxHealth;
 
-        // Player'ı bul
         var players = GetTree().GetNodesInGroup("player");
-        if (players.Count > 0)
-            player = players[0] as Node2D;
+        if (players.Count > 0) player = players[0] as Node2D;
 
         playerDetector.CollisionMask = 2;
-
-        // Sinyaller
         playerDetector.BodyEntered += OnPlayerEnterRange;
         playerDetector.BodyExited += OnPlayerExitRange;
         animatedSprite.Play("idle");
 
-        BirdScene = GD.Load<PackedScene>("res://Assets/Scenes/Trash_Bird.tscn");
+        birdScene = GD.Load<PackedScene>("res://Assets/Scenes/Trash_Bird.tscn");
 
-        // Path2D'yi bul (Level'de olmalı)
-        birdPath = GetParent().GetNodeOrNull<Path2D>("Path2D_secured");
+        if (AssignedPath == null)
+            GD.PrintErr("[SECURED SPAWNER] ❌ AssignedPath atanmamış!");
 
         spawnTimer = 2.0f;
-        securitySpawnTimer = 0;  // İlk spawn hemen olsun
-
-        GD.Print("[SPAWNER] Sistem başlatıldı!");
-        GD.Print($"[SPAWNER] Security Limit: {MaxSecurityCount}");
+        securitySpawnTimer = 0;
     }
-
-    private bool playerInRange = false;
 
     private void OnPlayerEnterRange(Node2D body)
     {
-        if (body.IsInGroup("player"))
+        if (!body.IsInGroup("player")) return;
+        playerInRange = true;
+        player = body;
+        if (!hasSpawnedInitialSecurity)
         {
-            playerInRange = true;
-            player = body;
-            GD.Print("[SPAWNER] 🎯 Player menzile girdi!");
-
-            // İlk kez girdiğinde hemen spawn et
-            if (!hasSpawnedInitialSecurity)
-            {
-                SpawnSecurityGuards();
-                hasSpawnedInitialSecurity = true;
-                securitySpawnTimer = SecuritySpawnInterval;  // Timer'ı başlat
-            }
+            SpawnSecurityGuards();
+            hasSpawnedInitialSecurity = true;
+            securitySpawnTimer = SecuritySpawnInterval;
         }
     }
-
     private void OnPlayerExitRange(Node2D body)
     {
-        if (body.IsInGroup("player"))
-        {
-            playerInRange = false;
-            GD.Print("[SPAWNER] Player menzilden çıktı!");
-        }
+        if (body.IsInGroup("player")) playerInRange = false;
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (isDead)
-            return;
+        if (isDead) return;
 
-        // Kuş spawn timer
         spawnTimer -= (float)delta;
+        if (spawnTimer <= 0 && activeBirds.Count < MaxBirds)
+        { SpawnBird(); spawnTimer = SpawnInterval; }
 
-        if (spawnTimer <= 0 && currentBirdCount < MaxBirds)
-        {
-            SpawnBird();
-            spawnTimer = SpawnInterval;
-        }
-
-        // ✅ SECURITY SPAWN SİSTEMİ
         if (playerInRange)
         {
             securitySpawnTimer -= (float)delta;
-
             if (securitySpawnTimer <= 0)
-            {
-                SpawnSecurityGuards();
-                securitySpawnTimer = SecuritySpawnInterval;  // 60 saniye sonra tekrar
-                GD.Print($"[SPAWNER] ⏰ Bir sonraki spawn: {SecuritySpawnInterval}s");
-            }
+            { SpawnSecurityGuards(); securitySpawnTimer = SecuritySpawnInterval; }
         }
+
+        AdvanceAndCheckBirds((float)delta);
     }
 
-    // ✅ YENİ METOD: Security Guard Spawn
-    private void SpawnSecurityGuards()
+    private void AdvanceAndCheckBirds(float delta)
     {
-        if (TrashMinibossSecurityScene == null)
+        for (int i = activeBirds.Count - 1; i >= 0; i--)
         {
-            GD.PrintErr("[SPAWNER] ❌ TrashMinibossSecurityScene atanmamış!");
-            return;
+            var entry = activeBirds[i];
+            if (!IsInstanceValid(entry.Bird) || !IsInstanceValid(entry.Follow))
+            { activeBirds.RemoveAt(i); continue; }
+
+            AdvanceFollower(entry, delta);
+            if (IsAtEnd(entry.CurrentPath, entry.Follow))
+                RerouteBird(entry);
         }
-
-        // ✅ Limit kontrolü - MESAJLI
-        if (currentSecurityCount >= MaxSecurityCount)
-        {
-            GD.Print($"[SPAWNER] ⚠️ Security limiti doldu! ({currentSecurityCount}/{MaxSecurityCount})");
-            return;
-        }
-
-        GD.Print($"[SPAWNER] 🛡️ {SecuritySpawnCount} adet TrashMinibossSecurity spawn ediliyor!");
-
-        for (int i = 0; i < SecuritySpawnCount; i++)
-        {
-            // Security oluştur
-            var security = TrashMinibossSecurityScene.Instantiate<Node2D>();
-
-            // Spawn pozisyonu: Spawner'ın sağında ve solunda
-            float offsetX = (i == 0) ? -80f : 80f;  // İlki solda, ikincisi sağda
-            float offsetY = 0f;
-
-            Vector2 spawnPos = GlobalPosition + new Vector2(offsetX, offsetY);
-            security.GlobalPosition = spawnPos;
-
-            // Level'e ekle (CurrentScene)
-            GetTree().CurrentScene.AddChild(security);
-
-            // ✅ KRİTİK: Security öldüğünde sayacı azalt!
-            security.TreeExited += () => OnSecurityDied();
-
-            GD.Print($"[SPAWNER] 🛡️ Security {i + 1} spawn edildi! Pos: {spawnPos}");
-        }
-
-        currentSecurityCount += SecuritySpawnCount;
-        GD.Print($"[SPAWNER] 📊 Toplam Security: {currentSecurityCount}/{MaxSecurityCount}");
-    }
-
-    // ✅ YENİ METOD: Security öldüğünde
-    private void OnSecurityDied()
-    {
-        currentSecurityCount--;
-        GD.Print($"[SPAWNER] 🛡️💀 Security öldü! Kalan: {currentSecurityCount}/{MaxSecurityCount}");
     }
 
     private void SpawnBird()
     {
-        if (birdPath == null)
+        if (AssignedPath == null) return;
+        var follow = CreateFollower(AssignedPath);
+        var bird = birdScene.Instantiate<Node2D>();
+        follow.AddChild(bird);
+
+        float entrySpeed = AssignedPath is BirdRouteManager brmSpd ? brmSpd.BirdSpeed : DefaultBirdSpeed;
+        var entry = new BirdEntry { Bird = bird, Follow = follow, CurrentPath = AssignedPath, Speed = entrySpeed };
+        activeBirds.Add(entry);
+
+        if (AssignedPath is BirdRouteManager brm) brm.FireEnter();
+
+        // ← DEĞİŞTİ
+        bird.TreeExited += () => { if (!entry.IsRerouting) activeBirds.Remove(entry); };
+    }
+
+    private void RerouteBird(BirdEntry entry)
+    {
+        entry.IsRerouting = true; // ← EKLENDİ
+        Path2D prevPath = entry.CurrentPath;
+
+        if (prevPath is BirdRouteManager brmPrev) brmPrev.FireExit();
+
+        Path2D nextPath = prevPath is BirdRouteManager brmNext
+            ? brmNext.GetNextPath(prevPath)
+            : null;
+
+        if (nextPath == null)
         {
-            GD.PrintErr("[SPAWNER] ❌ Path2D bulunamadı!");
+            bool fwdL = prevPath is BirdRouteManager brmL ? brmL.Forward : true;
+            entry.Follow.Progress = fwdL ? 0f : prevPath.Curve.GetBakedLength();
+            if (prevPath is BirdRouteManager brmRe) brmRe.FireEnter();
+            entry.IsRerouting = false; // ← EKLENDİ
             return;
         }
 
-        // PathFollow2D oluştur
-        var pathFollow = new PathFollow2D();
-        pathFollow.Rotates = false;  // Kuş kendi rotasyonunu yönetsin
-        pathFollow.Loop = true;      // Yolun sonunda başa dönsün
+        entry.Speed = nextPath is BirdRouteManager brmNS ? brmNS.BirdSpeed : entry.Speed;
 
-        // Path2D'ye ekle
-        birdPath.AddChild(pathFollow);
+        PathFollow2D oldFollow = entry.Follow;
+        PathFollow2D newFollow = CreateFollower(nextPath);
 
-        // Kuşu oluştur ve PathFollow2D'ye ekle
-        var bird = BirdScene.Instantiate<Node2D>();
-        pathFollow.AddChild(bird);
+        if (IsInstanceValid(entry.Bird))
+        {
+            entry.Bird.Reparent(newFollow, false);
+            entry.Bird.Position = Vector2.Zero;
+        }
+        entry.Follow = newFollow;
+        entry.CurrentPath = nextPath;
 
-        currentBirdCount++;
+        if (nextPath is BirdRouteManager brmEnter) brmEnter.FireEnter();
 
-        // Kuş öldüğünde sayıyı azalt
-        bird.TreeExited += () => OnBirdDied();
-
-        GD.Print($"[SPAWNER] 🐦 Kuş spawn edildi! Toplam: {currentBirdCount}/{MaxBirds}");
+        oldFollow.CallDeferred(Node.MethodName.QueueFree);
+        entry.IsRerouting = false; // ← EKLENDİ
     }
 
-    private void OnBirdDied()
+    private PathFollow2D CreateFollower(Path2D path)
     {
-        currentBirdCount--;
-        GD.Print($"[SPAWNER] 🐦 Kuş öldü! Kalan: {currentBirdCount}");
+        bool forward = path is BirdRouteManager brm ? brm.Forward : true;
+        var follow = new PathFollow2D();
+        follow.Rotates = false;
+        follow.Loop = false;
+        follow.Progress = forward ? 0f : path.Curve.GetBakedLength();
+        path.AddChild(follow);
+        return follow;
+    }
+
+    private void AdvanceFollower(BirdEntry entry, float delta)
+    {
+        bool forward = entry.CurrentPath is BirdRouteManager brm2 ? brm2.Forward : true;
+        entry.Follow.Progress += (forward ? 1 : -1) * entry.Speed * delta;
+    }
+
+    private bool IsAtEnd(Path2D path, PathFollow2D follow)
+    {
+        if (path is BirdRouteManager brm)
+            return brm.Forward
+                ? follow.Progress >= path.Curve.GetBakedLength() - brm.EndThreshold
+                : follow.Progress <= brm.EndThreshold;
+        return follow.Progress >= path.Curve.GetBakedLength() - 10f;
+    }
+
+    private void SpawnSecurityGuards()
+    {
+        if (TrashMinibossSecurityScene == null) return;
+        if (currentSecurityCount >= MaxSecurityCount) return;
+
+        for (int i = 0; i < SecuritySpawnCount; i++)
+        {
+            var security = TrashMinibossSecurityScene.Instantiate<Node2D>();
+            float offsetX = (i == 0) ? -80f : 80f;
+            security.GlobalPosition = GlobalPosition + new Vector2(offsetX, 0f);
+            GetTree().CurrentScene.AddChild(security);
+            security.TreeExited += () => currentSecurityCount--;
+        }
+        currentSecurityCount += SecuritySpawnCount;
     }
 
     public void TakeDamage(int damage = 1)
     {
-        if (isDead)
-            return;
-
+        if (isDead) return;
         currentHealth -= damage;
-        GD.Print($"[SPAWNER] 💔 HP: {currentHealth}/{MaxHealth}");
-
-        // Ölüm kontrolü
-        if (currentHealth <= 0)
-        {
-            Die();
-            return;
-        }
+        if (currentHealth <= 0) Die();
     }
 
     private void Die()
     {
-        if (isDead)
-            return;
-
+        if (isDead) return;
         isDead = true;
-        GD.Print("[SPAWNER] ☠️ Spawner öldü!");
-
-        // Collision kapat
         var collision = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-        if (collision != null)
-            collision.SetDeferred("disabled", true);
-
-        if (playerDetector != null)
-            playerDetector.Monitoring = false;
-
+        if (collision != null) collision.SetDeferred("disabled", true);
+        if (playerDetector != null) playerDetector.Monitoring = false;
         if (animatedSprite.SpriteFrames.HasAnimation("death"))
         {
             animatedSprite.Play("death");
-
-            float frameCount = animatedSprite.SpriteFrames.GetFrameCount("death");
+            float fc = animatedSprite.SpriteFrames.GetFrameCount("death");
             double fps = animatedSprite.SpriteFrames.GetAnimationSpeed("death");
-            double duration = frameCount / fps;
-
-            GetTree().CreateTimer(duration).Timeout += () =>
-            {
-                if (IsInstanceValid(this))
-                    QueueFree();
-            };
+            GetTree().CreateTimer(fc / fps).Timeout += () =>
+            { if (IsInstanceValid(this)) QueueFree(); };
         }
-        else
-        {
-            QueueFree();
-        }
+        else QueueFree();
     }
 }

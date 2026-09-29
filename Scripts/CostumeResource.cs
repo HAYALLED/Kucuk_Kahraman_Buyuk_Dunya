@@ -43,17 +43,25 @@ public partial class CostumeResource : Resource
     [Export] public float PlantExplosionRadius = 50.0f;   // Patlama yarıçapı
     [Export] public PackedScene PlantScene;               // Tuzak scene'i
 
-    // ===== DRONE SUPPORT =====
+    // ===== ATTACK DRONE (Iron Man) =====
     [Export] public bool HasDroneSupport = false;
-    [Export] public float DroneCollectInterval = 45.0f;   // Kaç saniyede bir toplar
-    [Export] public float DroneCollectRadius = 200.0f;    // Toplama yarıçapı
-
+    [Export] public PackedScene DroneScene;
+    [Export] public float DroneSpawnInterval = 25.0f;     
+    [Export] public int MaxActiveDrones = 2;              
+    [Export] public float DroneDetectionRadius = 500.0f;  // ⚡ YENİ: Düşman algılama mesafesi
+    [Export] public int DroneDamage = 2;                 
+    [Export] public float DroneSpeed = 400.0f;            
+    [Export] public float DroneLifetime = 10.0f;          // ⚡ YENİ: Max yaşam süresi (10sn)
     // ===== FROZE TIME (Zaman Yavaşlatma) =====
-    [Export] public bool CanFrozeTime = false;
-    [Export] public float FrozeTimeSlowPercent = 0.3f;    // %30 yavaşlatma (0.3 = %70 hız)
-    [Export] public float FrozeTimeDuration = 5.0f;       // Etki süresi
-    [Export] public float FrozeTimeCooldown = 30.0f;      // Bekleme süresi
-
+    [Export] public bool CanFreezeTime = false;
+    [Export] public float FreezeTimeDuration = 10.0f;     // Donma süresi
+    [Export] public float FreezeTimeCooldown = 25.0f;     // Bekleme süresi
+                                                          // ===== AQUAMAN BUBBLE TRAP =====
+    [Export] public bool CanUseBubbleTrap = false; 
+    [Export] public PackedScene BubbleScene;           // ✅ YENİ
+    [Export] public float BubbleStunDuration = 4.0f;   // ✅ YENİ
+    [Export] public float BubbleStunCooldown = 25.0f;  // ✅ YENİ
+    [Export] public float BubbleStunRadius = 200.0f;   // ✅ YENİ
     // ===== WALL JUMP (Duvar Zıplama) =====
     [Export] public bool CanWallJump = false;
     [Export] public int MaxWallJumps = 1;                 // Üst üste kaç duvar zıplaması

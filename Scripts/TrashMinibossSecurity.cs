@@ -25,7 +25,7 @@ public partial class TrashMinibossSecurity : CharacterBody2D
     [Export] public int MaxHealth = 10;
 
     // === SALDIRI AYARLARI ===
-    [Export] public float AttackRange = 50.0f;
+    [Export] public float AttackRange = 150.0f;
     [Export] public float AttackCooldown = 1.5f;
 
     // === IDLE/WALK AYARLARI ===
@@ -41,6 +41,7 @@ public partial class TrashMinibossSecurity : CharacterBody2D
     private float stateTimer = 0;
     private float attackTimer = 0;
     private float originalSpeed;
+    private int bonusDamage = 0; // TrashKingEvent
 
     // Kalkan sistemi
     private int battleDamageCount = 0;               // Battle'da alınan hasar sayısı
@@ -520,7 +521,7 @@ public partial class TrashMinibossSecurity : CharacterBody2D
         {
             if (body.HasMethod("TakeDamage"))
             {
-                body.Call("TakeDamage", 1);
+                body.Call("TakeDamage", 1 + bonusDamage);
             }
         }
     }
@@ -624,6 +625,8 @@ public partial class TrashMinibossSecurity : CharacterBody2D
     }
 
     // === STUN/SLOW ===
+    public void AddBonusDamage(int amount) { bonusDamage = Mathf.Max(0, bonusDamage + amount); }
+
     public void ApplyStun(float duration)
     {
         isStunned = true;
