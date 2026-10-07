@@ -109,6 +109,8 @@ public partial class Level3 : Node2D
 
     private void RestorePlayerState()
     {
+        // ✅ Kostüm + can artık Player_controller._Ready() içinde OTOMATİK
+        // restore ediliyor (player kendi üzerinde taşıyor, static alan).
         var player = GetNodeOrNull<Player_controller>("Player");
         if (player == null)
         {
@@ -117,28 +119,13 @@ public partial class Level3 : Node2D
         }
         if (player == null) return;
 
-        var root = GetTree().Root;
-
-        try
+        Callable.From(() =>
         {
-            if (root.HasMeta("SavedCostumeHealthData"))
+            if (player != null && IsInstanceValid(player))
             {
-                var data = (Godot.Collections.Dictionary)root.GetMeta("SavedCostumeHealthData");
-                Callable.From(() =>
-                {
-                    if (player != null && IsInstanceValid(player))
-                    {
-                        player.RestoreCostumeHealthSaveData(data);
-                        player.UpdateHealthUI();
-                    }
-                }).CallDeferred();
-                root.RemoveMeta("SavedCostumeHealthData");
+                player.UpdateHealthUI();
             }
-        }
-        catch (Exception e)
-        {
-            GD.PrintErr($"[LEVEL] RestorePlayerState hatası: {e.Message}");
-        }
+        }).CallDeferred();
     }
 
     private Vector2? GetSecretReturnPosition()
@@ -224,6 +211,9 @@ public partial class Level3 : Node2D
 
         GetTree().CreateTimer(3.0).Timeout += () =>
         {
+            // Level 3 kostümleri Level 4'e taşınsın
+            Player_controller.CarryCostumesToNextScene(GetTree());
+
             if (ResourceLoader.Exists("res://Assets/Scenes/Areas/Level4.tscn"))
                 GetTree().ChangeSceneToFile("res://Assets/Scenes/Areas/Level4.tscn");
             else

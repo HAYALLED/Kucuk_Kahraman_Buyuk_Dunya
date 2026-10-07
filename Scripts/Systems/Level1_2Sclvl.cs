@@ -95,15 +95,14 @@ public partial class Level1_2Sclvl : Area2D
 
     private void SavePlayerState(Node2D body)
     {
-        var root = GetTree().Root;
-
         try
         {
-            if (body.HasMethod("GetCostumeHealthSaveData"))
+            // ✅ Kostüm + can artık player'ın KENDİ ÜZERİNDE taşınıyor (static alan).
+            // Root meta'sına yazmaya gerek yok, timing sorunu da kalmıyor.
+            if (body.HasMethod("SaveCostumeHealthForSceneTransition"))
             {
-                var data = (Godot.Collections.Dictionary)body.Call("GetCostumeHealthSaveData");
-                root.SetMeta("SavedCostumeHealthData", data);
-                GD.Print("[SECRET] 💾 Tüm kostümlerin canı kaydedildi!");
+                body.Call("SaveCostumeHealthForSceneTransition");
+                GD.Print("[SECRET] 💾 Tüm kostümlerin canı player üzerinde taşınıyor!");
             }
         }
         catch (Exception e)

@@ -13,6 +13,7 @@ expand_margin_bottom = 100.0
 
 [sub_resource type="LabelSettings" id="LabelSettings_7pm4c"]
 font_size = 32
+font_color = Color(0.101960786, 0.101960786, 0.2, 1)
 
 [node name="Math_minigame" type="CanvasLayer" unique_id=520245715]
 script = ExtResource("1_210xx")

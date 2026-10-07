@@ -80,9 +80,8 @@ public partial class KillZone : Area2D
     {
         var root = GetTree().Root;
 
-        // Costume & health
-        if (root.HasMeta("SavedCostumeHealthData"))
-            root.RemoveMeta("SavedCostumeHealthData");
+        // Costume & health - artık player'ın static alanında, onu temizle
+        Player_controller.ClearPendingCostumeHealthData();
 
         // Trash
         if (root.HasMeta("SavedTrash_Metal"))

@@ -116,6 +116,9 @@ public partial class Level1 : Node2D
 
     private void RestorePlayerState()
     {
+        // ✅ Kostüm + can artık Player_controller._Ready() içinde OTOMATİK
+        // restore ediliyor (player kendi üzerinde taşıyor, static alan).
+        // Burada sadece UI'ı bir kez daha tazeleyelim, garanti olsun.
         var player = GetNodeOrNull<Player_controller>("Player");
         if (player == null)
         {
@@ -126,32 +129,13 @@ public partial class Level1 : Node2D
 
         if (player == null) return;
 
-        var root = GetTree().Root;
-
-        try
+        Callable.From(() =>
         {
-            // ✅ Tüm kostümlerin canı + aktif kostüm - TEK PAKET
-            if (root.HasMeta("SavedCostumeHealthData"))
+            if (player != null && IsInstanceValid(player))
             {
-                var data = (Godot.Collections.Dictionary)root.GetMeta("SavedCostumeHealthData");
-
-                Callable.From(() =>
-                {
-                    if (player != null && IsInstanceValid(player))
-                    {
-                        player.RestoreCostumeHealthSaveData(data);
-                        player.UpdateHealthUI();
-                        GD.Print("[LEVEL] 🔄 Tüm kostümlerin canı geri yüklendi!");
-                    }
-                }).CallDeferred();
-
-                root.RemoveMeta("SavedCostumeHealthData");
+                player.UpdateHealthUI();
             }
-        }
-        catch (Exception e)
-        {
-            GD.PrintErr($"[LEVEL] ❌ RestorePlayerState hatası: {e.Message}");
-        }
+        }).CallDeferred();
     }
 
     private Vector2? GetSecretReturnPosition()
@@ -279,6 +263,9 @@ public partial class Level1 : Node2D
 
         GetTree().CreateTimer(3.0).Timeout += () =>
         {
+            // Level 1 kostümleri Level 2'ye taşınsın
+            Player_controller.CarryCostumesToNextScene(GetTree());
+
             if (ResourceLoader.Exists("res://Assets/Scenes/Areas/Level2.tscn"))
                 GetTree().ChangeSceneToFile("res://Assets/Scenes/Areas/Level2.tscn");
             else if (ResourceLoader.Exists("res://Assets/Scenes/Areas/level_2.tscn"))

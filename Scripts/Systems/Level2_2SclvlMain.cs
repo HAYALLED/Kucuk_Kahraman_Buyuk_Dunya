@@ -95,46 +95,17 @@ public partial class Level2_2SclvlMain : Node2D
     }
     private async void RestorePlayerState()
     {
+        // ✅ Kostüm + can artık Player_controller._Ready() içinde OTOMATİK
+        // restore ediliyor (player kendi üzerinde taşıyor, static alan).
+        // Burada sadece UI'ı bir kez daha tazeleyelim, garanti olsun.
         var player = GetTree().GetFirstNodeInGroup("player") as Node2D;
-        if (player == null)
+        if (player == null) return;
+
+        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+
+        if (player != null && IsInstanceValid(player) && player.HasMethod("UpdateHealthUI"))
         {
-            GD.PrintErr("[SECRET LEVEL] ❌ Player bulunamadı!");
-            return;
-        }
-
-        var root = GetTree().Root;
-
-        try
-        {
-            // ✅ 2 frame bekle - collision'lar tamamen hazır olsun
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-
-            // ✅ Tüm kostümlerin canı + aktif kostüm - TEK PAKET, GÜVENLİ!
-            if (root.HasMeta("SavedCostumeHealthData"))
-            {
-                var data = (Godot.Collections.Dictionary)root.GetMeta("SavedCostumeHealthData");
-
-                if (player != null && IsInstanceValid(player))
-                {
-                    player.Call("RestoreCostumeHealthSaveData", data);
-                    GD.Print("[SECRET LEVEL] 🔄 Tüm kostümlerin canı geri yüklendi!");
-                }
-            }
-
-            // ✅ 1 frame daha bekle
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-
-            // ✅ UI güncelle
-            if (player != null && IsInstanceValid(player))
-            {
-                player.Call("UpdateHealthUI");
-                GD.Print("[SECRET LEVEL] ✅ Tüm restore işlemi tamamlandı!");
-            }
-        }
-        catch (Exception e)
-        {
-            GD.PrintErr($"[SECRET LEVEL] ❌ RestorePlayerState hatası: {e.Message}");
+            player.Call("UpdateHealthUI");
         }
     }
     private void CountTotalPoints()
@@ -201,15 +172,13 @@ public partial class Level2_2SclvlMain : Node2D
 
     private void SavePlayerState(Node2D player)
     {
-        var root = GetTree().Root;
-
         try
         {
-            if (player.HasMethod("GetCostumeHealthSaveData"))
+            // ✅ Kostüm + can artık player'ın KENDİ ÜZERİNDE taşınıyor (static alan).
+            if (player.HasMethod("SaveCostumeHealthForSceneTransition"))
             {
-                var data = (Godot.Collections.Dictionary)player.Call("GetCostumeHealthSaveData");
-                root.SetMeta("SavedCostumeHealthData", data);
-                GD.Print("[SECRET LEVEL] 💾 Tüm kostümlerin canı kaydedildi!");
+                player.Call("SaveCostumeHealthForSceneTransition");
+                GD.Print("[SECRET LEVEL] 💾 Tüm kostümlerin canı player üzerinde taşınıyor!");
             }
         }
         catch (Exception e)

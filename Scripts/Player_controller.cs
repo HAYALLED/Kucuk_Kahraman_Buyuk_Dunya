@@ -29,6 +29,19 @@ public partial class Player_controller : CharacterBody2D
     private List<TextureRect> costumeSlotIcons = new List<TextureRect>();
     private int currentCostumeIndex = -1;
 
+    // ✅ Sahneler arası kostüm taşıma (static): Player instance'ı sahneyle birlikte ölür,
+    // bu alanlar YAŞAR. Slot içerikleri + slot canları + aktif slot tutulur.
+    // _ExitTree'de otomatik yazılır, yeni Player _Ready'de okur.
+    private sealed class CostumeCarryState
+    {
+        public CostumeResource[] Slots;
+        public int[] Health;     // -1 = kayıt yok (tam can)
+        public int ActiveSlot;
+    }
+
+    private static CostumeCarryState carryState = null;
+    private static bool discardNextExitSave = false;
+
     // Kostüm sistemi
     public CostumeResource CurrentCostume;  // [Export] kaldırıldı!
     [Export] public CostumeResource[] CostumeSlots = new CostumeResource[3];
@@ -201,10 +214,17 @@ public partial class Player_controller : CharacterBody2D
         CreateAttackArea();
         AddToGroup("player");
 
-        // ✅ CRITICAL FIX: SavedCostumeHealthData meta varsa ilk kostümü GIYME!
-        bool willRestoreLater = GetTree().Root.HasMeta("SavedCostumeHealthData");
+        // ✅ KRİTİK FIX: Kostüm+can verisi artık PLAYER'IN KENDİSİNDE (static alan)
+        // taşınıyor — GetTree().Root meta'sına, dış scriptlerin doğru sırayla
+        // çağırmasına falan gerek yok. Sahne değişince bu instance ölür ama
+        // static alan YAŞAMAYA DEVAM EDER, yeni Player burada okur.
+        discardNextExitSave = false;
 
-        if (!willRestoreLater)
+        if (TryRestoreCarriedCostumes())
+        {
+            // ✅ Taşınan slotlar + canlar uygulandı - default kostüm GIYILMEYECEK!
+        }
+        else
         {
             // ✅ Normal başlangıç - Inspector'dan ilk kostümü giy
 
@@ -221,12 +241,6 @@ public partial class Player_controller : CharacterBody2D
                     }
                 }
             }
-        }
-        else
-        {
-            // ✅ Meta restore bekliyor - kostüm GIYILMEYECEK
-            currentCostumeIndex = -1;  // ✅ Resetle!
-            CurrentCostume = null;     // ✅ Null yap!
         }
 
         FindCostumeSlotUI();
@@ -2452,54 +2466,141 @@ public partial class Player_controller : CharacterBody2D
     // ========================================
     // Sadece aktif kostümün canını değil, 3 slotun TAMAMININ canını
     // tek pakette taşır. Secret level'e geçerken/dönerken bunu kullan.
-    public Godot.Collections.Dictionary GetCostumeHealthSaveData()
+    private CostumeCarryState CaptureCarryState()
     {
-        // Aktif kostümün güncel canını önce dictionary'ye yansıt
-        if (currentCostumeIndex >= 0 && currentCostumeIndex < CostumeSlots.Length)
+        int slotCount = CostumeSlots.Length;
+        var slots = new CostumeResource[slotCount];
+        var health = new int[slotCount];
+        int active = currentCostumeIndex;
+
+        // Aktif kostümün güncel canını yansıt
+        if (currentCostumeIndex >= 0 && currentCostumeIndex < slotCount)
         {
             costumeHealthStates[currentCostumeIndex] = currentHealth;
         }
 
-        var data = new Godot.Collections.Dictionary();
-        data["ActiveSlot"] = currentCostumeIndex;
-
-        for (int i = 0; i < CostumeSlots.Length; i++)
+        for (int i = 0; i < slotCount; i++)
         {
-            if (CostumeSlots[i] == null) continue;
-
-            int health = costumeHealthStates.ContainsKey(i) ? costumeHealthStates[i] : CostumeSlots[i].MaxHealth;
-            data[$"Slot{i}Health"] = health;
-            data[$"Slot{i}MaxHealth"] = CostumeSlots[i].MaxHealth;
+            slots[i] = CostumeSlots[i];
+            health[i] = costumeHealthStates.TryGetValue(i, out int h) ? h : -1;
         }
 
-        return data;
+        // Geçici (level boyu / süreli) kostüm: sonraki sahneye orijinali taşınır
+        if (hasTemporaryCostume)
+        {
+            if (currentCostumeIndex >= 0 && currentCostumeIndex < slotCount && currentCostumeIndex != originalSlotIndex)
+            {
+                slots[currentCostumeIndex] = null;
+                health[currentCostumeIndex] = -1;
+            }
+
+            if (originalCostume != null && originalSlotIndex >= 0 && originalSlotIndex < slotCount)
+            {
+                slots[originalSlotIndex] = originalCostume;
+                active = originalSlotIndex;
+            }
+        }
+
+        var names = new System.Text.StringBuilder();
+        for (int i = 0; i < slotCount; i++)
+        {
+            names.Append(i).Append('=').Append(slots[i]?.CostumeName ?? "-").Append(' ');
+        }
+        GD.Print($"[CARRY] 💾 Kaydedildi: {names}| aktif={active}");
+
+        return new CostumeCarryState { Slots = slots, Health = health, ActiveSlot = active };
     }
 
-    public void RestoreCostumeHealthSaveData(Godot.Collections.Dictionary data)
+    private bool TryRestoreCarriedCostumes()
     {
-        if (data == null) return;
+        var state = carryState;
+        carryState = null; // ✅ Tüketildi, tekrar kullanılmasın
 
-        // Önce TÜM slotların canını yükle (henüz hiçbiri giyilmeden!)
+        if (state == null || state.Slots == null) return false;
+
+        bool hasAny = false;
+        foreach (var c in state.Slots)
+        {
+            if (c != null) { hasAny = true; break; }
+        }
+        if (!hasAny) return false;
+
+        costumeHealthStates.Clear();
         for (int i = 0; i < CostumeSlots.Length; i++)
         {
-            string key = $"Slot{i}Health";
-            if (CostumeSlots[i] != null && data.ContainsKey(key))
+            if (i < state.Slots.Length && state.Slots[i] != null)
             {
-                costumeHealthStates[i] = (int)data[key];
+                CostumeSlots[i] = state.Slots[i];
+                if (i < state.Health.Length && state.Health[i] >= 0)
+                {
+                    costumeHealthStates[i] = state.Health[i];
+                }
+            }
+            else
+            {
+                CostumeSlots[i] = null;
             }
         }
 
-        // Sonra hangi kostüm aktifse onu giy - can zaten doğru şekilde hazır bekliyor
-        if (data.ContainsKey("ActiveSlot"))
+        int active = state.ActiveSlot;
+        if (active < 0 || active >= CostumeSlots.Length || CostumeSlots[active] == null)
         {
-            int activeSlot = (int)data["ActiveSlot"];
-            if (activeSlot >= 0 && activeSlot < CostumeSlots.Length && CostumeSlots[activeSlot] != null)
+            active = -1;
+            for (int i = 0; i < CostumeSlots.Length; i++)
             {
-                RestoreCostume(activeSlot);
+                if (CostumeSlots[i] != null) { active = i; break; }
             }
         }
+        if (active < 0) return false;
 
-        UpdateHealthUI();
+        RestoreCostume(active);
+        GD.Print($"[CARRY] ✅ Yüklendi: aktif slot={active} ({CostumeSlots[active].CostumeName})");
+        return true;
+    }
+
+    // Portal/kapı gibi dış scriptler çağırabilir; çağrılmasa da _ExitTree otomatik kaydeder.
+    public void SaveCostumeHealthForSceneTransition()
+    {
+        discardNextExitSave = false;
+        carryState = CaptureCarryState();
+    }
+
+    // Level bitişi / sonraki bölüme geçişte açıkça çağrılır (level scriptleri).
+    public static void CarryCostumesToNextScene(SceneTree tree)
+    {
+        if (tree == null) return;
+
+        var node = tree.GetFirstNodeInGroup("player");
+        if (node is Player_controller pc && IsInstanceValid(pc) && !pc.isDead)
+        {
+            pc.SaveCostumeHealthForSceneTransition();
+        }
+    }
+
+    // Yeni oyun / menü / yeniden başlatma: taşınan veriyi sil, bir sonraki çıkış kaydını da iptal et.
+    public static void ClearPendingCostumeHealthData()
+    {
+        carryState = null;
+        discardNextExitSave = true;
+    }
+
+    public override void _ExitTree()
+    {
+        if (discardNextExitSave)
+        {
+            discardNextExitSave = false;
+            carryState = null;
+            return;
+        }
+
+        // Ölüm = temiz başlangıç
+        if (isDead)
+        {
+            carryState = null;
+            return;
+        }
+
+        carryState = CaptureCarryState();
     }
 
     public void UpdateTeacherScore(int points)

@@ -152,12 +152,11 @@ public partial class PointsGoldTrash : Area2D
                 GD.Print($"[GOLD TRASH] 💾 Çöpler kaydedildi: {total} adet");
             }
 
-            // ✅ Kostüm + can kaydet (tüm slotlar, tek pakette)
-            if (player.HasMethod("GetCostumeHealthSaveData"))
+            // ✅ Kostüm + can artık player'ın KENDİ ÜZERİNDE taşınıyor (static alan)
+            if (player.HasMethod("SaveCostumeHealthForSceneTransition"))
             {
-                var data = (Godot.Collections.Dictionary)player.Call("GetCostumeHealthSaveData");
-                root.SetMeta("SavedCostumeHealthData", data);
-                GD.Print("[GOLD TRASH] 💾 Tüm kostümlerin canı kaydedildi!");
+                player.Call("SaveCostumeHealthForSceneTransition");
+                GD.Print("[GOLD TRASH] 💾 Tüm kostümlerin canı player üzerinde taşınıyor!");
             }
         }
         catch (Exception e)
