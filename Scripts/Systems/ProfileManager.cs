@@ -29,6 +29,10 @@ public partial class ProfileManager : Control
     //  MİNİMUM SORU SAYISI
     private const int MINIMUM_QUESTIONS_PER_DIFFICULTY = 3;
 
+    // DB'de saklanan zorluk değerleri (dilden bağımsız). Sıra, OptionButton index'i ile aynı.
+    private static readonly string[] DifficultyValues = { "Kolay", "Orta", "Zor" };
+    private static readonly string[] DifficultyTranslationKeys = { "DIFFICULTY_EASY", "DIFFICULTY_MEDIUM", "DIFFICULTY_HARD" };
+
     public override void _Ready()
     {
         //  TEMEL NODE'LAR
@@ -55,7 +59,7 @@ public partial class ProfileManager : Control
             CallDeferred(nameof(InitializeMathQuestions));
         }
     }
-    private void BrinkBackMathQuestionsNodes() 
+    private void BrinkBackMathQuestionsNodes()
     {
         addBringDeletedQuestionBackButton = GetNode<Button>("BringDeletedQuestion");
 
@@ -175,6 +179,11 @@ public partial class ProfileManager : Control
         GD.Print("[PROFILE] ========================================");
     }
 
+    private static string GetDifficultyValue(int index)
+    {
+        return index >= 0 && index < DifficultyValues.Length ? DifficultyValues[index] : DifficultyValues[1];
+    }
+
     private void InitializeMathQuestions()
     {
         if (!mathQuestionsEnabled)
@@ -201,13 +210,11 @@ public partial class ProfileManager : Control
         GD.Print($"[PROFILE] Clear() sonrası: {removeDifficultyOption.ItemCount} item");
 
         //  ZORLUK SEÇENEKLERİNİ EKLE
-        removeDifficultyOption.AddItem("Kolay");    // ID: 0
-        removeDifficultyOption.AddItem("Orta");     // ID: 1
-        removeDifficultyOption.AddItem("Zor");      // ID: 2
-
-        addDifficultyOption.AddItem("Kolay");       // ID: 0
-        addDifficultyOption.AddItem("Orta");        // ID: 1
-        addDifficultyOption.AddItem("Zor");         // ID: 2
+        for (int i = 0; i < DifficultyValues.Length; i++)
+        {
+            removeDifficultyOption.AddItem(Tr(DifficultyTranslationKeys[i]), i);
+            addDifficultyOption.AddItem(Tr(DifficultyTranslationKeys[i]), i);
+        }
 
         //  DOĞRULAMA
         GD.Print($"[PROFILE] AddItem() sonrası:");
@@ -359,7 +366,7 @@ public partial class ProfileManager : Control
             return;
         }
 
-        string difficulty = removeDifficultyOption.GetItemText(selectedIndex);
+        string difficulty = GetDifficultyValue(selectedIndex);
 
         GD.Print($"[PROFILE] Selected Index: {selectedIndex}");
         GD.Print($"[PROFILE] Difficulty Text: '{difficulty}'");
@@ -479,7 +486,8 @@ public partial class ProfileManager : Control
         if (!mathQuestionsEnabled) return;
 
         string question = addQuestionInput.Text.Trim();
-        string difficulty = addDifficultyOption.GetItemText(addDifficultyOption.Selected);
+        string difficulty = GetDifficultyValue(addDifficultyOption.Selected);
+        string difficultyLabel = addDifficultyOption.GetItemText(addDifficultyOption.Selected);
 
         if (string.IsNullOrEmpty(question))
         {
@@ -496,7 +504,7 @@ public partial class ProfileManager : Control
         }
 
         var confirm = new ConfirmationDialog();
-        confirm.DialogText = string.Format(Tr("PROFILE_ADD_CONFIRM_FORMAT").Replace("\\n", "\n"), question, difficulty);
+        confirm.DialogText = string.Format(Tr("PROFILE_ADD_CONFIRM_FORMAT").Replace("\\n", "\n"), question, difficultyLabel);
         confirm.Title = "SORU EKLEME";
         confirm.OkButtonText = "EVET, EKLE";
         confirm.CancelButtonText = "HAYIR";

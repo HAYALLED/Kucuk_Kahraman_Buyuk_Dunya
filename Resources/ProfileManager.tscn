@@ -85,14 +85,14 @@ text = "PROFILE_LOGIN_BUTTON"
 custom_minimum_size = Vector2(450, 45)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-placeholder_text = "Kullanıcı Adı"
+placeholder_text = "PROFILE_USERNAME_PLACEHOLDER"
 alignment = 1
 
 [node name="PasswordInput" type="LineEdit" parent="Profil/VBoxContainer"]
 custom_minimum_size = Vector2(450, 45)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-placeholder_text = "Şifre"
+placeholder_text = "PROFILE_PASSWORD_PLACEHOLDER"
 alignment = 1
 secret = true
 
@@ -197,7 +197,7 @@ theme_override_font_sizes/font_size = 22
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "PROFILE_MATH_QUESTION_PLACEHOLDER"
+placeholder_text = "PROFILE_MATH_QUESTION_PLACEHOLDER"
 
 [node name="HSeparator2" type="HSeparator" parent="MathquestionsAdd/VBoxContainer"]
 custom_minimum_size = Vector2(0, 30)

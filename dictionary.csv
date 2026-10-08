@@ -80,6 +80,8 @@ PROFILE_PASSWORD_TOO_SHORT,Şifre en az 4 karakter olmalı!,Password must be at 
 PROFILE_USERNAME_TAKEN,Bu kullanıcı adı zaten kullanılıyor!,This username is already taken!
 PROFILE_ACCOUNT_CREATED_FORMAT,"Hesap oluşturuldu! Hoş geldin, {0}!","Account created! Welcome, {0}!"
 PROFILE_LOGGED_OUT,Çıkış yapıldı!,Logged out!
+PROFILE_USERNAME_PLACEHOLDER,Kullanıcı Adı,Username
+PROFILE_PASSWORD_PLACEHOLDER,Şifre,Password
 DB_ERR_INVALID_DIFFICULTY,Geçersiz zorluk seviyesi!,Invalid difficulty level!
 DB_ERR_NEEDS_OPERATOR,"Soruda en az bir operatör (+, -, x, /) bulunmalı!","The question must contain at least one operator (+, -, x, /)!"
 DB_ERR_MAX_OPERATIONS_FORMAT,{0} seviyesinde en fazla {1} işlem olabilir! (Şu an: {2}),"At {0} level, at most {1} operations are allowed! (Currently: {2})"
