@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=22 format=3 uid="uid://dkc46fwvbn6j5"]
+[gd_resource type="SpriteFrames" format=3 uid="uid://dkc46fwvbn6j5"]
 
 [ext_resource type="Texture2D" uid="uid://c3206klakv55b" path="res://Sprites/main_chara_7yearskid-atttack.png" id="1_2vssq"]
 [ext_resource type="Texture2D" uid="uid://dedi1ybni2ip8" path="res://Sprites/main_chara_7yearskid-fall.png" id="2_2v5ju"]

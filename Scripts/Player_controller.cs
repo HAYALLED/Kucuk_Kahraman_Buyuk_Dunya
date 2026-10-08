@@ -26,7 +26,7 @@ public partial class Player_controller : CharacterBody2D
     private float windSpeedBoost = 0.3f;
 
     // Costume slot UI
-    private List<TextureRect> costumeSlotIcons = new List<TextureRect>();
+    private readonly List<AnimatedSprite2D> costumeSlotSprites = new List<AnimatedSprite2D>();
     private int currentCostumeIndex = -1;
 
     // ✅ Sahneler arası kostüm taşıma (static): Player instance'ı sahneyle birlikte ölür,
@@ -486,63 +486,69 @@ public partial class Player_controller : CharacterBody2D
 
     private void FindCostumeSlotUI()
     {
-        costumeSlotIcons.Clear();
+        costumeSlotSprites.Clear();
 
         var costumeSlots = GetNodeOrNull<CanvasLayer>("costume_slots");
-        if (costumeSlots == null)
-        {
-            return;
-        }
-
-        var hbox = costumeSlots.GetNodeOrNull<HBoxContainer>("HBoxContainer");
+        var hbox = costumeSlots?.GetNodeOrNull<HBoxContainer>("HBoxContainer");
         if (hbox == null)
-        {
             return;
-        }
 
         foreach (Node child in hbox.GetChildren())
         {
-            if (child is TextureRect slotRect)
+            if (child is not TextureRect)
+                continue;
+
+            AnimatedSprite2D sprite = null;
+            foreach (Node subChild in child.GetChildren())
             {
-                foreach (Node subChild in slotRect.GetChildren())
+                if (subChild is AnimatedSprite2D animSprite)
                 {
-                    if (subChild is TextureRect iconRect)
-                    {
-                        costumeSlotIcons.Add(iconRect);
-                        break;
-                    }
+                    sprite = animSprite;
+                    break;
                 }
             }
-        }
 
+            if (sprite == null)
+                continue;
+
+            // SpriteFrames sahnede 3 slot + kalpler arasında ortak. Slot başına kopya al,
+            // yoksa bir slotun icon'u hepsini değiştirir.
+            if (sprite.SpriteFrames != null)
+                sprite.SpriteFrames = (SpriteFrames)sprite.SpriteFrames.Duplicate(true);
+
+            costumeSlotSprites.Add(sprite);
+        }
     }
 
     private void UpdateCostumeSlotUI()
     {
-        for (int i = 0; i < costumeSlotIcons.Count; i++)
-        {
-            if (i < CostumeSlots.Length && CostumeSlots[i] != null)
-            {
-                if (CostumeSlots[i].Icon != null)
-                {
-                    costumeSlotIcons[i].Texture = CostumeSlots[i].Icon;
-                }
-                costumeSlotIcons[i].Visible = true;
+        const string portrayAnim = "portray";
 
-                if (i == currentCostumeIndex)
-                {
-                    costumeSlotIcons[i].Modulate = new Color(1, 1, 1, 1);
-                }
-                else
-                {
-                    costumeSlotIcons[i].Modulate = new Color(0.5f, 0.5f, 0.5f, 1);
-                }
-            }
-            else
+        for (int i = 0; i < costumeSlotSprites.Count; i++)
+        {
+            AnimatedSprite2D sprite = costumeSlotSprites[i];
+            if (!IsInstanceValid(sprite))
+                continue;
+
+            CostumeResource costume = i < CostumeSlots.Length ? CostumeSlots[i] : null;
+            if (costume == null)
             {
-                costumeSlotIcons[i].Texture = null;
-                costumeSlotIcons[i].Visible = false;
+                sprite.Visible = false;
+                continue;
             }
+
+            // Kostümün Icon'u bu slotun "portray" frame'ini override eder.
+            if (costume.Icon != null && sprite.SpriteFrames != null && sprite.SpriteFrames.HasAnimation(portrayAnim))
+            {
+                sprite.SpriteFrames.SetFrame(portrayAnim, 0, costume.Icon);
+                sprite.Animation = portrayAnim;
+                sprite.Frame = 0;
+            }
+
+            sprite.Visible = true;
+            sprite.Modulate = i == currentCostumeIndex
+                ? new Color(1, 1, 1, 1)
+                : new Color(0.5f, 0.5f, 0.5f, 1);
         }
     }
     // ========================================

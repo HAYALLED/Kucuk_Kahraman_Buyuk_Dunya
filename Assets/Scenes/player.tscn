@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://365bo4k4vdep"]
+[gd_scene format=3 uid="uid://365bo4k4vdep"]
 
 [ext_resource type="Script" uid="uid://clwaso7uwqail" path="res://Scripts/Player_controller.cs" id="1_7dd06"]
 [ext_resource type="SpriteFrames" uid="uid://dkc46fwvbn6j5" path="res://Resources/Costumes/default_sprites.tres" id="2_38rej"]
@@ -74,7 +74,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="player" type="CharacterBody2D"]
+[node name="player" type="CharacterBody2D" unique_id=1952491288]
 collision_layer = 3
 collision_mask = 15
 script = ExtResource("1_7dd06")
@@ -82,31 +82,31 @@ CostumeSlots = [ExtResource("3_lerqx"), ExtResource("4_jp3cw"), ExtResource("5_e
 WebAnchorTexture = ExtResource("6_jp3cw")
 HookTexture = ExtResource("7_ecf78")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1433377177]
 zoom = Vector2(2, 2)
 script = ExtResource("7_vy5gb")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1993221519]
 position = Vector2(0, -28)
 shape = SubResource("CapsuleShape2D_t1xgp")
 
-[node name="attack_collision" type="Area2D" parent="."]
+[node name="attack_collision" type="Area2D" parent="." unique_id=1193011235]
 collision_layer = 8
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="attack_collision"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="attack_collision" unique_id=433492243]
 visibility_layer = 7
 position = Vector2(26.75, -26)
 shape = SubResource("RectangleShape2D_c3tg1")
 debug_color = Color(0.8036122, 0.3793542, 0.47163427, 0.41960785)
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=403181071]
 position = Vector2(0, -33)
 sprite_frames = ExtResource("2_38rej")
 animation = &"attack"
 
-[node name="health_bar" type="CanvasLayer" parent="."]
+[node name="health_bar" type="CanvasLayer" parent="." unique_id=1834557327]
 
-[node name="HBoxContainer" type="HBoxContainer" parent="health_bar"]
+[node name="HBoxContainer" type="HBoxContainer" parent="health_bar" unique_id=620079769]
 z_index = 3
 custom_minimum_size = Vector2(10, 10)
 offset_left = 10.0
@@ -115,113 +115,113 @@ offset_right = 83.0
 offset_bottom = 50.0
 theme_override_constants/separation = 10
 
-[node name="heart" type="TextureRect" parent="health_bar/HBoxContainer"]
+[node name="heart" type="TextureRect" parent="health_bar/HBoxContainer" unique_id=870823803]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart"]
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart" unique_id=615543385]
 z_index = 3
 position = Vector2(20, 20)
 scale = Vector2(2.9615386, 2.9615386)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"health"
 
-[node name="heart2" type="TextureRect" parent="health_bar/HBoxContainer"]
+[node name="heart2" type="TextureRect" parent="health_bar/HBoxContainer" unique_id=913510398]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart2"]
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart2" unique_id=744868855]
 z_index = 3
 position = Vector2(20, 20)
 scale = Vector2(2.9615386, 2.9615386)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"health"
 
-[node name="heart3" type="TextureRect" parent="health_bar/HBoxContainer"]
+[node name="heart3" type="TextureRect" parent="health_bar/HBoxContainer" unique_id=528576006]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart3"]
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart3" unique_id=1838465505]
 z_index = 3
 position = Vector2(20, 20)
 scale = Vector2(2.9615386, 2.9615386)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"health"
 
-[node name="heart4" type="TextureRect" parent="health_bar/HBoxContainer"]
+[node name="heart4" type="TextureRect" parent="health_bar/HBoxContainer" unique_id=482518327]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart4"]
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart4" unique_id=395096884]
 z_index = 3
 position = Vector2(20, 20)
 scale = Vector2(2.9615386, 2.9615386)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"health"
 
-[node name="heart5" type="TextureRect" parent="health_bar/HBoxContainer"]
+[node name="heart5" type="TextureRect" parent="health_bar/HBoxContainer" unique_id=1239800538]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart5"]
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart5" unique_id=1970742180]
 z_index = 3
 position = Vector2(20, 20)
 scale = Vector2(2.9615386, 2.9615386)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"health"
 
-[node name="heart6" type="TextureRect" parent="health_bar/HBoxContainer"]
+[node name="heart6" type="TextureRect" parent="health_bar/HBoxContainer" unique_id=1303051432]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart6"]
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart6" unique_id=1424062202]
 z_index = 3
 position = Vector2(20, 20)
 scale = Vector2(2.9615386, 2.9615386)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"health"
 
-[node name="heart7" type="TextureRect" parent="health_bar/HBoxContainer"]
+[node name="heart7" type="TextureRect" parent="health_bar/HBoxContainer" unique_id=1666588272]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart7"]
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart7" unique_id=2076820261]
 z_index = 3
 position = Vector2(20, 20)
 scale = Vector2(2.9615386, 2.9615386)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"health"
 
-[node name="heart8" type="TextureRect" parent="health_bar/HBoxContainer"]
+[node name="heart8" type="TextureRect" parent="health_bar/HBoxContainer" unique_id=131311525]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart8"]
+[node name="heart" type="AnimatedSprite2D" parent="health_bar/HBoxContainer/heart8" unique_id=1171941978]
 z_index = 3
 position = Vector2(20, 20)
 scale = Vector2(2.9615386, 2.9615386)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"health"
 
-[node name="costume_slots" type="CanvasLayer" parent="."]
+[node name="costume_slots" type="CanvasLayer" parent="." unique_id=316101513]
 
-[node name="HBoxContainer" type="HBoxContainer" parent="costume_slots"]
+[node name="HBoxContainer" type="HBoxContainer" parent="costume_slots" unique_id=1789552230]
 z_index = 3
 custom_minimum_size = Vector2(10, 10)
 anchors_preset = 1
@@ -232,48 +232,48 @@ offset_bottom = 40.0
 grow_horizontal = 0
 theme_override_constants/separation = 10
 
-[node name="portray" type="TextureRect" parent="costume_slots/HBoxContainer"]
+[node name="portray" type="TextureRect" parent="costume_slots/HBoxContainer" unique_id=1370025116]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="portray" type="AnimatedSprite2D" parent="costume_slots/HBoxContainer/portray"]
+[node name="portray" type="AnimatedSprite2D" parent="costume_slots/HBoxContainer/portray" unique_id=1834658115]
 z_index = 3
 position = Vector2(-2.0000076, 46)
 scale = Vector2(1.058, 1)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"portray"
 
-[node name="portray2" type="TextureRect" parent="costume_slots/HBoxContainer"]
+[node name="portray2" type="TextureRect" parent="costume_slots/HBoxContainer" unique_id=250760374]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="portray" type="AnimatedSprite2D" parent="costume_slots/HBoxContainer/portray2"]
+[node name="portray" type="AnimatedSprite2D" parent="costume_slots/HBoxContainer/portray2" unique_id=1966996356]
 z_index = 3
 position = Vector2(-2.0000076, 46)
 scale = Vector2(1.058, 1)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"portray"
 
-[node name="portray3" type="TextureRect" parent="costume_slots/HBoxContainer"]
+[node name="portray3" type="TextureRect" parent="costume_slots/HBoxContainer" unique_id=724266604]
 z_index = 3
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 stretch_mode = 4
 
-[node name="portray" type="AnimatedSprite2D" parent="costume_slots/HBoxContainer/portray3"]
+[node name="portray" type="AnimatedSprite2D" parent="costume_slots/HBoxContainer/portray3" unique_id=1166382704]
 z_index = 3
 position = Vector2(-2.0000076, 46)
 scale = Vector2(1.058, 1)
 sprite_frames = SubResource("SpriteFrames_ggw7w")
 animation = &"portray"
 
-[node name="scores" type="CanvasLayer" parent="."]
+[node name="scores" type="CanvasLayer" parent="." unique_id=446740709]
 
-[node name="VBoxContainer" type="VBoxContainer" parent="scores"]
+[node name="VBoxContainer" type="VBoxContainer" parent="scores" unique_id=1786979398]
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
@@ -282,20 +282,20 @@ offset_right = 199.0
 offset_bottom = 38.5
 grow_vertical = 2
 
-[node name="trashCountLabel" type="Label" parent="scores/VBoxContainer"]
+[node name="trashCountLabel" type="Label" parent="scores/VBoxContainer" unique_id=358498055]
 layout_mode = 2
 text = "tuttuğu çöp sayısı"
 
-[node name="currentScoreLabel" type="Label" parent="scores/VBoxContainer"]
+[node name="currentScoreLabel" type="Label" parent="scores/VBoxContainer" unique_id=1524903717]
 layout_mode = 2
 text = "player şu anki puan sayısı"
 
-[node name="requiredScoreLabel" type="Label" parent="scores/VBoxContainer"]
+[node name="requiredScoreLabel" type="Label" parent="scores/VBoxContainer" unique_id=1032256457]
 layout_mode = 2
 text = "for level score"
 
-[node name="RayCast2D" type="RayCast2D" parent="."]
+[node name="RayCast2D" type="RayCast2D" parent="." unique_id=1200579606]
 position = Vector2(-1, -29)
 target_position = Vector2(100, 0)
 
-[node name="Mr_AdGuy" parent="." instance=ExtResource("10_ecf78")]
+[node name="Mr_AdGuy" parent="." unique_id=2122481558 instance=ExtResource("10_ecf78")]

@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="CostumeResource" load_steps=6 format=3 uid="uid://bij37anshk5ed"]
+[gd_resource type="Resource" script_class="CostumeResource" format=3 uid="uid://bij37anshk5ed"]
 
-[ext_resource type="Texture2D" uid="uid://wmjovwg6jeq8" path="res://Sprites/portray-empthy.png" id="1_2dupw"]
 [ext_resource type="PackedScene" uid="uid://0h7247b2t0g2" path="res://Assets/Scenes/Projectiles/BubbleProjectile.tscn" id="1_ti548"]
 [ext_resource type="SpriteFrames" uid="uid://3v6klq8a2tmw" path="res://Resources/Costumes/aquaBoy_sprites.tres" id="2_2dupw"]
 [ext_resource type="PackedScene" uid="uid://b7opmiwxefcs6" path="res://Assets/Scenes/Projectiles/tsunami_wave.tscn" id="2_fsu7i"]
+[ext_resource type="Texture2D" uid="uid://d3d8ro71crrvn" path="res://Sprites/portray-aquaboy.png" id="2_ti548"]
 [ext_resource type="Script" uid="uid://dy444cyn5wphm" path="res://Scripts/CostumeResource.cs" id="3_ti548"]
 
 [resource]
@@ -11,7 +11,7 @@ script = ExtResource("3_ti548")
 CostumeName = "aquaboy"
 Sprites = ExtResource("2_2dupw")
 MaxHealth = 8
-Icon = ExtResource("1_2dupw")
+Icon = ExtResource("2_ti548")
 DamageMultiplier = 2.0
 CanThrowProjectile = true
 ProjectileDamage = 2

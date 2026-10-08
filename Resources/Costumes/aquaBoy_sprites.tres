@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=28 format=3 uid="uid://3v6klq8a2tmw"]
+[gd_resource type="SpriteFrames" format=3 uid="uid://3v6klq8a2tmw"]
 
 [ext_resource type="Texture2D" uid="uid://c6ptfeoufn5tr" path="res://Sprites/costume_aquaboy_atk-atttack.png" id="1_85uja"]
 [ext_resource type="Texture2D" uid="uid://bowaosysdaawf" path="res://Sprites/costume_aquaboy-fall.png" id="2_geph7"]

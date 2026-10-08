@@ -1,0 +1,89 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Systems/KeyRebind.cs" id="1_krb"]
+[ext_resource type="Texture2D" uid="uid://o3tlduoy50q5" path="res://Sprites/scores-scoreboard_background.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://dhwjyam1elhpm" path="res://Sprites/go_back.png" id="3_back"]
+
+[node name="KeyRebind" type="Control"]
+custom_minimum_size = Vector2(800, 600)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -16.0
+offset_right = -128.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_krb")
+
+[node name="TextureRect" type="NinePatchRect" parent="."]
+custom_minimum_size = Vector2(1200, 600)
+layout_mode = 0
+offset_left = 100.0
+offset_top = 12.0
+offset_right = 1300.0
+offset_bottom = 612.0
+texture = ExtResource("2_bg")
+region_rect = Rect2(1.6728249, 0.47975922, 61.11027, 63.545647)
+
+[node name="BackButton" type="TextureButton" parent="."]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 0
+offset_left = 140.0
+offset_top = 11.999996
+offset_right = 180.0
+offset_bottom = 51.999996
+scale = Vector2(5, 5)
+texture_normal = ExtResource("3_back")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_left = 295.0
+offset_right = 1095.0
+offset_bottom = 620.0
+theme_override_constants/margin_left = 100
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 100
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "KEYREBIND_TITLE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(600, 330)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Rows" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 20
+text = "KEYREBIND_RESET"

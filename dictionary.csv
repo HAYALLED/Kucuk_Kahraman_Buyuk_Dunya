@@ -183,3 +183,38 @@ TEACHER_MSG_21," GİZLİ ALANLAR:\nDuvarların arkasını kontrol et, sürprizle
 TEACHER_MSG_22,Bu kadar bilgi yeterli! İyi şanslar!\n(Tekrar gelirsen yeni infolar öğrenebilirsin! ),That's enough info for now! Good luck!\n(Come back again and you can learn new info!)
 LEVEL_TOTAL_MISSING_FORMAT,Toplam Puan: {0}/{1}\nEksik: {2} puan!,Total Score: {0}/{1}\nMissing: {2} points!
 LEVEL_INSUFFICIENT_FORMAT,Yetersiz! Daha {0} puan gerekli.,Not enough! {0} more points needed.
+SETTINGS_KEY_REBIND,TUŞ ATAMA,KEY REBIND
+KEYREBIND_TITLE,TUŞ ATAMA,KEY REBIND
+KEYREBIND_RESET,VARSAYILANA DÖN,RESET TO DEFAULT
+KEYREBIND_HINT,Bir kutuya tıkla ve yeni tuşa bas (ESC: iptal),Click a slot and press a new key (ESC: cancel)
+KEYREBIND_WAITING,Tuşa bas...,Press a key...
+KEYREBIND_EMPTY,Boş,Empty
+KEYREBIND_SAVED,Kaydedildi,Saved
+KEYREBIND_RESET_DONE,Varsayılan tuşlar geri yüklendi,Default keys restored
+KEYREBIND_NEED_ONE,En az bir tuş atanmış olmalı,At least one key must stay assigned
+KEYREBIND_MOUSE_LEFT,Sol Tık,Left Click
+KEYREBIND_MOUSE_RIGHT,Sağ Tık,Right Click
+KEYREBIND_MOUSE_MIDDLE,Orta Tık,Middle Click
+KEYREBIND_ACTION_MOVE_LEFT,Sola Git,Move Left
+KEYREBIND_ACTION_MOVE_RIGHT,Sağa Git,Move Right
+KEYREBIND_ACTION_JUMP,Zıpla,Jump
+KEYREBIND_ACTION_CLIMB,Tırman,Climb
+KEYREBIND_ACTION_ATTACK,Saldır,Attack
+KEYREBIND_ACTION_THROW,Mermi At,Throw Projectile
+KEYREBIND_ACTION_SPECIAL,Özel Yetenek,Special Ability
+KEYREBIND_ACTION_INTERACT,Etkileşim,Interact
+KEYREBIND_ACTION_TELEPORT,Işınlan,Teleport
+KEYREBIND_ACTION_PLANT,Tuzak Kur,Plant Trap
+KEYREBIND_ACTION_COSTUME_1,Kostüm 1,Costume 1
+KEYREBIND_ACTION_COSTUME_2,Kostüm 2,Costume 2
+KEYREBIND_ACTION_COSTUME_3,Kostüm 3,Costume 3
+KEYREBIND_ACTION_PAUSE,Duraklat,Pause
+KEYREBIND_ACTION_CAMERA_UP,Yukarı Bak,Look Up
+KEYREBIND_ACTION_CAMERA_DOWN,Aşağı Bak,Look Down
+KEYREBIND_CONFLICT_TITLE,TUŞ ÇAKIŞMASI,KEY CONFLICT
+KEYREBIND_CONFLICT_TEXT,{0} tuşu şu aksiyonlarda zaten kullanılıyor: {1}\n\nBu tuşu farklı yerde kullanıyorsunuz. Emin misiniz?,{0} is already used for: {1}\n\nYou are using this key somewhere else. Are you sure?
+KEYREBIND_CONFLICT_BOTH,Aynı anda kullan,Use for both
+KEYREBIND_CONFLICT_ONLY_HERE,Sadece bunda kullan,Use only here
+KEYREBIND_CONFLICT_CANCEL,İptal,Cancel
+KEYREBIND_CONFLICT_CANCELLED,İptal edildi,Cancelled
+KEYREBIND_UNASSIGNED_FORMAT,Atamasız kalan: {0},Left unassigned: {0}

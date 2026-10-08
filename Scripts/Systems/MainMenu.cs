@@ -9,6 +9,9 @@ public partial class MainMenu : Control
     private TextureButton scoretableButton;
     public override void _Ready()
     {
+        // Kayıtlı tuş atamalarını oyun açılırken uygula
+        KeyBindings.Initialize();
+
         // Button'ları bul
         startButton = GetNode<TextureButton>("start");
         settingsButton = GetNode<TextureButton>("settings");

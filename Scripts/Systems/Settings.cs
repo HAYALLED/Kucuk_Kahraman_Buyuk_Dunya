@@ -16,6 +16,7 @@ public partial class Settings : Control
     // Oyun
     private OptionButton difficultyOption;
     private Button resetButton;
+    private Button keyRebindButton;
 
     // Geri
     private TextureButton backButton;
@@ -39,6 +40,8 @@ public partial class Settings : Control
         // ===== OYUN =====
         difficultyOption = GetNode<OptionButton>("MarginContainer/VBoxContainer/TabContainer/Oyun/VBoxContainer/HBoxContainer/DifficultyOption");
         resetButton = GetNode<Button>("MarginContainer/VBoxContainer/TabContainer/Oyun/VBoxContainer/HBoxContainer/ResetButton");
+
+        keyRebindButton = GetNodeOrNull<Button>("MarginContainer/VBoxContainer/TabContainer/Oyun/VBoxContainer/KeyRebindButton");
 
         // ===== GERİ =====
         backButton = GetNode<TextureButton>("BackButton");
@@ -167,6 +170,8 @@ public partial class Settings : Control
 
         difficultyOption.ItemSelected += OnDifficultySelected;
         resetButton.Pressed += OnResetPressed;
+        if (keyRebindButton != null)
+            keyRebindButton.Pressed += OnKeyRebindPressed;
         backButton.Pressed += OnBackPressed;
 
         GD.Print("[SETTINGS] ✅ Tüm signal'lar bağlandı!");
@@ -333,6 +338,12 @@ public partial class Settings : Control
 
         AddChild(confirm);
         confirm.PopupCentered(new Vector2I(400, 150));
+    }
+
+    private void OnKeyRebindPressed()
+    {
+        GD.Print("[SETTINGS] Tuş atama sayfasına gidiliyor...");
+        GetTree().ChangeSceneToFile("res://Resources/KeyRebind.tscn");
     }
 
     private void OnBackPressed()

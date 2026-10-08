@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=28 format=3 uid="uid://d0andxrbsyphu"]
+[gd_resource type="SpriteFrames" format=3 uid="uid://d0andxrbsyphu"]
 
 [ext_resource type="Texture2D" uid="uid://cqkuogl3rcd7a" path="res://Sprites/costume_spiderboy-atttack.png" id="1_oglil"]
 [ext_resource type="Texture2D" uid="uid://bxpvaof1f4pa7" path="res://Sprites/costume_spiderboy-fall.png" id="2_kvr72"]
